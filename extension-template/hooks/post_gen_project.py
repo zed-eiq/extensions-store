@@ -32,7 +32,7 @@ from dev_kit.eiq_edk import ImporterProcess
 class MainApp(ImporterProcess):
 
     def download(self):
-        print("Downloading raw data. Add you code here")
+        print("Downloading raw data. Add your code here")
 
     def transform(self, raw_data):
         print("Transform single package of raw data. Add your code here")

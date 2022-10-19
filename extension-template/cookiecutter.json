@@ -1,11 +1,13 @@
 {
    "extension_name": "Opensource Intelligence Feed",
+   "__package_name": "{{ cookiecutter.extension_name.lower().replace(' ', '-').replace('_', '-') }}",
+   "__year": "{% now 'utc', '%Y' %}",
    "extension_type": ["incoming", "outgoing", "enricher"],
    "extension_version": "0.0.1",
    "extension_description": "Short description of the extension you're building",
    "producer": "Your Company Name",
    "maintainer": "John Doe <email@example.com>",
-   "repository_url": "https://github.com/{{ cookiecutter.producer.lower().replace(' ', '_').replace('-', '_') }}/{{ cookiecutter.extension_name.lower().replace(' ', '-').replace('_', '-') }}",
+   "repository_url": "https://github.com/{{ cookiecutter.producer.lower().replace(' ', '_').replace('-', '_') }}/{{ cookiecutter.__package_name }}",
    "license": ["MIT license",
         "BSD license",
         "ISC license",
@@ -15,12 +17,13 @@
         "GNU LGPLv3",
         "Mozilla Public License 2.0",
         "Boost Software License 1.0",
-        "The Unlicensed",
+        "The Unlicense",
         "Proprietary"],
    "edk_protocol": ["1.0"],
    "programming_language": ["Python"],
    "programming_language_version": "3.8",
    "_copy_without_render": [
         "create_deb_package.sh"
-    ]
+    ],
+    "_extensions": ["jinja2_time.TimeExtension"]
 }

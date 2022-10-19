@@ -21,7 +21,7 @@ function usage {
       echo ""
       echo "Usage: $0 [OPTIONS]"
       echo ""
-      echo "Example: $0 -p Intel471 -v 1.1 -m 'John Doe <user@example.com>' -d 'Intel 471 extension for incoming feed' -k F8120DBF852F77C1 --source /opt/dev/Intel471"
+      echo "Example: $0 -p my-extension -v 1.1 -m 'John Doe <user@example.com>' -d 'Lorem ipsum dolor' -k F8120DBF852F77C1 --source /opt/dev/my-extension"
       echo ""
       echo "Options:"
       echo "   -p package_name                  .deb package name. Must only contain lowercase alphanumeric and '-+' characters."

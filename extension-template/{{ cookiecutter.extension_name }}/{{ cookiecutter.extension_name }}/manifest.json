@@ -10,13 +10,13 @@
   "edk_protocol": "{{ cookiecutter.edk_protocol }}",
   "version": "{{ cookiecutter.extension_version }}",
   "programming_language": "{{ cookiecutter.programming_language}}",
-  "programming_language_version": "{{ cookiecutter.programming_language_version}}",
+  "programming_language_version": "{{ cookiecutter.programming_language_version}}"
 
 {%- if cookiecutter.extension_type == "incoming" -%}
-
+,
   "content_types": [
     {
-      "id": "urn:eiq-edk:{{ cookiecutter.producer.lower().replace(' ', '_').replace('-', '_') }}:{{ cookiecutter.extension_name.lower().replace(' ', '-').replace('_', '-') }}:{{ cookiecutter.extension_version }}",
+      "id": "urn:eiq-edk:{{ cookiecutter.producer.lower().replace(' ', '_').replace('-', '_') }}:{{ cookiecutter.__package_name }}:{{ cookiecutter.extension_version }}",
       "name": "",
       "description": "",
       "content_groups": [
@@ -37,11 +37,11 @@
   ]
 
 {%- elif cookiecutter.extension_type == "outgoing" -%}
-
+,
   "supported_update_strategies": "APPEND",
   "content_types": [
     {
-      "id": "urn:eiq-edk:{{ cookiecutter.producer.lower().replace(' ', '_').replace('-', '_') }}:{{ cookiecutter.extension_name.lower().replace(' ', '-').replace('_', '-') }}:{{ cookiecutter.extension_version }}",
+      "id": "urn:eiq-edk:{{ cookiecutter.producer.lower().replace(' ', '_').replace('-', '_') }}:{{ cookiecutter.__package_name }}:{{ cookiecutter.extension_version }}",
       "name": "",
       "description": "",
       "content_groups": [
@@ -62,7 +62,7 @@
   ]
 
 {%- elif cookiecutter.extension_type == "enricher" -%}
-
+,
   "supported_extract_types": [
         "actor-id"
    ],
@@ -71,5 +71,3 @@
 {% endif %}
 
 }
-
-

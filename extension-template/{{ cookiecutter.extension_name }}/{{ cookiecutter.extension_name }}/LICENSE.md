@@ -1,6 +1,7 @@
 {%- if cookiecutter.license == "MIT license" -%}
 # The MIT License (MIT)
-Copyright © [year] [copyright holders]
+Copyright (c) {{ cookiecutter.__year }} {{ cookiecutter.producer }}
+
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -12,7 +13,7 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 # The 3-Clause BSD License
 Note: This license has also been called the "New BSD License" or "Modified BSD License". See also the 2-clause BSD License.
 
-Copyright [YEAR] [COPYRIGHT HOLDER]
+Copyright (c) {{ cookiecutter.__year }} {{ cookiecutter.producer }}
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -26,7 +27,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 {%- elif cookiecutter.license == "ISC license" -%}
 # ISC License (ISC)
-Copyright <YEAR> <OWNER>
+Copyright (c) {{ cookiecutter.__year }} {{ cookiecutter.producer }}
 
 Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.
 
@@ -35,7 +36,7 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 {%- elif cookiecutter.license == "Apache Software License 2.0" -%}
 # Apache License, Version 2.0
 
-   Copyright [yyyy] [name of copyright owner]
+   Copyright (c) {{ cookiecutter.__year }} {{ cookiecutter.producer }}
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -51,8 +52,8 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 
 {%- elif cookiecutter.license == "GNU General Public License v3" -%}
 # GNU General Public License version 3
-<one line to give the program's name and a brief idea of what it does.>
-Copyright (C) <year>  <name of author>
+{{ cookiecutter.extension_description }}
+Copyright (c) {{ cookiecutter.__year }} {{ cookiecutter.producer }}
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -70,8 +71,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 {%- elif cookiecutter.license == "GNU AGPLv3" -%}
 # GNU Affero General Public License
 
-<one line to give the program's name and a brief idea of what it does.>
-Copyright (C) <year>  <name of author>
+{{ cookiecutter.extension_description }}
+Copyright (c) {{ cookiecutter.__year }} {{ cookiecutter.producer }}
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
@@ -315,8 +316,8 @@ The copyright notices in the Software and this entire statement, including the a
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE SOFTWARE BE LIABLE FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-{%- elif cookiecutter.license == "The Unlicensed" -%}
-# The Unlicensed
+{%- elif cookiecutter.license == "The Unlicense" -%}
+# The Unlicense
 
 This is free and unencumbered software released into the public domain.
 
@@ -330,6 +331,7 @@ For more information, please refer to
 
 {%- elif cookiecutter.license == "Proprietary" -%}
 # Proprietary
+Copyright (c) {{ cookiecutter.__year }} {{ cookiecutter.producer }}
 
 Please add your license text here
 
