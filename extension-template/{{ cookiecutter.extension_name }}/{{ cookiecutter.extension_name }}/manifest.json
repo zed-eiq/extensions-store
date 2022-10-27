@@ -24,7 +24,7 @@
       ],
       "file_extension": "",
       "mime_type": "",
-      "configuration":
+      "configuration": [
         {
           "default": "",
           "required": false,
@@ -33,6 +33,7 @@
           "title": "",
           "name": ""
         }
+      ]
     }
   ]
 
