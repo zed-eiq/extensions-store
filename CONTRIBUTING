@@ -1,0 +1,23 @@
+# Contributing
+
+Thanks for being interested in contributing to the EclecticIQ Extensions repository. This document describes the Contribution process.
+
+Contributing allows you to make the content that you build on the EclecticIQ Extensions Developer Kit available to every client. Content can be either EclecticIQ, Partner or Community supported.
+
+All the content is open source and lives in this repository. By making a submission, you agree for distribution under an MIT license.
+
+## Support and requirements
+
+Extensions can be either officially supported by EclecticIQ (for extensions built by EclecticIQ), a Technology Partner, or an individual developer. This is defined on a per extension basis and support information can be found in each extensions manifest.
+
+## Tests
+
+TODO
+
+## Documentation
+
+TODO
+
+## Submissions
+
+TODO
