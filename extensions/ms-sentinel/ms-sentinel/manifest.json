@@ -1,0 +1,51 @@
+{
+  "name": "ms-sentinel",
+  "extension_type": "outgoing",
+  "license": "MIT license",
+  "maintainer": "PINT <pint@eclecticiq.com>",
+  "producer": "EclecticIQ",
+  "eiq_verified": false,
+  "repository": "https://extensions.eclecticiq.com",
+  "application_path": "process.py",
+  "edk_protocol": "1.0",
+  "version": "0.0.1",
+  "programming_language": "Python",
+  "programming_language_version": "3.8",
+  "supported_update_strategies": ["APPEND", "REPLACE", "DIFF"],
+  "content_types": [
+    {
+      "id": "urn:eiq-edk:eclectiiq:ms-sentinel:0.0.1",
+      "name": "Microsoft Sentinel JSON model",
+      "description": "Microsoft Sentinel JSON model",
+      "content_groups": ["eiq.outgoing-transports.ms_sentinel"],
+      "file_extension": "json",
+      "mime_type": "application/json",
+      "configuration": [
+        {
+          "default": "https://login.microsoftonline.com/{}/oauth2/v2.0/token",
+          "required": true,
+          "type": "string",
+          "description": "The URL pointing to the API endpoint exposing the service.",
+          "title": "API URL",
+          "name": "api_url"
+        },
+        {
+          "default": "*********",
+          "required": true,
+          "type": "string",
+          "description": "Client id",
+          "title": "Client id",
+          "name": "client_id"
+        },
+        {
+          "default": "**********",
+          "required": true,
+          "type": "string",
+          "description": "Client secret",
+          "title": "Client secret",
+          "name": "client_secret"
+        }
+      ]
+    }
+  ]
+}
