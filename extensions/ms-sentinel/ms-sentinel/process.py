@@ -39,6 +39,7 @@ class MainApp(ExporterProcess):
         ms_sentinel_service = MicrosoftSentinelService(
             self.config.get('api_url', MS_SENTINEL_API), token_service
         )
+
         self.send_info({
             "message": "Message token",
             "description": f"A message from the outgoing MS-Sentinel feed token creation"
