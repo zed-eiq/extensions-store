@@ -4,7 +4,7 @@ import logging
 from eiq_edk import ExporterProcess
 from packer import to_ms_sentinel_json
 from upload_helper import Oauth2Service, MicrosoftSentinelService
-
+from requests import HTTPError
 
 MS_SENTINEL_API = "https://graph.microsoft.com/beta/"
 PACKAGE_LIMIT = 100
@@ -16,33 +16,64 @@ class MainApp(ExporterProcess):
 
     def pack_data(self, raw_data):
 
+        self.send_info(
+            {
+                "code": "INF-0001",
+                "message": "Execution started",
+                "description": "MS-Sentinel started packing data"
+            }
+        )
+
         data = json.loads(raw_data.decode())
         packed_data = to_ms_sentinel_json([data], self.config)
         self.save_packed_data(packed_data)
+
+        self.send_info(
+            {
+                "code": "INF-0003",
+                "message": "Execution completed successfuly",
+                "description": "MS-Sentinel packed_data  completed successfuly."
+            }
+        )
 
         stash_dict = {'first_extenition': {}}
         self.save_stash(stash_dict)
 
     def upload_data(self, raw_data=None):
 
+        self.send_info(
+            {
+                "code": "INF-0001",
+                "message": "Execution started",
+                "description": "MS-Sentinel started uploading data"
+            }
+        )
+
         stash = {'first_extenition': {}} # need to be added in function above
-
-        log.info(f"Sending {len(raw_data)} blocks to Microsoft Sentinel")
-
-        token_service = Oauth2Service(
-            stash=stash,
-            auth_url="https://login.microsoftonline.com/{}/oauth2/v2.0/token",
-            scope_field="scope",
-            scope_value="https://graph.microsoft.com/.default",
-            kwargs=self.config,
-        )
-        ms_sentinel_service = MicrosoftSentinelService(
-            self.config.get('api_url', MS_SENTINEL_API), token_service
-        )
+        try:
+            token_service = Oauth2Service(
+                stash=stash,
+                auth_url="https://login.microsoftonline.com/{}/oauth2/v2.0/token",
+                scope_field="scope",
+                scope_value="https://graph.microsoft.com/.default",
+                kwargs=self.config,
+            )
+            ms_sentinel_service = MicrosoftSentinelService(
+                self.config.get('api_url', MS_SENTINEL_API), token_service
+            )
+        except HTTPError as ex:
+            self.send_info({
+                {
+                    "code": "ERR-0001",
+                    "description": "3rd party connector error",
+                    "message": f"An error occured during contacting 3rd party. Error Code {ex.response}. Aborting."
+                },
+            })
 
         self.send_info({
-            "message": "Message token",
-            "description": f"A message from the outgoing MS-Sentinel feed token creation"
+            "code": "INF-0002",
+            "message": "State transition",
+            "description": "Run state make Oauth2 token"
         })
         new_indicators = []
         deleted_indicators = []
@@ -79,7 +110,11 @@ class MainApp(ExporterProcess):
         pushed_indicators.extend([item["externalId"] for item in new_indicators])
         stash['pushed_indicators'] = ",".join(list(set(pushed_indicators)))
 
-        log.info(f"Successfully pushed {len(new_indicators)} new indicators.")
+        self.send_info({
+            "code": "INF-0003",
+            "message": "Execution completed successfuly",
+            "description": f"{len(new_indicators)} indicators pushed successfuly."
+        })
         self.save_stash(stash)
 
 
