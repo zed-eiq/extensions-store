@@ -2,7 +2,6 @@
 import json
 import math
 from datetime import datetime
-import pytz
 
 from dateutil import parser
 from eiq_edk import ImporterProcess
@@ -67,6 +66,7 @@ class MainApp(ImporterProcess):
                 alert_data = alert.get("post")
                 alert_data["content_type"] = "intel471_posts"
             if alert_data:
+                timestamp = datetime.utcfromtimestamp(int(alert["foundTime"] / 1000))
                 self.save_raw_data({
                         "raw_data": report, "timestamp": timestamp.isoformat()
                     })
