@@ -2,14 +2,12 @@
 import json
 import math
 from datetime import datetime
-import pytz
 
 from dateutil import parser
 from eiq_edk import ImporterProcess
 from furl import furl
 
-
-from parsers import parse_indicators, parse_ttps, parse_report
+from parsers import create_adversary_actors, create_adversary_report
 from utils import batch, fetch_results, fetch_with_paging, get_time_params, Intel471Exception, REPORT_ENDPOINT
 
 
@@ -93,26 +91,15 @@ class MainApp(ImporterProcess):
 
         raw_data = json.loads(raw_data.decode("utf-8"))['raw_data']
         entities, relations = [], []
-        feed_type = raw_data.get("feed_type")
-        parse_indicators([raw_data["indicator"]], entities, relations, feed_type)
-        parse_ttps(
-            [raw_data["indicator"]],
-            entities,
-            relations,
-            raw_report=raw_data["report"] if raw_data.get("report") else None,
-            feed_type=feed_type
-        )
-        if raw_data.get("report"):
-            report, report_relation = parse_report(raw_data["report"], entities)
-            entities.extend(report)
-            relations.extend(report_relation)
-        linked_entities = {
-            "type": "linked-entities",
-            "entities": entities,
-            "relations": relations,
-        }
+        report = create_adversary_report(raw_data)
+        entities.append(report)
 
-        self.save_transformed_data(linked_entities)
+        if raw_data.get("actorSubjectOfReport"):
+            actors, actor_relations = create_adversary_actors(raw_data, entities)
+            entities.append(actors)
+            relations.extend(actor_relations)
+
+        self.save_transformed_data({"type": "linked-entities", "entities": entities, "relations": relations})
         self.send_info({
             "code": "INF-0003",
             "message": "Execution completed successfuly",

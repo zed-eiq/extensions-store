@@ -32,7 +32,6 @@ def batch(iterable, size):
 
 
 def fetch_with_paging(
-    self,
     api_url,
     count_col_name,
     root_node,
@@ -73,10 +72,10 @@ def fetch_with_paging(
             if item_count <= offset + page_size:
                 break
         else:
-            self.send_error({
-                "code": "404",
-                "description": "Not Found error, we handle that with custom exception on first",
-                "message": f"API returned error for {api_url}"})
+            # When user make invalid URL to make request Intel471 API return
+            # 404: Not Found error, we handle that with custom exception on first
+            # request from pagination
+            log.error(f"API returned error for {api_url}")
             raise Intel471Exception(
                 'Provided parameters result with "404: not found" error'
             )
@@ -178,46 +177,6 @@ def handle_errors(self, response, ext_type):
             "code": "ERR-0000",
             "description": f"{ext_type} failed, malformed request",
             "message": f"{response.text}."
-        })
-        pass
-
-
-def fetch_with_cursor(
-    self,
-    api_url,
-    root_node,
-    auth,
-    query_params,
-    verify_ssl,
-):
-    response = fetch_results(
-        self, url=api_url, auth=auth, verify_ssl=verify_ssl, params=query_params
-    )
-    if response:
-        while response.get("cursorNext"):
-            if not response.get(root_node, []):
-                break
-            items = response.get(root_node, [])
-            for item in items:
-                yield item
-            query_params["cursor"] = response.get("cursorNext")
-            response = fetch_results(
-                url=api_url, auth=auth, verify_ssl=verify_ssl, params=query_params
-            )
-    else:
-        self.send_error({
-          "code": "404",
-          "description": "3rd party connector error",
-          "message": f"An error occured during contacting 3rd party  {api_url}. Aborting."
-        })
-        pass
-
-    if response.get("indicatorTotalCount") == 0:
-
-        self.send_warning({
-            "code": "WAR-0001",
-            "message": "No results",
-            "description": "Provider finished with no results."
         })
         pass
 
