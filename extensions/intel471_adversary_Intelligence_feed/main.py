@@ -11,9 +11,6 @@ from parsers import create_adversary_actors, create_adversary_report
 from utils import batch, fetch_results, fetch_with_paging, get_time_params, Intel471Exception, REPORT_ENDPOINT
 
 
-
-
-
 class MainApp(ImporterProcess):
 
     def download(self):
