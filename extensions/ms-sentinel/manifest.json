@@ -1,7 +1,7 @@
 {
   "name": "ms-sentinel",
   "extension_type": "outgoing",
-  "license": "",
+  "license": "MIT license",
   "maintainer": "PINT <pint@eclecticiq.com>",
   "producer": "EclecticIQ",
   "eiq_verified": false,
