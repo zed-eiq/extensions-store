@@ -34,7 +34,7 @@ function usage {
 }
 
 # If no arguments provided
-if [[ ${#} -eq 0 ]]; then
+if [[ $# -eq 0 ]]; then
    usage
 fi
 
