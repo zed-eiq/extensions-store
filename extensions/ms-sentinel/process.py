@@ -9,7 +9,7 @@ from requests import HTTPError
 MS_SENTINEL_API = "https://graph.microsoft.com/beta/"
 PACKAGE_LIMIT = 100
 
-log = logging(__name__)
+log = logging.getLogger(__name__)
 
 
 class MainApp(ExporterProcess):
