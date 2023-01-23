@@ -1,47 +1,15 @@
 import unittest
 from packer import to_ms_sentinel_json
 
-class MyTestCase(unittest.TestCase):
 
+class MyTestCase(unittest.TestCase):
     def test_pack_data_with_diff_add(self):
-        #diff state is add
-        ret_data = to_ms_sentinel_json([input_indicator], config)
+        # diff state is add
+        ret_data = to_ms_sentinel_json([input_indicator])
+        print(ret_data)
         self.assertEqual(ret_data, expected_output)  # add assertion here
 
-    def test_pack_data_with_diff_null(self):
-        input_indicator['diff'] = 'null'
-        ret_data = to_ms_sentinel_json([input_indicator], config)
-        self.assertEqual(ret_data, expected_output)
 
-    def test_packer_expired_data(self):
-        input_indicator["meta"].update(
-            {"estimated_threat_start_time": "2007-11-21T16:19:16"}
-        )
-        input_indicator['diff'] = 'null'
-        config['update_strategy'] = 'REPLACE'
-        ret_data = to_ms_sentinel_json([input_indicator], config)
-        self.assertEqual(ret_data, None)
-
-        input_indicator['diff'] = 'add'
-        config['update_strategy'] = 'APPEND'
-        ret_data = to_ms_sentinel_json([input_indicator], config)
-        self.assertEqual(ret_data, None)
-
-    def test_packer_deleted_data(self):
-        input_indicator['diff'] = 'del'
-        config['update_strategy'] = 'DIFF'
-        ret_data = to_ms_sentinel_json([input_indicator], config)
-        self.assertEqual(ret_data['403f4cf5-98bc-47ef-9bbe-f6e8b574c8c3']['deleted'], True)
-
-
-config = {
-    "update_strategy" : "APPEND",
-    "ALLOWED_KINDS" : ["domain", "email", "hash-sha1", "hash-sha256", "uri", "asn"],
-    "ALLOWED_STATES" : [
-        {"classification": "bad", "confidence": "high"},
-        {"classification": "bad", "confidence": "medium"},
-        {"classification": "unknown"}]
-}
 input_indicator = {
     "data": {
         "id": "{{http://www.eclecticiq.com/}}indicator-{123}",
@@ -67,69 +35,28 @@ input_indicator = {
     },
     "diff": "add",
     "id": "403f4cf5-98bc-47ef-9bbe-f6e8b574c8c3",
-    "extracts": [{
-        "kind": "domain",
-        "value": "test.high.com",
-        "meta": {
-            "classification": "bad",
-            "confidence": "high"
+    "extracts": [
+        {
+            "kind": "domain",
+            "value": "test.high.com",
+            "meta": {"classification": "bad", "confidence": "high"},
         },
-    },
         {
             "kind": "domain",
             "value": "test.medium.com",
-            "meta": {
-                "classification": "bad",
-                "confidence": "medium"
-            },
+            "meta": {"classification": "bad", "confidence": "medium"},
         },
-
-        {
-            "kind": "hash-md5",
-            "value": "test.md5",
-            "meta": {
-                "classification": "bad",
-                "confidence": "low"
-            },
-        },
-
         {
             "kind": "hash-sha1",
             "value": "test.sha1",
-            "meta": {
-                "classification": "unknown",
-                "confidence": "unknown"
-            },
-        },
-
-        {
-            "kind": "hash-sha256",
-            "value": "test.sha256",
-            "meta": {
-                "classification": "good",
-                "confidence": "unknown"
-            },
-        },
-
-        {
-            "kind": "asn",
-            "value": "This will be skipped",
-            "meta": {
-                "classification": "bad",
-                "confidence": "high"
-            },
+            "meta": {"classification": "unknown", "confidence": "unknown"},
         },
         {
             "kind": "asn",
             "value": "AS-4200 This will be sent as '4200",
-            "meta": {
-                "classification": "bad",
-                "confidence": "high"
-            },
+            "meta": {"classification": "bad", "confidence": "high"},
         },
-
     ],
-
     "meta": {
         "estimated_threat_start_time": "2117-11-21T16:19:16",
         "estimated_observed_time": "2017-11-21T16:19:16",
@@ -142,22 +69,10 @@ input_indicator = {
         "half_life": 30,
         "bundled_extracts": [
             {
-                "kind": "ipv4",
-                "value": "127.0.0.1",
-                "classification": "bad",
-                "confidence": "high",
-            },
-            {
                 "kind": "email",
                 "value": "someone@email.domain.com",
                 "classification": "bad",
                 "confidence": "medium",
-            },
-            {
-                "kind": "uri",
-                "value": "invalid.uri",
-                "classification": "bad",
-                "confidence": "high",
             },
         ],
     },
@@ -328,5 +243,5 @@ expected_output = {
     }
 }
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

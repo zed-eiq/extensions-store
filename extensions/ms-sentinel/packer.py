@@ -14,94 +14,70 @@ from eiq_edk.schemas.entities import SUPPORTED_EXTRACT_TYPES, TLP_COLORS_ORDERED
 log = logging.getLogger(__name__)
 
 
-def to_ms_sentinel_json(list_elements, feed):
+def to_ms_sentinel_json(list_elements):
     results = dict()
     indicator_ids = []
 
     for element in list_elements:
 
-        if str(element['id']) in indicator_ids:
+        if str(element["id"]) in indicator_ids:
             continue
 
-        # mark indicators that should be deleted
-        deleted = element['diff'] == "del"
+        indicators = make_ms_sentinel_indicators(element)
 
-        if entity_has_expired(element["meta"]):
-            # handle expired data
-            if (
-                    feed['update_strategy'] in ["APPEND", "REPLACE"]
-                    or element['diff'] == "add"
-            ):
-                log.info(f"Skipping expired entity: {str(element['id'])}")
-                continue
-            log.info(f"Deleting expired entity: {str(element['id'])}")
-            deleted = True
-        if deleted:
-            indicators = {str(element['id']): {"deleted": True}}
-        else:
-            indicators = make_ms_sentinel_indicators(
-                element, feed['ALLOWED_KINDS'], feed['ALLOWED_STATES']
-            )
-
-        indicator_ids.append(str(element['id']))
+        indicator_ids.append(str(element["id"]))
         results.update(indicators)
 
     return results or None
 
 
-def make_ms_sentinel_indicators(
-        entity_stream_element, allowed_extract_types, allowed_extract_states
-):
+def make_ms_sentinel_indicators(entity_stream_element):
     extracts = []
-    allowed_kinds = set(allowed_extract_types) & SUPPORTED_EXTRACT_TYPES
-    allowed_classifications = [
-        item.get("classification") for item in allowed_extract_states
-    ]
-    allowed_confidence = [item.get("confidence") for item in allowed_extract_states]
 
     # get extracts from data dict
     extracts_from_data = extract_from_entity_meta(meta=entity_stream_element["meta"])
 
     for extract in extracts_from_data.values():
+        if extract["kind"] == "asn":
+            try:
+                extract["value"] = extract_asn_from_value(extract["value"])
+            except ValueError as e:
+                log.warning(f"Skipping an observable due to an error - {str(e)}")
+                continue
         extracts.append(
             {
-                "kind": extract['kind'],
-                "value": extract['value'],
-                "classification": extract['classification'] or "unknown",
-                "confidence": extract['confidence'],
+                "kind": extract["kind"],
+                "value": extract["value"],
+                "classification": extract["classification"] or "unknown",
+                "confidence": extract["confidence"],
             }
         )
 
     # get extracts from entity_extracts
-    for extract in entity_stream_element['extracts']:
+    for extract in entity_stream_element["extracts"]:
+        if extract["kind"] == "asn":
+            try:
+                extract["value"] = extract_asn_from_value(extract["value"])
+            except ValueError as e:
+                log.warning(f"Skipping an observable due to an error - {str(e)}")
+                continue
         extracts.append(
             {
-                "kind": extract['kind'],
-                "value": extract['value'],
-                "classification": extract['meta'].get("classification")
-                                  or "unknown",
-                "confidence": extract['meta'].get("confidence"),
+                "kind": extract["kind"],
+                "value": extract["value"],
+                "classification": extract["meta"].get("classification") or "unknown",
+                "confidence": extract["meta"].get("confidence"),
             }
         )
 
-    filtered_extracts = filter_extracts(
-        extracts, allowed_kinds, allowed_classifications, allowed_confidence
-    )
-
-    if not filtered_extracts:
-        return {str(entity_stream_element['id']): dict()}
-
     confidence = max(
-        [
-            CONFIDENCE.index(extract["confidence"] or "unknown")
-            for extract in filtered_extracts
-        ]
+        [CONFIDENCE.index(extract["confidence"] or "unknown") for extract in extracts]
     )
     # create MS Sentinel indicators that should be pushed
     indicator_template = make_ms_sentinel_indicator(entity_stream_element, confidence)
 
     indicators = dict()
-    for extract in filtered_extracts:
+    for extract in extracts:
         indicator = copy.deepcopy(indicator_template)
         # fill in the value we have and set the other values to None
         indicator_value = prepare_indicator_value(extract["kind"], extract["value"])
@@ -110,42 +86,7 @@ def make_ms_sentinel_indicators(
         indicator["fileHashType"] = SENTINEL_HASH_FORMAT.get(extract["kind"])
         indicators[f"{extract['kind']}:{extract['value']}"] = indicator
 
-    return {str(entity_stream_element['id']): indicators}
-
-
-def filter_extracts(
-        extracts, allowed_kinds, allowed_classifications, allowed_confidence
-):
-    filtered_extracts = []
-    processed = set()
-    for extract in extracts:
-        if any(
-                [
-                    extract["kind"] not in allowed_kinds or extract["value"] in processed,
-                    (extract["classification"] or "unknown") not in allowed_classifications,
-                    (
-                            extract["classification"] == "bad"
-                            and extract["confidence"] not in allowed_confidence
-                    ),
-                ]
-        ):
-            continue
-        if extract["kind"] == "uri" and not validators.url(extract["value"]):
-            msg = f"Invalid URI: {extract['value']}"
-            log.warning(f"Skipping an observable due to an error - {msg}")
-            continue
-        # TP#51121: MS Sentinel expects ASNs to be integers (System.Int64)
-        if extract["kind"] == "asn":
-            try:
-                extract["value"] = extract_asn_from_value(extract["value"])
-            except ValueError as e:
-                log.warning(f"Skipping an observable due to an error - {str(e)}")
-                continue
-
-        processed.add(extract["value"])
-        filtered_extracts.append(extract)
-
-    return filtered_extracts
+    return {str(entity_stream_element["id"]): indicators}
 
 
 def extract_from_entity_meta(meta):
@@ -186,12 +127,10 @@ def make_ms_sentinel_indicator(entity_stream_element, extract_confidence):
     if entity_stream_element["meta"].get("estimated_threat_start_time"):
         half_life = int(entity_stream_element["meta"].get("half_life", 0))
         expiration_date_time = (
-                dateutil.parser.isoparse(
-                    entity_stream_element["meta"].get(
-                        "estimated_threat_start_time"
-                    )
-                )
-                + datetime.timedelta(days=half_life)
+            dateutil.parser.isoparse(
+                entity_stream_element["meta"].get("estimated_threat_start_time")
+            )
+            + datetime.timedelta(days=half_life)
         ).isoformat()
 
     indicator_confidence = 0
@@ -203,7 +142,7 @@ def make_ms_sentinel_indicator(entity_stream_element, extract_confidence):
     tags, kill_chain = parse_tags(entity_stream_element["meta"])
 
     color_form_meta = entity_stream_element["meta"].get("tlp_color")
-    tlp_color = 'unknown'
+    tlp_color = "unknown"
     for item in TLP_COLORS_ORDERED:
         if item == color_form_meta:
             tlp_color = item.lower()
@@ -212,9 +151,9 @@ def make_ms_sentinel_indicator(entity_stream_element, extract_confidence):
     indicator = {
         "action": "alert",
         "targetProduct": "Azure Sentinel",
-        "externalId": str(entity_stream_element['id']),
+        "externalId": str(entity_stream_element["id"]),
         "description": f"Entity from EclecticIQ Platform. "
-                       f"{entity_stream_element['data']['title']}",
+        f"{entity_stream_element['data']['title']}",
         "tlpLevel": tlp_color,
         "confidence": indicator_confidence,
         "severity": SENTINEL_SEVERITY.get(CONFIDENCE[extract_confidence or 0].lower()),
