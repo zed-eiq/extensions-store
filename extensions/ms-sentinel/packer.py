@@ -69,7 +69,8 @@ def make_ms_sentinel_indicators(entity_stream_element):
                 "confidence": extract["meta"].get("confidence"),
             }
         )
-
+    if not extracts:
+        return {}
     confidence = max(
         [CONFIDENCE.index(extract["confidence"] or "unknown") for extract in extracts]
     )
@@ -81,6 +82,8 @@ def make_ms_sentinel_indicators(entity_stream_element):
         indicator = copy.deepcopy(indicator_template)
         # fill in the value we have and set the other values to None
         indicator_value = prepare_indicator_value(extract["kind"], extract["value"])
+        if indicator_value is None:
+            continue
         for field in SENTINEL_FIELD.values():
             indicator[field] = indicator_value.get(field)
         indicator["fileHashType"] = SENTINEL_HASH_FORMAT.get(extract["kind"])
@@ -200,10 +203,13 @@ def extract_kill_chain(tags):
 
 
 def prepare_indicator_value(extract_kind, extract_value):
-    data = {SENTINEL_FIELD[extract_kind]: extract_value}
-    if extract_kind == "email":
-        data["emailSourceDomain"] = extract_value.split("@")[-1]
-    return data
+    try:
+        data = {SENTINEL_FIELD[extract_kind]: extract_value}
+        if extract_kind == "email":
+            data["emailSourceDomain"] = extract_value.split("@")[-1]
+        return data
+    except KeyError:
+        return None
 
 
 def entity_has_expired(meta):

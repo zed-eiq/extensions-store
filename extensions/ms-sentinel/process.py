@@ -25,7 +25,7 @@ class MainApp(ExporterProcess):
         )
 
         data = json.loads(raw_data.decode())
-        packed_data = to_ms_sentinel_json([data], self.config)
+        packed_data = to_ms_sentinel_json(data)
         self.save_packed_data(packed_data)
 
         self.send_info(
