@@ -2,7 +2,7 @@
 import json
 from eiq_edk import ExporterProcess
 from packer import to_ms_sentinel_json
-from upload_helper import Oauth2Service, MicrosoftSentinelService, MSSentinelException, MSSentinelSuccessfullyException
+from upload_helper import Oauth2Service, MicrosoftSentinelService, MSSentinelException
 from requests import HTTPError
 
 MS_SENTINEL_API = "https://graph.microsoft.com/beta/"
@@ -52,6 +52,7 @@ class MainApp(ExporterProcess):
                 auth_url="https://login.microsoftonline.com/{}/oauth2/v2.0/token",
                 scope_field="scope",
                 scope_value="https://graph.microsoft.com/.default",
+                tenant_id=self.config['tenant_id'],
                 kwargs=self.config,
             )
             ms_sentinel_service = MicrosoftSentinelService(
@@ -59,8 +60,6 @@ class MainApp(ExporterProcess):
             )
         except MSSentinelException as ex:
             self.send_error(ex.message)
-        except MSSentinelSuccessfullyException as ex:
-            self.send_info(ex.message)
 
         self.send_info({
             "code": "INF-0002",

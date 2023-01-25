@@ -133,13 +133,7 @@ class MicrosoftSentinelService:
             time.sleep(1)
             return self.submit_indicators(package, already_tried=True)
 
-        raise MSSentinelSuccessfullyException(
-            {
-                'code': 'INF-0003',
-                'description': f"Execution of the extension completed successfully",
-                'message': f'Service submit indicators {len(package)}'
-            }
-        )
+
 
     def update_indicators(self, package, already_tried=False):
         self.refresh_headers()
@@ -160,13 +154,6 @@ class MicrosoftSentinelService:
             time.sleep(1)
             return self.update_indicators(package, already_tried=True)
 
-        raise MSSentinelSuccessfullyException(
-            {
-                'code': 'INF-0003',
-                'description': f"Execution of the extension completed successfully",
-                'message': f'Service update indicators {len(package)}'
-            }
-        )
 
     def delete_indicators(self, package, already_tried=False):
         if not package:
@@ -190,13 +177,6 @@ class MicrosoftSentinelService:
             time.sleep(1)
             return self.delete_indicators(package, already_tried=True)
 
-        raise MSSentinelSuccessfullyException(
-            {
-                'code': 'INF-0003',
-                'description': f"Execution of the extension completed successfully",
-                'message': f'Service delete indicators {len(package)}'
-            }
-        )
 
     @staticmethod
     def handle_errors(response):
@@ -218,9 +198,3 @@ class MSSentinelException(Exception):
         self.message = message
         super().__init__()
 
-
-class MSSentinelSuccessfullyException(Exception):
-
-    def __init__(self, message: dict):
-        self.message = message
-        super().__init__()

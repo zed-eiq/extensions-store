@@ -38,6 +38,14 @@
           "name": "client_id"
         },
         {
+          "default": "",
+          "required": true,
+          "type": "string",
+          "description": "tenant id",
+          "title": "Tenant id",
+          "name": "tenant_id"
+        },
+        {
           "default": "**********",
           "required": true,
           "type": "string",
