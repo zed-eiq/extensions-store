@@ -1,4 +1,3 @@
-import logging
 from datetime import datetime
 import time
 from furl import furl
@@ -6,7 +5,6 @@ import requests
 
 REQUESTS_TIMEOUT = 120
 
-log = logging.getLogger(__name__)
 
 
 class Oauth2Service:
@@ -49,7 +47,7 @@ class Oauth2Service:
         return token_data.get(self.tenant_id).get("access_token")
 
     def create_new_token(self):
-        log.info(f"Creating token for OAuth2.\nSending POST request to {self.url}")
+
         response = requests.post(self.url, headers=self.headers, data=self.data)
         data = response.json()
         if data.get("access_token"):
@@ -60,7 +58,6 @@ class Oauth2Service:
 
             }
             self.stash[self.tenant_id] = stash_data
-            log.info("Created token for OAuth2.")
             return self.stash
         else:
             raise MSSentinelException(
@@ -102,31 +99,32 @@ class MicrosoftSentinelService:
     def get_indicators(self, external_ids=None, already_tried=False):
         self.refresh_headers()
         url = self.get_indicators_url
-        log.info(f"Fetching indicators for entities: {external_ids}")
+
         if external_ids:
             query = " or ".join(
                 [f"externalId eq '{external_id}'" for external_id in external_ids]
             )
             url += f"?$filter={query}"
-        log.info(f"Sending GET request to: {url}")
+
+
         response = requests.get(url, headers=self.headers)
         # if there's a quota issue or "UnknownError", try again - API is a beta version
         if self.handle_errors(response) and not already_tried:
             time.sleep(1)
             return self.get_indicators(external_ids, already_tried=True)
 
-        log.info("Indicators successfully fetched")
         return response.json()["value"]
 
     def submit_indicators(self, package, already_tried=False):
         self.refresh_headers()
         if not package:
-            log.info("Service received an empty package to submit.")
-            return
-        log.info(
-            f"Submitting {len(package)} indicators.\n"
-            f"Sending POST request to: {self.submit_indicators_url}"
-        )
+            raise MSSentinelException(
+                {
+                    'code': 'ERR-0000',
+                    'description': f"Service received an empty package to submit.",
+                    'message': f'Service received {len(package)}'
+                }
+            )
         response = requests.post(
             self.submit_indicators_url, headers=self.headers, json={"value": package}
         )
@@ -135,17 +133,25 @@ class MicrosoftSentinelService:
             time.sleep(1)
             return self.submit_indicators(package, already_tried=True)
 
-        log.info("Indicators successfully submitted")
+        raise MSSentinelSuccessfullyException(
+            {
+                'code': 'INF-0003',
+                'description': f"Execution of the extension completed successfully",
+                'message': f'Service submit indicators {len(package)}'
+            }
+        )
 
     def update_indicators(self, package, already_tried=False):
         self.refresh_headers()
         if not package:
-            log.info("Service received an empty package to update.")
-            return
-        log.info(
-            f"Updating {len(package)} indicators\n"
-            f"Sending POST request to: {self.update_indicators_url}"
-        )
+            raise MSSentinelException(
+                {
+                    'code': 'ERR-0000',
+                    'description': f"Service received an empty package to update.",
+                    'message': f'Service received {len(package)}'
+                }
+            )
+
         response = requests.post(
             self.update_indicators_url, headers=self.headers, json={"value": package}
         )
@@ -154,15 +160,27 @@ class MicrosoftSentinelService:
             time.sleep(1)
             return self.update_indicators(package, already_tried=True)
 
-        log.info("Indicators successfully updated")
+        raise MSSentinelSuccessfullyException(
+            {
+                'code': 'INF-0003',
+                'description': f"Execution of the extension completed successfully",
+                'message': f'Service update indicators {len(package)}'
+            }
+        )
 
     def delete_indicators(self, package, already_tried=False):
         if not package:
-            log.info("Service received an empty package to delete.")
-            return
+            raise MSSentinelException(
+                {
+                    'code': 'ERR-0000',
+                    'description': f"Service received an empty package to delete.",
+                    'message': f'Service received {len(package)}'
+                }
+            )
+
         self.refresh_headers()
         the_word = "entities" if len(package) > 1 else "entity"
-        log.info(f"Deleting indicators from {len(package)} {the_word}")
+
         response = requests.post(
             self.delete_multi_external_url,
             headers=self.headers,
@@ -172,7 +190,13 @@ class MicrosoftSentinelService:
             time.sleep(1)
             return self.delete_indicators(package, already_tried=True)
 
-        log.info("Indicators successfully deleted")
+        raise MSSentinelSuccessfullyException(
+            {
+                'code': 'INF-0003',
+                'description': f"Execution of the extension completed successfully",
+                'message': f'Service delete indicators {len(package)}'
+            }
+        )
 
     @staticmethod
     def handle_errors(response):
@@ -182,14 +206,21 @@ class MicrosoftSentinelService:
             raise MSSentinelException(
                 {
                     'code': 'ERR-0000',
-                    'description': "OAuth2 couldn't generate token",
-                    'message': f'Status code {response.status_code}, response text {response.text}, response reason {response.json().get("error", dict()).get("message")}'
+                    'description': f"{response.text}",
+                    'message': f'Status code {response.status_code}, response reason {response.json().get("error", dict()).get("message")}'
                 }
             )
     
     
 class MSSentinelException(Exception):
     
+    def __init__(self, message: dict):
+        self.message = message
+        super().__init__()
+
+
+class MSSentinelSuccessfullyException(Exception):
+
     def __init__(self, message: dict):
         self.message = message
         super().__init__()

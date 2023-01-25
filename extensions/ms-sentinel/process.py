@@ -1,16 +1,12 @@
 #!/usr/bin/env python
 import json
-import logging
 from eiq_edk import ExporterProcess
 from packer import to_ms_sentinel_json
-from upload_helper import Oauth2Service, MicrosoftSentinelService, MSSentinelException
+from upload_helper import Oauth2Service, MicrosoftSentinelService, MSSentinelException, MSSentinelSuccessfullyException
 from requests import HTTPError
 
 MS_SENTINEL_API = "https://graph.microsoft.com/beta/"
 PACKAGE_LIMIT = 100
-
-log = logging.getLogger(__name__)
-
 
 class MainApp(ExporterProcess):
 
@@ -62,6 +58,8 @@ class MainApp(ExporterProcess):
                 self.config.get('api_url', MS_SENTINEL_API), token_service
             )
         except MSSentinelException as ex:
+            self.send_error(ex.message)
+        except MSSentinelSuccessfullyException as ex:
             self.send_error(ex.message)
 
         self.send_info({
