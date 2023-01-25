@@ -53,7 +53,8 @@ class MainApp(ExporterProcess):
                 scope_field="scope",
                 scope_value="https://graph.microsoft.com/.default",
                 tenant_id=self.config['tenant_id'],
-                kwargs=self.config,
+                client_id = self.config['client_id'],
+                client_secret = self.config['client_secret'],
             )
             ms_sentinel_service = MicrosoftSentinelService(
                 self.config.get('api_url', MS_SENTINEL_API), token_service

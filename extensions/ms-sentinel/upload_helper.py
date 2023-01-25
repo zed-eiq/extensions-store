@@ -16,14 +16,15 @@ class Oauth2Service:
             scope_field,
             scope_value,
             tenant_id,
-            **kwargs
+            client_id,
+            client_secret,
     ):
-        self.user_agent_header = f"EclecticIQ IC/{kwargs['edk_protocol']}-Microsoft Sentinel/{kwargs['version']}"
+        self.user_agent_header = f"EclecticIQ IC/1.0-Microsoft Sentinel/1.0"
         self.stash = stash
-        self.url = auth_url.format(kwargs['tenant_id'])
+        self.url = auth_url.format('tenant_id')
         self.data = {
-            "CLIENT_ID": kwargs['client_id'],
-            "CLIENT_SECRET": kwargs['client_secret'],
+            "CLIENT_ID":client_id,
+            "CLIENT_SECRET": client_secret,
             "grant_type": "client_credentials",
             scope_field: scope_value,
         }
