@@ -60,7 +60,7 @@ class MainApp(ExporterProcess):
         except MSSentinelException as ex:
             self.send_error(ex.message)
         except MSSentinelSuccessfullyException as ex:
-            self.send_error(ex.message)
+            self.send_info(ex.message)
 
         self.send_info({
             "code": "INF-0002",
