@@ -89,12 +89,18 @@ class MainApp(ExporterProcess):
         for index, indicator in enumerate(deleted_indicators):
             package.append(indicator)
             if len(package) == PACKAGE_LIMIT or index == len(deleted_indicators) - 1:
-                ms_sentinel_service.delete_indicators(package)
+                try:
+                    ms_sentinel_service.delete_indicators(package)
+                except MSSentinelException as ex:
+                    self.send_error(ex.message)
                 package = []
         for index, indicator in enumerate(new_indicators):
             package.append(indicator)
             if len(package) == PACKAGE_LIMIT or index == len(new_indicators) - 1:
-                ms_sentinel_service.submit_indicators(package)
+                try:
+                    ms_sentinel_service.submit_indicators(package)
+                except MSSentinelException as ex:
+                    self.send_error(ex.message)
                 package = []
 
         # store all new Sentinel indicator externalIds in local stash
