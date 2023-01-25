@@ -63,13 +63,13 @@ class Oauth2Service:
             log.info("Created token for OAuth2.")
             return self.stash
         else:
-            log.error(
-                "Couldn't generate token.",
-                status_code=response.status_code,
-                message=response.text,
+            raise MSSentinelException(
+                {
+                    'code':'ERR-0000',
+                    'description': "OAuth2 couldn't generate token",
+                    'message': f'Status code {response.status_code}, response text {response.text}, response reason {data.get("error_description")}'
+                }
             )
-            response.reason = data.get("error_description") or response.reason
-            response.raise_for_status()
 
 
 class MicrosoftSentinelService:
@@ -179,8 +179,17 @@ class MicrosoftSentinelService:
         if response.status_code in [429, 504]:
             return True
         if not response.ok:
-            log.error(response.text)
-            error_message = response.json().get("error", dict()).get("message")
-            response.reason = error_message or response.reason
-            response.raise_for_status()
-        return False
+            raise MSSentinelException(
+                {
+                    'code': 'ERR-0000',
+                    'description': "OAuth2 couldn't generate token",
+                    'message': f'Status code {response.status_code}, response text {response.text}, response reason {response.json().get("error", dict()).get("message")}'
+                }
+            )
+    
+    
+class MSSentinelException(Exception):
+    
+    def __init__(self, message: dict):
+        self.message = message
+        super().__init__()

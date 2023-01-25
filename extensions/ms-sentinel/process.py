@@ -3,7 +3,7 @@ import json
 import logging
 from eiq_edk import ExporterProcess
 from packer import to_ms_sentinel_json
-from upload_helper import Oauth2Service, MicrosoftSentinelService
+from upload_helper import Oauth2Service, MicrosoftSentinelService, MSSentinelException
 from requests import HTTPError
 
 MS_SENTINEL_API = "https://graph.microsoft.com/beta/"
@@ -61,14 +61,8 @@ class MainApp(ExporterProcess):
             ms_sentinel_service = MicrosoftSentinelService(
                 self.config.get('api_url', MS_SENTINEL_API), token_service
             )
-        except HTTPError as ex:
-            self.send_info({
-                {
-                    "code": "ERR-0001",
-                    "description": "3rd party connector error",
-                    "message": f"An error occured during contacting 3rd party. Error Code {ex.response}. Aborting."
-                },
-            })
+        except MSSentinelException as ex:
+            self.send_error(ex.message)
 
         self.send_info({
             "code": "INF-0002",
