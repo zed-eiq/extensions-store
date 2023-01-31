@@ -4,10 +4,9 @@ import logging
 import re
 import datetime
 from typing import Union
-
 import dateutil
 import pytz
-import validators
+
 
 from eiq_edk.schemas.entities import SUPPORTED_EXTRACT_TYPES, TLP_COLORS_ORDERED
 
@@ -18,17 +17,15 @@ def to_ms_sentinel_json(list_elements):
     results = dict()
     indicator_ids = []
 
-    for element in list_elements:
-
+    for element in list_elements:  #### package level
         if str(element["id"]) in indicator_ids:
             continue
 
         indicators = make_ms_sentinel_indicators(element)
-
         indicator_ids.append(str(element["id"]))
         results.update(indicators)
 
-    return results or None
+    return results
 
 
 def make_ms_sentinel_indicators(entity_stream_element):

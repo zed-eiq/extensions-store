@@ -1,13 +1,27 @@
+import json
 import unittest
 from packer import to_ms_sentinel_json
+from upload_helper import Oauth2Service, MicrosoftSentinelService
+from process import populate_indicator_lists
 
 
 class MyTestCase(unittest.TestCase):
     def test_pack_data_with_diff_add(self):
         # diff state is add
-        ret_data = to_ms_sentinel_json([input_indicator])
+        ret_data = to_ms_sentinel_json([my_test_case_input])
         print(ret_data)
-        self.assertEqual(ret_data, expected_output)  # add assertion here
+        self.assertEqual(ret_data, my_test_case)  # add assertion here
+
+        deleted_indicators = []
+        new_indicators = []
+        populate_indicator_lists(
+            new_indicators,
+            deleted_indicators,
+            ret_data,
+            "APPEND",
+        )
+        print("Data data")
+        print(new_indicators)
 
 
 input_indicator = {
@@ -240,6 +254,90 @@ expected_output = {
             "url": None,
             "isActive": True,
         },
+    }
+}
+
+my_test_case_input = {
+    "attachments": [],
+    "data": {
+        "confidence": {"type": "confidence", "value": "Unknown"},
+        "description": "<head></head><body><p>Test</p></body>",
+        "description_structuring_format": "html",
+        "id": "{http://not-yet-configured.example.org/}indicator-dc690c91-d83b-4929-ad65-66d5571df1e1",
+        "likely_impact": {
+            "type": "statement",
+            "value": "Unknown",
+            "value_vocab": "{http://stix.mitre.org/default_vocabularies-1}HighMediumLowVocab-1.0",
+        },
+        "short_description": "<head></head><body></body>",
+        "timestamp": "2023-01-25T13:48:50.941459+00:00",
+        "title": "Old Sentinel Indicator",
+        "type": "indicator",
+        "types": [{"value": "IP Watchlist"}],
+    },
+    "enrichment_extracts": [],
+    "external_url": "https://default/entity/dc690c91-d83b-4929-ad65-66d5571df1e1",
+    "extracts": [
+        {
+            "instance_meta": {"link_types": ["observed"], "paths": []},
+            "kind": "ipv4",
+            "meta": {"classification": "bad", "confidence": "low"},
+            "value": "1.1.1.1",
+        }
+    ],
+    "id": "dc690c91-d83b-4929-ad65-66d5571df1e1",
+    "meta": {
+        "estimated_observed_time": "2023-01-25T13:48:50.941459+00:00",
+        "estimated_threat_start_time": "2023-01-25T13:48:50.941459+00:00",
+        "first_ingest_time": "2023-01-25T13:48:50.941459+00:00",
+        "half_life": 30,
+        "ingest_time": "2023-01-25T13:48:50.941459+00:00",
+        "source_reliability": None,
+        "tags": [],
+        "title": "Old Sentinel Indicator",
+        "tlp_color": None,
+    },
+    "relevancy": 0.8908987181403393,
+    "sources": [
+        {
+            "name": "Testing Group",
+            "source_id": "8a1b12c2-0435-481c-9333-5380e1173c21",
+            "source_type": "group",
+        }
+    ],
+}
+
+
+my_test_case = {
+    "dc690c91-d83b-4929-ad65-66d5571df1e1": {
+        "ipv4:1.1.1.1": {
+            "action": "alert",
+            "targetProduct": "Azure Sentinel",
+            "externalId": "dc690c91-d83b-4929-ad65-66d5571df1e1",
+            "description": "Entity from EclecticIQ Platform. Old Sentinel Indicator",
+            "tlpLevel": "unknown",
+            "confidence": 0,
+            "severity": 1,
+            "threatType": "WatchList",
+            "expirationDateTime": "2023-02-24T13:48:50.941459+00:00",
+            "lastReportedDateTime": "2023-01-25T13:48:50.941459+00:00",
+            "tags": [],
+            "killChain": [],
+            "isActive": True,
+            "networkSourceAsn": None,
+            "domainName": None,
+            "emailSenderAddress": None,
+            "emailSourceDomain": None,
+            "emailSubject": None,
+            "fileName": None,
+            "fileHashValue": None,
+            "networkIPv4": "1.1.1.1",
+            "networkIPv6": None,
+            "fileMutexName": None,
+            "networkPort": None,
+            "url": None,
+            "fileHashType": None,
+        }
     }
 }
 

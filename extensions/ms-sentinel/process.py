@@ -8,32 +8,29 @@ from requests import HTTPError
 MS_SENTINEL_API = "https://graph.microsoft.com/beta/"
 PACKAGE_LIMIT = 100
 
-class MainApp(ExporterProcess):
 
+class MainApp(ExporterProcess):
     def pack_data(self, raw_data):
 
         self.send_info(
             {
                 "code": "INF-0001",
                 "message": "Execution started",
-                "description": "MS-Sentinel started packing data"
+                "description": "MS-Sentinel started packing data",
             }
         )
 
         data = json.loads(raw_data.decode())
         packed_data = to_ms_sentinel_json(data)
-        self.save_packed_data(packed_data)
+        self.save_packed_data(json.dumps(packed_data).encode())
 
         self.send_info(
             {
                 "code": "INF-0003",
-                "message": "Execution completed successfuly",
-                "description": "MS-Sentinel packed_data  completed successfuly."
+                "message": "Execution completed successfully",
+                "description": "MS-Sentinel packed_data  completed successfully.",
             }
         )
-
-        stash_dict = {'first_extenition': {}}
-        self.save_stash(stash_dict)
 
     def upload_data(self, raw_data=None):
 
@@ -41,32 +38,35 @@ class MainApp(ExporterProcess):
             {
                 "code": "INF-0001",
                 "message": "Execution started",
-                "description": "MS-Sentinel started uploading data"
+                "description": "MS-Sentinel started uploading data",
             }
         )
 
-        stash = {'first_extenition': {}} # need to be added in function above
+        stash = {"first_extenition": {}}  # need to be added in function above
+
         try:
             token_service = Oauth2Service(
                 stash=stash,
                 auth_url="https://login.microsoftonline.com/{}/oauth2/v2.0/token",
                 scope_field="scope",
                 scope_value="https://graph.microsoft.com/.default",
-                tenant_id=self.config['tenant_id'],
-                client_id = self.config['client_id'],
-                client_secret = self.config['client_secret'],
+                tenant_id=self.config["tenant_id"],
+                client_id=self.config["client_id"],
+                client_secret=self.config["client_secret"],
             )
             ms_sentinel_service = MicrosoftSentinelService(
-                self.config.get('api_url', MS_SENTINEL_API), token_service
+                self.config.get("api_url", MS_SENTINEL_API), token_service
             )
         except MSSentinelException as ex:
             self.send_error(ex.message)
 
-        self.send_info({
-            "code": "INF-0002",
-            "message": "State transition",
-            "description": "Run state make Oauth2 token"
-        })
+        self.send_info(
+            {
+                "code": "INF-0002",
+                "message": "State transition",
+                "description": "Run state make Oauth2 token",
+            }
+        )
         new_indicators = []
         deleted_indicators = []
 
@@ -75,16 +75,16 @@ class MainApp(ExporterProcess):
             pushed_indicators = stash["pushed_indicators"].split(",")
 
         # in REPLACE mode, first delete everything pushed by this feed
-        if self.config['update_strategy'] == "REPLACE" and pushed_indicators:
-            deleted_indicators.extend(pushed_indicators)
-            pushed_indicators = []
+        #        if self.config['update_strategy'] == "REPLACE" and pushed_indicators:
+        #            deleted_indicators.extend(pushed_indicators)
+        #            pushed_indicators = []
 
         populate_indicator_lists(
-                new_indicators,
-                deleted_indicators,
-                json.loads(raw_data.data.decode()),
-                self.config['update_strategy'],
-            )
+            new_indicators,
+            deleted_indicators,
+            json.loads(raw_data.decode()),
+            "APPEND",  # self.config['update_strategy'],
+        )
 
         package = []
         for index, indicator in enumerate(deleted_indicators):
@@ -102,18 +102,20 @@ class MainApp(ExporterProcess):
                     ms_sentinel_service.submit_indicators(package)
                 except MSSentinelException as ex:
                     self.send_error(ex.message)
+                    exit(1)
                 package = []
 
         # store all new Sentinel indicator externalIds in local stash
         pushed_indicators.extend([item["externalId"] for item in new_indicators])
-        stash['pushed_indicators'] = ",".join(list(set(pushed_indicators)))
+        stash["pushed_indicators"] = ",".join(list(set(pushed_indicators)))
 
-        self.send_info({
-            "code": "INF-0003",
-            "message": "Execution completed successfuly",
-            "description": f"{len(new_indicators)} indicators pushed successfuly."
-        })
-        self.save_stash(stash)
+        self.send_info(
+            {
+                "code": "INF-0003",
+                "message": "Execution completed successfully",
+                "description": f"{len(new_indicators)} indicators pushed successfully.",
+            }
+        )
 
 
 def populate_indicator_lists(
