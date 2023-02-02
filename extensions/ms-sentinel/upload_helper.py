@@ -7,15 +7,16 @@ REQUESTS_TIMEOUT = 120
 
 
 class Oauth2Service:
+
     def __init__(
-        self,
-        stash,
-        auth_url,
-        scope_field,
-        scope_value,
-        tenant_id,
-        client_id,
-        client_secret,
+            self,
+            stash,
+            auth_url,
+            scope_field,
+            scope_value,
+            tenant_id,
+            client_id,
+            client_secret,
     ):
         self.user_agent_header = f"EclecticIQ IC/1.0-Microsoft Sentinel/1.0"
         self.stash = stash
@@ -54,20 +55,22 @@ class Oauth2Service:
                 "access_token": data.get("access_token"),
                 "created_token_time": datetime.utcnow().timestamp(),
                 "expires_token_in": data.get("expires_in"),
+
             }
             self.stash[self.tenant_id] = stash_data
             return self.stash
         else:
             raise MSSentinelException(
                 {
-                    "code": "ERR-0000",
-                    "description": "OAuth2 couldn't generate token",
-                    "message": f'Status code {response.status_code}, response text {response.text}, response reason {data.get("error_description")}',
+                    'code': 'ERR-0000',
+                    'description': "OAuth2 couldn't generate token",
+                    'message': f'Status code {response.status_code}, response text {response.text}, response reason {data.get("error_description")}'
                 }
             )
 
 
 class MicrosoftSentinelService:
+
     def __init__(self, url, token_service):
         self.api_url = url
         self.token_service = token_service
@@ -75,9 +78,7 @@ class MicrosoftSentinelService:
             "Content-Type": "application/json",
             "User-Agent": token_service.user_agent_header,
         }
-        self.get_indicators_url = (
-            furl(self.api_url).add(path="security/tiIndicators").url
-        )
+        self.get_indicators_url = furl(self.api_url).add(path="security/tiIndicators").url
         self.submit_indicators_url = (
             furl(self.api_url).add(path="security/tiIndicators/submitTiIndicators").url
         )
@@ -115,12 +116,13 @@ class MicrosoftSentinelService:
 
     def submit_indicators(self, package, already_tried=False):
         self.refresh_headers()
+
         if not package:
             raise MSSentinelException(
                 {
-                    "code": "ERR-0000",
-                    "description": f"Service received an empty package to submit.",
-                    "message": f"Service received {len(package)}",
+                    'code': 'ERR-0000',
+                    'description': f"Service received an empty package to submit.",
+                    'message': f'Service received {len(package)}'
                 }
             )
         response = requests.post(
@@ -136,9 +138,9 @@ class MicrosoftSentinelService:
         if not package:
             raise MSSentinelException(
                 {
-                    "code": "ERR-0000",
-                    "description": f"Service received an empty package to update.",
-                    "message": f"Service received {len(package)}",
+                    'code': 'ERR-0000',
+                    'description': f"Service received an empty package to update.",
+                    'message': f'Service received {len(package)}'
                 }
             )
 
@@ -154,9 +156,9 @@ class MicrosoftSentinelService:
         if not package:
             raise MSSentinelException(
                 {
-                    "code": "ERR-0000",
-                    "description": f"Service received an empty package to delete.",
-                    "message": f"Service received {len(package)}",
+                    'code': 'ERR-0000',
+                    'description': f"Service received an empty package to delete.",
+                    'message': f'Service received {len(package)}'
                 }
             )
 
@@ -179,14 +181,15 @@ class MicrosoftSentinelService:
         if not response.status_code >= 400:
             raise MSSentinelException(
                 {
-                    "code": "ERR-0000",
-                    "description": f"{response.text}",
-                    "message": f'Status code {response.status_code}, response reason {response.json().get("error", dict()).get("message")}',
+                    'code': 'ERR-0000',
+                    'description': f"{response.text}",
+                    'message': f'Status code {response.status_code}, response reason {response.json().get("error", dict()).get("message")}'
                 }
             )
 
 
 class MSSentinelException(Exception):
+
     def __init__(self, message: dict):
         self.message = message
         super().__init__()

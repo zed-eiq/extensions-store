@@ -22,7 +22,7 @@
       "mime_type": "application/json",
       "configuration": [
         {
-          "default": "https://login.microsoftonline.com/{}/oauth2/v2.0/token",
+          "default": "https://graph.microsoft.com/beta/",
           "required": true,
           "type": "string",
           "description": "The URL pointing to the API endpoint exposing the service.",
