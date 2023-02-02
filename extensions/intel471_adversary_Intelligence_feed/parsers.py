@@ -1,49 +1,21 @@
 import datetime
 import uuid
+import json
 from typing import List, Dict, Tuple
 from urllib import parse
-import iso3166
-
-from eiq_ext import ExtractType
-from eiq_ext.legacy import get_admiralty_id
-from eiq.extensions.commons.utils import (
-    create_extract,
-    create_information_source,
-    make_confidence,
+from dev_kit.eiq_edk.schemas.entities import (
+    EntityMetaSchema,
+    EntitySchema,
+    ExtractSchema,
+    CONFIDENCES_EXTRACT_VALUES,
+    ReportDataSchema,
+    ThreatActorDataSchema,
+    ExtractType
 )
+import iso3166
+import structlog
 
-from eiq.extensions.commons.entities import create_report, create_threat_actor
-
-
-ENTITIES_TO_EXTRACTS = {
-    "MD5": {"kind": ExtractType.HASH_MD5, "classification": "unknown"},
-    "SHA1": {"kind": ExtractType.HASH_SHA1, "classification": "unknown"},
-    "SHA256": {"kind": ExtractType.HASH_SHA256, "classification": "unknown"},
-    "MaliciousURL": {"kind": ExtractType.URI, "classification": "unknown"},
-    "BitcoinID": {"kind": ExtractType.BANK_ACCOUNT, "classification": "unknown"},
-    "BitcoinWalletID": {"kind": ExtractType.BANK_ACCOUNT, "classification": "unknown"},
-    "IPAddress": {"kind": ExtractType.IPV4, "classification": "unknown"},
-    "ActorWebsite": {"kind": ExtractType.URI, "classification": "unknown"},
-    "ActorDomain": {"kind": ExtractType.DOMAIN, "classification": "unknown"},
-    "AutonomousSystem": {"kind": ExtractType.ASN, "classification": "good"},
-    "EmailAddress": {"kind": ExtractType.EMAIL, "classification": "unknown"},
-    "FileType": {"kind": ExtractType.FILE, "classification": "unknown"},
-    "Handle": {"kind": ExtractType.NAME, "classification": "unknown"},
-    "IPv4Prefix": {"kind": ExtractType.IPV4, "classification": "unknown"},
-    "IPv6Prefix": {"kind": ExtractType.IPV6, "classification": "unknown"},
-    "Jabber": {"kind": ExtractType.EMAIL, "classification": "unknown"},
-    "Phone": {"kind": ExtractType.TELEPHONE, "classification": "unknown"},
-    "Twitter": {"kind": ExtractType.HANDLE, "classification": "unknown"},
-    "URL": {"kind": ExtractType.URI, "classification": "unknown"},
-    "VK": {"kind": ExtractType.URI, "classification": "unknown"},
-    "Telegram": {"kind": ExtractType.HANDLE, "classification": "unknown"},
-}
-MOTIVATION_TAGS = {"CC": "Cyber Crime", "CE": "Cyber Espionage", "HA": "Hacktivism"}
-MOTIVATION_INTENT = {
-    "CC": ["Financial or Economic"],
-    "CE": ["Political", "Military"],
-    "HA": ["Ideological"],
-}
+log = structlog.get_logger(__name__)
 
 
 def create_adversary_actors(data: dict, entities: list) -> Tuple[Dict, List]:
@@ -86,7 +58,7 @@ def create_adversary_actors(data: dict, entities: list) -> Tuple[Dict, List]:
         _id,
         f"Threat Actor: {title_actor}",
         information_source=information_source,
-        confidence=make_confidence("High"),
+        confidence=CONFIDENCES_EXTRACT_VALUES[2],
         extracts=create_actor_extracts(data),
         tags=tags,
         motivations=actor_motivations,
@@ -109,13 +81,118 @@ def create_adversary_actors(data: dict, entities: list) -> Tuple[Dict, List]:
     return threat_actor, actor_relations
 
 
+def create_information_source(
+    identity_name: str,
+    references: list = [],
+    role_values: list = [],
+    description: str = "",
+) -> dict:
+
+    information_source = {
+            "type": "information-source",
+            "identity": identity_name,
+            "references":references,
+            "roles": role_values,
+            "description": description
+    }
+
+    return information_source
+
+
+def create_threat_actor(
+    stix_id: str,
+    title: str,
+    description: str = "",
+    information_source: dict = None,
+    identity: str = "", 
+    observed_time: str = None,
+    threat_start_time: str = None,
+    threat_end_time: str = None,
+    confidence: dict = None,
+    timestamp: str = None,
+    extracts: list = None,
+    tags: list = None,
+    types: list = None,
+    summary: str = None,
+    extraction_ignore_paths: list = None,
+    attachments: list = None,
+    tlp_color: str = None,
+    half_life: int = None,
+    observable: list = None,
+    taxonomy: list = [],
+    motivations: list = None,
+    actor_types: list = None,
+    intended_effects: list = None,
+    sophistication: list = None,
+    actor_identity: str = None,
+    attacks: list = None,
+) -> dict:
+    threat_actor = ThreatActorDataSchema().load({
+            "id": stix_id,
+            "type": "threat-actor",
+            "title": title,
+            "description": description,
+            "information_source": information_source,
+            "timestamp": timestamp,
+            "identity": identity,
+            "intended_effects": intended_effects,
+            "motivations": motivations,
+            "sophistication": sophistication,
+            "types": types
+        }
+    )
+
+    entity_meta = EntityMetaSchema().load(
+        {
+            "estimated_observed_time": observed_time,
+            "estimated_threat_start_time": threat_start_time,
+            "estimated_threat_end_time": threat_end_time,
+            "half_life": half_life,
+            "tags": tags,
+            "taxonomy": taxonomy,
+            "attack": attacks,
+            "tlp_color": tlp_color,
+            "bundled_extracts": extracts,
+            "extraction_ignore_paths": extraction_ignore_paths,
+        }
+    )
+
+    entity_data = EntitySchema().load(
+        {
+            "data": threat_actor,
+            "meta": entity_meta,
+            "attachments": attachments
+        }
+    )
+    return entity_data
+
+
 def create_actor_extracts(data: dict) -> List:
     if not data.get("actorSubjectOfReport"):
         return []
     return [
-        create_extract(ExtractType.NAME, alias, classification="unknown")
+        {"kind":ExtractType.NAME.value, "value":alias, "classification": "unknown", "link_type": "observed"}
         for alias in data["actorSubjectOfReport"][0].get("aliases", [])
     ]
+
+
+def create_extract(
+    kind: str,
+    value: str,
+    classification: str = None,
+    confidence: str = None,
+    link_type: str = None,
+) -> dict:
+    extract = ExtractSchema().load(
+        {
+            "kind": kind,
+            "value": value,
+            "classification": classification,
+            "link_type":  link_type
+        }
+    )
+    
+    return extract
 
 
 def create_indicator_title(data: dict) -> str:
@@ -140,12 +217,12 @@ def create_indicator_title(data: dict) -> str:
 
 
 def add_admiralty_taxonomy(taxonomy: list, admiralty: tuple):
-    reliability_taxonomy = get_admiralty_id(
+    reliability_taxonomy = (
         "Admiralty Code - Reliability", admiralty[0]
     )
     if reliability_taxonomy:
         taxonomy.append(reliability_taxonomy)
-    credibility_taxonomy = get_admiralty_id(
+    credibility_taxonomy = (
         "Admiralty Code - Credibility", admiralty[1]
     )
     if credibility_taxonomy:
@@ -175,8 +252,8 @@ def create_adversary_report(data: dict) -> Dict:
     intents = [{"value": "Threat Report"}]
     information_source = create_information_source(
         "Intel 471 Adversary Intelligence Feed",
-        references,
-        role_values,
+        references=references,
+        role_values=role_values,
         description="Intel 471 Adversary Intelligence Feed",
     )
     _id = "{{http://www.intel471.com/}}Report-{}".format(
@@ -196,6 +273,70 @@ def create_adversary_report(data: dict) -> Dict:
         taxonomy=taxonomy,
     )
     return report
+
+
+def create_report(
+    stix_id: str = "",
+    title: str = "",
+    description: str = "",
+    short_description: str = "",
+    information_source: dict = {},
+    observed_time: str = "",
+    threat_start_time: str = "",
+    threat_end_time: str = "",
+    timestamp: str = "",
+    extracts: list = [],
+    tags: list = [],
+    summary: str = "",
+    intents: list = [],
+    extraction_ignore_paths: list = [],
+    attachments: list = [],
+    tlp_color: str = None,
+    half_life: int = 1,
+    observable: list = [],
+    taxonomy: list = [],
+    taxonomy_paths: list = [],
+    relationship: str = "",
+    attacks: list = [],
+) -> dict:
+
+    report = ReportDataSchema().load(
+        {
+            "id": stix_id,
+            "type": "report",
+            "title": title,
+            "description": description,
+            "short_description": short_description,
+            "information_source": information_source,
+            "intents": intents,
+            "timestamp": timestamp
+        }
+    )
+
+    entity_meta = EntityMetaSchema().load({
+            "estimated_observed_time": observed_time,
+            "estimated_threat_start_time": threat_start_time,
+            "estimated_threat_end_time": threat_end_time,
+            "half_life": half_life,
+            "tags": tags,
+            "taxonomy": taxonomy,
+            "attack": attacks,
+            "tlp_color": tlp_color,
+            "bundled_extracts": extracts,
+            "extraction_ignore_paths": extraction_ignore_paths
+        }
+    )
+
+    entity_data = EntitySchema().load(
+        {
+            "data": report, 
+            "meta": entity_meta,
+            "attachments": attachments
+        }
+    )
+
+    return entity_data
+
 
 def create_adversary_analysis(data: dict) -> str:
     analysis = ""
@@ -254,9 +395,12 @@ def create_adversary_report_extracts(data: dict) -> List:
         else:
             value = entity.get("value")
         bundled_extracts.append(
-            create_extract(
-                extract.get("kind"), value, classification=extract.get("classification")
-            )
+                {
+                    "kind": extract.get("kind"),
+                    "value": value,
+                    "classification": extract.get("classification"),
+                    "link_type": "observed"
+                }
         )
     bundled_extracts = filter_empty_extracts(bundled_extracts)
     return bundled_extracts
@@ -269,15 +413,44 @@ def location_extracts(locations: list, bundled_extracts: list):
         except KeyError:
             continue
         bundled_extracts.append(
-            create_extract(ExtractType.COUNTRY, country.name, classification="good")
+            {"kind": ExtractType.COUNTRY.value, "value": country.name, "classification": "good"}
         )
         bundled_extracts.append(
-            create_extract(
-                ExtractType.COUNTRY_CODE, country.alpha2, classification="good"
-            )
+                {"kind": ExtractType.COUNTRY_CODE.value, "value": country.alpha2, "classification": "good"}
         )
 
 
 def filter_empty_extracts(extracts):
     extracts = [i for i in extracts if i]
     return extracts
+
+
+ENTITIES_TO_EXTRACTS = {
+    "MD5": {"kind": ExtractType.HASH_MD5.value, "classification": "unknown"},
+    "SHA1": {"kind": ExtractType.HASH_SHA1.value, "classification": "unknown"},
+    "SHA256": {"kind": ExtractType.HASH_SHA256.value, "classification": "unknown"},
+    "MaliciousURL": {"kind": ExtractType.URI.value, "classification": "unknown"},
+    "BitcoinID": {"kind": ExtractType.BANK_ACCOUNT.value, "classification": "unknown"},
+    "BitcoinWalletID": {"kind": ExtractType.BANK_ACCOUNT.value, "classification": "unknown"},
+    "IPAddress": {"kind": ExtractType.IPV4.value, "classification": "unknown"},
+    "ActorWebsite": {"kind": ExtractType.URI.value, "classification": "unknown"},
+    "ActorDomain": {"kind": ExtractType.DOMAIN.value, "classification": "unknown"},
+    "AutonomousSystem": {"kind": ExtractType.ASN.value, "classification": "good"},
+    "EmailAddress": {"kind": ExtractType.EMAIL.value, "classification": "unknown"},
+    "FileType": {"kind": ExtractType.FILE.value, "classification": "unknown"},
+    "Handle": {"kind": ExtractType.NAME.value, "classification": "unknown"},
+    "IPv4Prefix": {"kind": ExtractType.IPV4.value, "classification": "unknown"},
+    "IPv6Prefix": {"kind": ExtractType.IPV6.value, "classification": "unknown"},
+    "Jabber": {"kind": ExtractType.EMAIL.value, "classification": "unknown"},
+    "Phone": {"kind": ExtractType.TELEPHONE.value, "classification": "unknown"},
+    "Twitter": {"kind": ExtractType.HANDLE.value, "classification": "unknown"},
+    "URL": {"kind": ExtractType.URI.value, "classification": "unknown"},
+    "VK": {"kind": ExtractType.URI.value, "classification": "unknown"},
+    "Telegram": {"kind": ExtractType.HANDLE.value, "classification": "unknown"},
+}
+MOTIVATION_TAGS = {"CC": "Cyber Crime", "CE": "Cyber Espionage", "HA": "Hacktivism"}
+MOTIVATION_INTENT = {
+    "CC": ["Financial or Economic"],
+    "CE": ["Political", "Military"],
+    "HA": ["Ideological"],
+}

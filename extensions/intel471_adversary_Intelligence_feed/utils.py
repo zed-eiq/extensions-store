@@ -32,6 +32,7 @@ def batch(iterable, size):
 
 
 def fetch_with_paging(
+    self,
     api_url,
     count_col_name,
     root_node,
@@ -46,7 +47,7 @@ def fetch_with_paging(
     while True:
         query_params.update({"count": page_size, "offset": offset})
         response = fetch_results(
-            url=api_url, auth=auth, verify_ssl=verify_ssl, params=query_params
+            self, url=api_url, auth=auth, verify_ssl=verify_ssl, params=query_params
         )
         if response:
             item_count = response.get(count_col_name, 0)

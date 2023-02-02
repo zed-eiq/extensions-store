@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 import json
 import math
 from datetime import datetime
@@ -31,6 +31,7 @@ class MainApp(ImporterProcess):
         since = parser.isoparse(since)
         from_param, until_param, until = get_time_params(since)
         reports_stream = fetch_with_paging(
+            self,
             furl(api_url).add(path="reports").url,
             "reportTotalCount",
             "reports",
@@ -51,7 +52,7 @@ class MainApp(ImporterProcess):
                     furl(api_url).add(path=REPORT_ENDPOINT.format(report["uid"])).url
                 )
                 detailed_report = fetch_results(
-                    report_url, auth=(api_email, api_key), verify_ssl=verify
+                    self, report_url, auth=(api_email, api_key), verify_ssl=verify
                 )
 
                 if not detailed_report:
@@ -59,7 +60,7 @@ class MainApp(ImporterProcess):
 
                 timestamp = None
                 if report.get("created"):
-                    timestamp = datetime.datetime.utcfromtimestamp(
+                    timestamp = datetime.utcfromtimestamp(
                         report.get("created") / 1000
                     )
 
