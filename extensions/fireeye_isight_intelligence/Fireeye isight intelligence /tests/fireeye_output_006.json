@@ -1,0 +1,92 @@
+{
+	"type": "linked-entities",
+	"entities": [
+		{
+			"attachments": [],
+			"data": {
+				"id": "{https://api.isightpartners.com/}Report-e30d2bea-4734-5c4c-b2c6-21694843aa8a",
+				"title": "TEMP.Avengers Actor Overview",
+				"type": "report",
+				"description": "Test Actor Overview",
+				"intents": [],
+				"short_description": "",
+				"timestamp": "2017-04-17T14:33:00+00:00",
+				"information_source": {
+					"description": "https://api.isightpartners.com",
+					"type": "information-source",
+					"identity": {
+						"name": "FireEye iSIGHT Intelligence Report API",
+						"type": "identity"
+					},
+					"references": [],
+					"roles": [
+						{
+							"value": "Initial Author",
+							"vocab": "{http://stix.mitre.org/default_vocabularies-1}InformationSourceRoleVocab-1.0"
+						}
+					]
+				}
+			},
+			"meta": {
+				"attack": [],
+
+                        "bundled_extracts": [],
+                        "estimated_observed_time": "2017-04-17T14:33:00+00:00",
+                        "estimated_threat_end_time": null,
+                        "estimated_threat_start_time": "2017-04-17T14:33:00+00:00",
+                        "extraction_ignore_paths": ["information_source",
+                                                    "producer"],
+                        "half_life": 1,
+                        "tags": [],
+                        "taxonomy": [],
+                        "tlp_color": "NONE"
+			}
+		},
+		{
+			"data": {
+				"id": "{https://api.isightpartners.com/}threat-actor-c2fb1031-5a41-5081-ba3d-36e346c56b6d",
+				"type": "threat-actor",
+				"title": "Intrusion Set: TEMP.Avengers",
+				"description": "Test Actor Overview",
+				"timestamp": "2017-04-17T14:33:00+00:00",
+				"identity": {
+					"name": "TEMP.Avengers",
+					"type": "identity"
+				},
+				"information_source": {
+					"description": "https://api.isightpartners.com",
+					"type": "information-source",
+					"identity": {
+						"name": "FireEye iSIGHT Intelligence Report API",
+						"type": "identity"
+					},
+					"references": [],
+					"roles": [
+						{
+							"value": "Initial Author",
+							"vocab": "{http://stix.mitre.org/default_vocabularies-1}InformationSourceRoleVocab-1.0"
+						}
+					]
+				}
+			},
+			"meta": {
+				"estimated_observed_time": "2017-04-17T14:33:00+00:00",
+				"estimated_threat_start_time": "2017-04-17T14:33:00+00:00",
+				"extraction_ignore_paths": ["information_source",
+                                                    "producer"]
+			}
+		}
+	],
+	"relations": [
+		{
+			"data": {
+				"source": 0,
+				"target": 1,
+				"key": "ttps",
+				"source_type": "report",
+				"target_type": "ttp",
+				"type": "relation"
+			}
+		}
+	]
+}

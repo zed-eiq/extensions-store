@@ -1,0 +1,53 @@
+{
+  "name": "Fireeye isight intelligence ",
+  "extension_type": "incoming",
+  "license": "MIT license",
+  "maintainer": "team PINT team.pint@eclecticiq.com",
+  "producer": "EclecticIQ",
+  "eiq_verified": false,
+  "repository": "https://github.com/eclecticiq/fireeye-isight-intelligence-",
+  "application_path": "process.py",
+  "edk_protocol": "1.0",
+  "version": "0.1",
+  "programming_language": "Python",
+  "programming_language_version": "3.9",
+  "content_types": [
+    {
+      "id": "urn:eiq-edk:eclecticiq:fireeye-isight-intelligence-:0.1",
+      "name": "Fireeye isight intelligence",
+      "description": "Fireeye isight intelligence",
+      "content_groups": [
+        "edk_fireeye_extension"
+      ],
+      "file_extension": "json",
+      "mime_type": "application/json",
+      "configuration": [
+        {
+          "default": "",
+          "required": true,
+          "type": "string",
+          "description": "The URL pointing to the API endpoint exposing the service that makes the data available for retrieval through the feed.",
+          "title": "API URL",
+          "name": "api_url"
+        },
+        {
+          "default": "***",
+          "required": true,
+          "type": "string",
+          "description": "Public Key",
+          "title": "Public Key",
+          "name": "public_key"
+        },
+        {
+          "default": "***",
+          "required": true,
+          "type": "string",
+          "description": "private key",
+          "title": "Private key",
+          "name": "private_key"
+        }
+      ]
+    }
+  ]
+
+}
