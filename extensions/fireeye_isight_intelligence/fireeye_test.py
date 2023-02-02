@@ -6,13 +6,13 @@ class MyTestCase(unittest.TestCase):
     def test_vurnerability(self):
         #working
         data  = None
-        with open('tests/fireeye_vulnerability_report.json','r') as f:
+        with open('tests/fireeye_vulnerability_report.json', 'r') as f:
             data = f.read()
 
 
         data = json.loads(data)
         other_data = None
-        with open('tests/fireeye_output_001.json','r') as f:
+        with open('tests/fireeye_output_001.json', 'r') as f:
             other_data = f.read()
         expected_data = json.loads(other_data)
 
