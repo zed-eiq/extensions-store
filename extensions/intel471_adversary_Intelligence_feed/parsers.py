@@ -1,17 +1,18 @@
 import datetime
 import uuid
-import json
 from typing import List, Dict, Tuple
 from urllib import parse
+
+from utils import ExtractType
 from dev_kit.eiq_edk.schemas.entities import (
     EntityMetaSchema,
     EntitySchema,
     ExtractSchema,
     CONFIDENCES_EXTRACT_VALUES,
     ReportDataSchema,
-    ThreatActorDataSchema,
-    ExtractType
+    ThreatActorDataSchema
 )
+
 import iso3166
 import structlog
 
