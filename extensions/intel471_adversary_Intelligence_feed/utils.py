@@ -195,11 +195,11 @@ def get_time_params(since: datetime):
     return from_param, until_param, until
 
 
-def now_as_utc(*, with_microseconds=True) -> datetime.datetime:
+def now_as_utc(*, with_microseconds=True) -> datetime:
     """
     Return a time-zone aware datetime for the current time in UTC.
     """
-    dt = datetime.datetime.utcnow()
+    dt = datetime.utcnow()
     if not with_microseconds:
         dt = dt.replace(microsecond=0)
     return pytz.utc.localize(dt)
