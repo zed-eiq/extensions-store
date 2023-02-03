@@ -3,6 +3,8 @@ import uuid
 import json
 from typing import List, Dict, Tuple
 from urllib import parse
+
+from utils import ExtractType, set_dates
 from dev_kit.eiq_edk.schemas.entities import (
     EntityMetaSchema,
     EntitySchema,
@@ -10,10 +12,11 @@ from dev_kit.eiq_edk.schemas.entities import (
     CONFIDENCES_EXTRACT_VALUES,
     ReportDataSchema,
     ThreatActorDataSchema,
-    ExtractType
 )
+
 import iso3166
 import structlog
+from validator_collection import validators
 
 log = structlog.get_logger(__name__)
 
@@ -37,7 +40,7 @@ def create_posts_report(posts: list) -> Dict:
 
     analysis, tags = create_post_analysis_tags(posts, actor)
 
-    extracts = [create_extract(ExtractType.ACTOR_ID, actor)]
+    extracts = [create_extract(ExtractType.ACTOR_ID.value, actor)]
     for post in posts:
         forum = post.get("links").get("forum")
         if not forum:
@@ -46,13 +49,13 @@ def create_posts_report(posts: list) -> Dict:
         if domain_check:
             extracts.append(
                 create_extract(
-                    ExtractType.DOMAIN, forum.get("name"), classification="unknown"
+                    ExtractType.DOMAIN.value, forum.get("name"), classification="unknown"
                 )
             )
         else:
             extracts.append(
                 create_extract(
-                    ExtractType.FORUM_NAME, forum.get("name"), classification="unknown"
+                    ExtractType.FORUM_NAME.value, forum.get("name"), classification="unknown"
                 )
             )
     extracts = filter_empty_extracts(extracts)
@@ -68,6 +71,46 @@ def create_posts_report(posts: list) -> Dict:
         extracts=extracts,
     )
     return post_report
+
+
+def create_post_analysis_tags(posts: list, actor: str) -> Tuple[str, list]:
+    forum_description, post_analysis = "", ""
+    tags = ["Posts Report"]
+    title = f"<p>Intel 471 Forum Posts - {actor}<p>"
+    summary = (
+        f"<h4>SUMMARY</h4><p>This Intel 471 report gives an overview of "
+        f"forums posts created by {actor}.</p>"
+    )
+    analysis = "<h4>ANALYSIS *</h4>"
+    for post in posts:
+        forum_description = ""
+        if post["links"]["forum"].get("description"):
+            forum_description = (
+                f"<p>Forum Description: " f"{post['links']['forum']['description']}</p>"
+            )
+        post_date = datetime.datetime.utcfromtimestamp(post["date"] / 1000).isoformat()
+        if post.get("links", {}).get("thread", {}).get("topic"):
+            thread_topic = f"<p>Thread Topic: {post['links']['thread']['topic']}.</p>"
+        elif post.get("links", {}).get("thread", {}).get("topicOriginal"):
+            thread_topic = (
+                f"<p>Thread Topic: {post['links']['thread']['topicOriginal']}.</p>"
+            )
+        else:
+            thread_topic = ""
+        post_analysis += (
+            f"<p><u><strong>Post</u></strong></p>"
+            f"<p>Forum Name: {post['links']['forum']['name']}</p>"
+            + forum_description
+            + thread_topic
+            + f"<p>Date: "
+            f"{post_date}</p>"
+            f"<p>{post['message'].replace('<img title=', '<img src=')}</p><br>"
+        )
+        if post["links"]["forum"].get("name") not in tags:
+            tags.append(post["links"]["forum"].get("name"))
+
+    full_analysis = title + summary + analysis + post_analysis
+    return full_analysis, tags
 
 
 def transform_adversary_report(blob: bytes) -> Dict:

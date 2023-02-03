@@ -1,3 +1,4 @@
+import enum
 import itertools
 import re
 import sys
@@ -183,47 +184,8 @@ def handle_errors(self, response, ext_type):
         pass
 
 
-def fetch_with_cursor(
-    self,
-    api_url,
-    root_node,
-    auth,
-    query_params,
-    verify_ssl,
-):
-    response = fetch_results(
-        self, url=api_url, auth=auth, verify_ssl=verify_ssl, params=query_params
-    )
-    if response:
-        while response.get("cursorNext"):
-            if not response.get(root_node, []):
-                break
-            items = response.get(root_node, [])
-            for item in items:
-                yield item
-            query_params["cursor"] = response.get("cursorNext")
-            response = fetch_results(
-                url=api_url, auth=auth, verify_ssl=verify_ssl, params=query_params
-            )
-    else:
-        self.send_error({
-          "code": "404",
-          "description": "3rd party connector error",
-          "message": f"An error occured during contacting 3rd party  {api_url}. Aborting."
-        })
-        pass
 
-    if response.get("indicatorTotalCount") == 0:
-
-        self.send_warning({
-            "code": "WAR-0001",
-            "message": "No results",
-            "description": "Provider finished with no results."
-        })
-        pass
-
-
-def fetch_alerts(api_url: str, auth: Tuple, from_param: datetime, verify_ssl: bool):
+def fetch_alerts(self, api_url: str, auth: Tuple, from_param: datetime, verify_ssl: bool):
     offset = 0
     query_params = {"from": from_param, "sort": "earliest", "count": PAGE_SIZE}
     results = []
@@ -231,7 +193,7 @@ def fetch_alerts(api_url: str, auth: Tuple, from_param: datetime, verify_ssl: bo
         if offset:
             query_params.update({"offset": offset})
         response = fetch_results(
-            url=api_url, auth=auth, verify_ssl=verify_ssl, params=query_params
+            self, url=api_url, auth=auth, verify_ssl=verify_ssl, params=query_params
         )
         if not response:
             # When user make invalid URL to make request Intel471 API return
@@ -280,6 +242,13 @@ def download_report(url: str, auth: Tuple, verify_ssl: bool):
         report.pop("rawText")
     return report
 
+
+def set_dates(posts: list) -> str:
+    dates = []
+    for post in posts:
+        dates.append(post["date"])
+    date = datetime.utcfromtimestamp(min(dates) / 1000).isoformat()
+    return date
 
 class Intel471Exception(Exception):
     def __init__(self, arg):

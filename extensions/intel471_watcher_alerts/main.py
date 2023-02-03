@@ -7,8 +7,8 @@ from dateutil import parser
 from eiq_edk import ImporterProcess
 from furl import furl
 
-from parsers import parse_indicators, parse_ttps, parse_report
-from utils import batch, fetch_results, fetch_alerts, download_related_reports, REPORT_ENDPOINT
+from parsers import transform_adversary_report, transform_posts
+from utils import fetch_results, fetch_alerts, download_related_reports, REPORT_ENDPOINT
 
 
 
@@ -50,7 +50,7 @@ class MainApp(ImporterProcess):
                     .add(path=REPORT_ENDPOINT.format(alert["report"]["uid"]))
                     .url
                 )
-                report = fetch_results(report_url, auth, verify_ssl)
+                report = fetch_results(self, report_url, auth, verify_ssl)
                 if report:
                     report["relatedReports"], downloaded_reports = download_related_reports(
                         api_url,
@@ -90,27 +90,13 @@ class MainApp(ImporterProcess):
         )
 
         raw_data = json.loads(raw_data.decode("utf-8"))['raw_data']
-        entities, relations = [], []
-        feed_type = raw_data.get("feed_type")
-        parse_indicators([raw_data["indicator"]], entities, relations, feed_type)
-        parse_ttps(
-            [raw_data["indicator"]],
-            entities,
-            relations,
-            raw_report=raw_data["report"] if raw_data.get("report") else None,
-            feed_type=feed_type
-        )
-        if raw_data.get("report"):
-            report, report_relation = parse_report(raw_data["report"], entities)
-            entities.extend(report)
-            relations.extend(report_relation)
-        linked_entities = {
-            "type": "linked-entities",
-            "entities": entities,
-            "relations": relations,
+        alert_transformer = {
+            "intel471_adversary_report": transform_adversary_report,
+            "intel471_posts": transform_posts,
         }
+        alert_data = json.loads(raw_data.decode("utf-8"))['raw_data']
+        self.save_transformed_data(alert_transformer[alert_data["content_type"]](alert_data)) 
 
-        self.save_transformed_data(linked_entities)
         self.send_info({
             "code": "INF-0003",
             "message": "Execution completed successfuly",
