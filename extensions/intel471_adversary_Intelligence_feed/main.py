@@ -64,9 +64,9 @@ class MainApp(ImporterProcess):
                         report.get("created") / 1000
                     )
 
-                self.save_raw_data({
+                self.save_raw_data(json.dumps({
                     "raw_data": detailed_report, "timestamp": timestamp.isoformat()
-                })
+                }).encode())
                 processed_reports += 1
 
                 self.send_info(
