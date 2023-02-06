@@ -7,24 +7,22 @@ then
 fi
 
 # Setting up default values in case something is not provided
-_TARGET_INSTALL_DIR='/opt/eiq-edk/extensions' # Do not change
-_ARCHITECTURE='amd64'
+_ARCHITECTURE='any'
 _VERSION='1.0'
-: "${TARGET_INSTALL_DIR:=${_TARGET_INSTALL_DIR}}"
 : "${ARCHITECTURE:=${_ARCHITECTURE}}"
 : "${VERSION:=${_VERSION}}"
 
 export GPG_TTY=$(tty) # Fix GPG error: Inappropriate ioctl for device
 
 function usage {
-      echo "Creates and signs a .deb package for your extension."
+      echo "Creates and signs a package for your extension."
       echo ""
       echo "Usage: $0 [OPTIONS]"
       echo ""
       echo "Example: $0 -p my-extension -v 1.1 -m 'John Doe <user@example.com>' -d 'Lorem ipsum dolor' -k F8120DBF852F77C1 --source /opt/dev/my-extension"
       echo ""
       echo "Options:"
-      echo "   -p package_name                  .deb package name. Must only contain lowercase alphanumeric and '-+' characters."
+      echo "   -p package_name                  Package name. Must only contain lowercase alphanumeric and '-+' characters."
       echo "   -v version                       Numeric version of your package. Default: ${_VERSION}"
       echo "   -a arch                          Target architecture: amd64, x86. Default: ${_ARCHITECTURE}"
       echo "   -m John Doe <user@example.com>   Maintainer's contact details."
@@ -36,7 +34,7 @@ function usage {
 }
 
 # If no arguments provided
-if [[ ${#} -eq 0 ]]; then
+if [[ $# -eq 0 ]]; then
    usage
 fi
 
@@ -85,29 +83,21 @@ while [ ! -z "$1" ]; do
 shift
 done
 
-#Creating deb package structure
+#Creating package structure
 TARGET_NAME="${PACKAGE_NAME}_${VERSION}_${ARCHITECTURE}"
-BUILD_DIR=".${TARGET_NAME}"
+BUILD_DIR="${TARGET_NAME}"
 rm -rf ${BUILD_DIR}
-mkdir -p $BUILD_DIR/$TARGET_INSTALL_DIR/$PACKAGE_NAME
-mkdir -p $BUILD_DIR/DEBIAN
-
-cat << EOF >  $BUILD_DIR/DEBIAN/control
-Package: $PACKAGE_NAME
-Version: $VERSION
-Architecture: $ARCHITECTURE
-Maintainer: $MAINTAINER
-Description: $DESCRIPTION
-EOF
+mkdir -p $BUILD_DIR/$PACKAGE_NAME
 
 # Copy executable to target folder
-cp -r $SRC_DIR/* $BUILD_DIR/$TARGET_INSTALL_DIR/$PACKAGE_NAME
+cp -r $SRC_DIR/* $BUILD_DIR/$PACKAGE_NAME
 
 # Packing
-dpkg-deb --build $BUILD_DIR $TARGET_NAME.deb
+tar -C $BUILD_DIR -czf $TARGET_NAME.tar.gz $PACKAGE_NAME
 
 # Signing
-dpkg-sig -k $KEY_ID --sign author $TARGET_NAME.deb
+gpg --local-user $KEY_ID --sign $TARGET_NAME.tar.gz
 
 # Cleanup
+rm $TARGET_NAME.tar.gz
 rm -rf ${BUILD_DIR}
