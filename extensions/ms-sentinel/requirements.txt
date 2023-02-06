@@ -1,6 +1,0 @@
-dateutil
-pytz
-dateutil
-re
-requests
-furl
