@@ -1,14 +1,10 @@
 import itertools
 import re
 import sys
-import enum
-
-import requests
-import structlog
 from datetime import datetime
-import pytz
 
-log = structlog.get_logger(__name__)
+import pytz
+import requests
 
 HEADERS = {}
 
@@ -33,15 +29,15 @@ def batch(iterable, size):
 
 
 def fetch_with_paging(
-    self,
-    api_url,
-    count_col_name,
-    root_node,
-    created_col_name,
-    auth,
-    query_params,
-    verify_ssl,
-    page_size=PAGE_SIZE,
+        self,
+        api_url,
+        count_col_name,
+        root_node,
+        created_col_name,
+        auth,
+        query_params,
+        verify_ssl,
+        page_size=PAGE_SIZE,
 ):
     offset = 0
     last_report_timestamp = query_params["from"]
@@ -77,7 +73,6 @@ def fetch_with_paging(
             # When user make invalid URL to make request Intel471 API return
             # 404: Not Found error, we handle that with custom exception on first
             # request from pagination
-            log.error(f"API returned error for {api_url}")
             raise Intel471Exception(
                 'Provided parameters result with "404: not found" error'
             )
@@ -115,7 +110,7 @@ def fetch_results(self, url, auth, verify_ssl, ext_type="Provider", **params):
                 "description": f"{ext_type}  failed, service unavailable",
                 "message": f"{response.text}"})
             return {}
-        handle_errors(response, ext_type)
+        handle_errors(self, response, ext_type)
         response.raise_for_status()
     try:
         data = response.json()
@@ -126,17 +121,17 @@ def fetch_results(self, url, auth, verify_ssl, ext_type="Provider", **params):
         # so we remove that image to ingest the report
         the_text = ""
         complete_fields_size = (
-            data.get("researcherComments", "")
-            + data.get("rawText", "")
-            + data.get("rawTextTranslated", "")
+                data.get("researcherComments", "")
+                + data.get("rawText", "")
+                + data.get("rawTextTranslated", "")
         )
 
         if sys.getsizeof(complete_fields_size) > DESCRIPTION_SIZE_LIMIT:
             for field in ["researcherComments", "rawText", "rawTextTranslated"]:
                 remove_images_from_description(data, field)
                 if (
-                    sys.getsizeof(data.get(field, "") + the_text)
-                    < DESCRIPTION_SIZE_LIMIT
+                        sys.getsizeof(data.get(field, "") + the_text)
+                        < DESCRIPTION_SIZE_LIMIT
                 ):
                     the_text += data.get(field, "")
                 else:
@@ -160,16 +155,15 @@ def remove_images_from_description(data, field):
 def handle_errors(self, response, ext_type):
     # if file is not found, don't stop the feed
     if response.status_code in (401, 403):
-
         self.send_error({
-            "code": "401 / 403",
+            "code": "ERR-0000",
             "description": f"{ext_type} failed, authentication error",
             "message": f"{response.text} {response.status_code}."
         })
         pass
     elif response.status_code > 500:
         self.send_error({
-            "code": "500",
+            "code": "ERR-0000",
             "description": f"{ext_type} failed, service unavailable",
             "message": f"{response.text}."
         })
@@ -188,7 +182,6 @@ def get_time_params(since: datetime):
     from_param = 1000 * int(since.timestamp()) if since else 0
     until_param = 1000 * int(until.timestamp())
     if from_param > until_param:
-        log.error("The date and time must not be greater than present time!")
         raise Intel471Exception(
             "The date and time must not be greater than present time!"
         )
@@ -209,77 +202,3 @@ class Intel471Exception(Exception):
     def __init__(self, arg):
         self.strerror = arg
         self.args = {arg}
-
-
-class ExtractType(str, enum.Enum):
-    """
-    Usage:
-        extract_type = ExtractType.ADDRESS
-    """
-    ACTOR_ID = "actor-id"
-    ADDRESS = "address"
-    ASN = "asn"
-    BANK_ACCOUNT = "bank-account"
-    CARD = "card"
-    CARD_OWNER = "card-owner"
-    CCE = "cce"
-    CITY = "city"
-    COMPANY = "company"
-    COUNTRY = "country"
-    COUNTRY_CODE = "country-code"
-    CVE = "cve"
-    CWE = "cwe"
-    DOMAIN = "domain"
-    EMAIL = "email"
-    EMAIL_SUBJECT = "email-subject"
-    EUI_64 = "eui-64"
-    FILE = "file"
-    FORUM_NAME = "forum-name"
-    FORUM_ROOM = "forum-room"
-    FORUM_THREAD = "forum-thread"
-    FOX_IT_PORTAL_URI = "fox-it-portal-uri"
-    GEO = "geo"
-    GEO_LAT = "geo-lat"
-    GEO_LONG = "geo-long"
-    HANDLE = "handle"
-    HASH_AUTHENTIHASH = "hash-authentihash"
-    HASH_IMPHASH = "hash-imphash"
-    HASH_MD5 = "hash-md5"
-    HASH_RICH_PE_HEADER = "hash-rich-pe-header"
-    HASH_SHA1 = "hash-sha1"
-    HASH_SHA256 = "hash-sha256"
-    HASH_SHA512 = "hash-sha512"
-    HASH_SSDEEP = "hash-ssdeep"
-    HASH_VHASH = "hash-vhash"
-    HOST = "host"
-    INDUSTRY = "industry"
-    INETNUM = "inetnum"
-    IPV4 = "ipv4"
-    IPV4_CIDR = "ipv4-cidr"
-    IPV6 = "ipv6"
-    IPV6_CIDR = "ipv6-cidr"
-    JA3S_FULL = "ja3s-full"
-    JA3S_HASH = "ja3s-hash"
-    JA3_FULL = "ja3-full"
-    JA3_HASH = "ja3-hash"
-    MAC_48 = "mac-48"
-    MALWARE = "malware"
-    MUTEX = "mutex"
-    NAME = "name"
-    NATIONALITY = "nationality"
-    NETNAME = "netname"
-    ORGANIZATION = "organization"
-    PERSON = "person"
-    PORT = "port"
-    POSTCODE = "postcode"
-    PROCESS = "process"
-    PRODUCT = "product"
-    REGISTRAR = "registrar"
-    RULE = "rule"
-    SNORT = "snort"
-    STREET = "street"
-    TELEPHONE = "telephone"
-    URI = "uri"
-    URI_HASH_SHA256 = "uri-hash-sha256"
-    WINREGISTRY = "winregistry"
-    YARA = "yara"

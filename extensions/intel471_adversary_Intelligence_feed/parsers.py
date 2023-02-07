@@ -3,20 +3,12 @@ import uuid
 from typing import List, Dict, Tuple
 from urllib import parse
 
-from utils import ExtractType
-from dev_kit.eiq_edk.schemas.entities import (
-    EntityMetaSchema,
-    EntitySchema,
-    ExtractSchema,
-    CONFIDENCES_EXTRACT_VALUES,
-    ReportDataSchema,
-    ThreatActorDataSchema
-)
-
 import iso3166
-import structlog
-
-log = structlog.get_logger(__name__)
+from eiq_edk import create_entity, create_extract
+from eiq_edk._data_objects import ExtractType
+from eiq_edk.schemas.entities import (
+    CONFIDENCES_EXTRACT_VALUES
+)
 
 
 def create_adversary_actors(data: dict, entities: list) -> Tuple[Dict, List]:
@@ -30,43 +22,40 @@ def create_adversary_actors(data: dict, entities: list) -> Tuple[Dict, List]:
     actor_motivations = list()
     # Admiralty tags
     if data.get("admiraltyCode"):
-        add_admiralty_taxonomy(taxonomy, data["admiraltyCode"])
+        tags.append(RELIABILITY.get(data.get("admiraltyCode")[0]))
+        tags.append(CREDIBILITY.get(data.get("admiraltyCode")[1]))
     # Motivation tags
     for motivation in data.get("motivation", []):
         tags.append(MOTIVATION_TAGS.get(motivation, motivation))
         for motivation_intent in MOTIVATION_INTENT.get(motivation, []):
-            actor_motivations.append(
-                {
-                    "type": "statement",
-                    "value": motivation_intent,
-                    "value_vocab": (
-                        "{http://stix.mitre.org/default_vocabularies-1}"
-                        "MotivationVocab-1.1"
-                    ),
-                }
-            )
+            actor_motivations.append(motivation_intent)
 
     title_actor = data["actorSubjectOfReport"][0].get("handle")
     _id = "{{http://www.intel471.com/}}threat-actor-{}".format(
         str(uuid.uuid5(uuid.NAMESPACE_X500, title_actor))
     )
-    information_source = create_information_source(
-        "Intel 471 Adversary Intelligence Feed",
-        description="Intel 471 Adversary Intelligence Feed",
-    )
 
-    threat_actor = create_threat_actor(
-        _id,
-        f"Threat Actor: {title_actor}",
-        information_source=information_source,
-        confidence=CONFIDENCES_EXTRACT_VALUES[2],
-        extracts=create_actor_extracts(data),
-        tags=tags,
-        motivations=actor_motivations,
-        taxonomy=taxonomy,
-        actor_identity=title_actor,
-    )
+    information_source = {
+        "identity": "Intel 471 Adversary Intelligence Feed",
+        "description": "Intel 471 Adversary Intelligence Feed"
+    }
+    threat_actor_data = {
+        "id": _id,
+        "title": title_actor,
+        "producer": information_source,
+        "confidence": CONFIDENCES_EXTRACT_VALUES[2],
+        "motivations": actor_motivations,
+        "identity": title_actor
+    }
+    threat_actor_meta = {
+        "bundled_extracts": create_actor_extracts(data),
+        "tags": tags,
+        # "taxonomy_paths": taxonomy
+    }
 
+    threat_actor = create_entity({
+        "type": "threat-actor", "data": threat_actor_data, "meta": threat_actor_meta
+    })
     actor_relations = [
         {
             "data": {
@@ -82,118 +71,14 @@ def create_adversary_actors(data: dict, entities: list) -> Tuple[Dict, List]:
     return threat_actor, actor_relations
 
 
-def create_information_source(
-    identity_name: str,
-    references: list = [],
-    role_values: list = [],
-    description: str = "",
-) -> dict:
-
-    information_source = {
-            "type": "information-source",
-            "identity": identity_name,
-            "references":references,
-            "roles": role_values,
-            "description": description
-    }
-
-    return information_source
-
-
-def create_threat_actor(
-    stix_id: str,
-    title: str,
-    description: str = "",
-    information_source: dict = None,
-    identity: str = "", 
-    observed_time: str = None,
-    threat_start_time: str = None,
-    threat_end_time: str = None,
-    confidence: dict = None,
-    timestamp: str = None,
-    extracts: list = None,
-    tags: list = None,
-    types: list = None,
-    summary: str = None,
-    extraction_ignore_paths: list = None,
-    attachments: list = None,
-    tlp_color: str = None,
-    half_life: int = None,
-    observable: list = None,
-    taxonomy: list = [],
-    motivations: list = None,
-    actor_types: list = None,
-    intended_effects: list = None,
-    sophistication: list = None,
-    actor_identity: str = None,
-    attacks: list = None,
-) -> dict:
-    threat_actor = ThreatActorDataSchema().load({
-            "id": stix_id,
-            "type": "threat-actor",
-            "title": title,
-            "description": description,
-            "information_source": information_source,
-            "timestamp": timestamp,
-            "identity": identity,
-            "intended_effects": intended_effects,
-            "motivations": motivations,
-            "sophistication": sophistication,
-            "types": types
-        }
-    )
-
-    entity_meta = EntityMetaSchema().load(
-        {
-            "estimated_observed_time": observed_time,
-            "estimated_threat_start_time": threat_start_time,
-            "estimated_threat_end_time": threat_end_time,
-            "half_life": half_life,
-            "tags": tags,
-            "taxonomy": taxonomy,
-            "attack": attacks,
-            "tlp_color": tlp_color,
-            "bundled_extracts": extracts,
-            "extraction_ignore_paths": extraction_ignore_paths,
-        }
-    )
-
-    entity_data = EntitySchema().load(
-        {
-            "data": threat_actor,
-            "meta": entity_meta,
-            "attachments": attachments
-        }
-    )
-    return entity_data
-
-
 def create_actor_extracts(data: dict) -> List:
     if not data.get("actorSubjectOfReport"):
         return []
     return [
-        {"kind":ExtractType.NAME.value, "value":alias, "classification": "unknown", "link_type": "observed"}
+        create_extract({"kind": ExtractType.NAME.value, "value": alias,
+                        "classification": "unknown"})
         for alias in data["actorSubjectOfReport"][0].get("aliases", [])
     ]
-
-
-def create_extract(
-    kind: str,
-    value: str,
-    classification: str = None,
-    confidence: str = None,
-    link_type: str = None,
-) -> dict:
-    extract = ExtractSchema().load(
-        {
-            "kind": kind,
-            "value": value,
-            "classification": classification,
-            "link_type":  link_type
-        }
-    )
-    
-    return extract
 
 
 def create_indicator_title(data: dict) -> str:
@@ -217,19 +102,6 @@ def create_indicator_title(data: dict) -> str:
     return title
 
 
-def add_admiralty_taxonomy(taxonomy: list, admiralty: tuple):
-    reliability_taxonomy = (
-        "Admiralty Code - Reliability", admiralty[0]
-    )
-    if reliability_taxonomy:
-        taxonomy.append(reliability_taxonomy)
-    credibility_taxonomy = (
-        "Admiralty Code - Credibility", admiralty[1]
-    )
-    if credibility_taxonomy:
-        taxonomy.append(credibility_taxonomy)
-
-
 def create_adversary_report(data: dict) -> Dict:
     references = [item["url"] for item in data.get("sources", []) if item.get("url")]
     if data.get("portalReportUrl"):
@@ -250,93 +122,39 @@ def create_adversary_report(data: dict) -> Dict:
     role_values = []
     if references:
         role_values.append("Initial Author")
-    intents = [{"value": "Threat Report"}]
-    information_source = create_information_source(
-        "Intel 471 Adversary Intelligence Feed",
-        references=references,
-        role_values=role_values,
-        description="Intel 471 Adversary Intelligence Feed",
-    )
+    intents = ["Threat Report"]
     _id = "{{http://www.intel471.com/}}Report-{}".format(
         str(uuid.uuid5(uuid.NAMESPACE_X500, data["uid"]))
     )
-    report = create_report(
-        _id,
-        data.get("subject"),
-        description=analysis,
-        information_source=information_source,
-        observed_time=report_date.isoformat(),
-        timestamp=report_date.isoformat(),
-        intents=intents,
-        extracts=bundled_extracts,
-        tags=tags,
-        summary=summary,
-        taxonomy=taxonomy,
-    )
+    information_source = {
+        "identity": "Intel 471 Adversary Intelligence Feed",
+        "references": references,
+        "roles": role_values,
+        "description": "Intel 471 Adversary Intelligence Feed"
+    }
+
+    report_data = {
+        "id": _id,
+        "title": data.get("subject"),
+        "description": analysis,
+        "producer": information_source,
+        "intents": intents,
+        "short_description": summary,
+        "timestamp": report_date.isoformat(),
+    }
+
+    report_meta = {
+        "bundled_extracts": bundled_extracts,
+        "tags": tags,
+        # "taxonomy_paths": taxonomy,
+        "estimated_observed_time": report_date.isoformat()
+
+    }
+
+    report = create_entity({
+        "type": "report", "data": report_data, "meta": report_meta
+    })
     return report
-
-
-def create_report(
-    stix_id: str = "",
-    title: str = "",
-    description: str = "",
-    short_description: str = "",
-    information_source: dict = {},
-    observed_time: str = "",
-    threat_start_time: str = "",
-    threat_end_time: str = "",
-    timestamp: str = "",
-    extracts: list = [],
-    tags: list = [],
-    summary: str = "",
-    intents: list = [],
-    extraction_ignore_paths: list = [],
-    attachments: list = [],
-    tlp_color: str = None,
-    half_life: int = 1,
-    observable: list = [],
-    taxonomy: list = [],
-    taxonomy_paths: list = [],
-    relationship: str = "",
-    attacks: list = [],
-) -> dict:
-
-    report = ReportDataSchema().load(
-        {
-            "id": stix_id,
-            "type": "report",
-            "title": title,
-            "description": description,
-            "short_description": short_description,
-            "information_source": information_source,
-            "intents": intents,
-            "timestamp": timestamp
-        }
-    )
-
-    entity_meta = EntityMetaSchema().load({
-            "estimated_observed_time": observed_time,
-            "estimated_threat_start_time": threat_start_time,
-            "estimated_threat_end_time": threat_end_time,
-            "half_life": half_life,
-            "tags": tags,
-            "taxonomy": taxonomy,
-            "attack": attacks,
-            "tlp_color": tlp_color,
-            "bundled_extracts": extracts,
-            "extraction_ignore_paths": extraction_ignore_paths
-        }
-    )
-
-    entity_data = EntitySchema().load(
-        {
-            "data": report, 
-            "meta": entity_meta,
-            "attachments": attachments
-        }
-    )
-
-    return entity_data
 
 
 def create_adversary_analysis(data: dict) -> str:
@@ -363,7 +181,8 @@ def create_adversary_tags(data: dict) -> Tuple[list, list]:
             unique_tags.add(tag)
     # Admiralty tags
     if data.get("admiraltyCode"):
-        add_admiralty_taxonomy(taxonomy, data["admiraltyCode"])
+        unique_tags.add(RELIABILITY.get(data.get("admiraltyCode")[0]))
+        unique_tags.add(CREDIBILITY.get(data.get("admiraltyCode")[1]))
     # Motivation tags
     for motivation in data.get("motivation", []):
         unique_tags.add(MOTIVATION_TAGS.get(motivation, motivation))
@@ -396,12 +215,11 @@ def create_adversary_report_extracts(data: dict) -> List:
         else:
             value = entity.get("value")
         bundled_extracts.append(
-                {
-                    "kind": extract.get("kind"),
-                    "value": value,
-                    "classification": extract.get("classification"),
-                    "link_type": "observed"
-                }
+            create_extract({
+                "kind": extract.get("kind"),
+                "value": value,
+                "classification": extract.get("classification")
+            })
         )
     bundled_extracts = filter_empty_extracts(bundled_extracts)
     return bundled_extracts
@@ -414,10 +232,18 @@ def location_extracts(locations: list, bundled_extracts: list):
         except KeyError:
             continue
         bundled_extracts.append(
-            {"kind": ExtractType.COUNTRY.value, "value": country.name, "classification": "good"}
+            create_extract({
+                "kind": ExtractType.COUNTRY.value,
+                "value": country.name,
+                "classification": "good"
+            })
         )
         bundled_extracts.append(
-                {"kind": ExtractType.COUNTRY_CODE.value, "value": country.alpha2, "classification": "good"}
+            create_extract({
+                "kind": ExtractType.COUNTRY_CODE.value,
+                "value": country.alpha2,
+                "classification": "good"
+            })
         )
 
 
@@ -432,7 +258,8 @@ ENTITIES_TO_EXTRACTS = {
     "SHA256": {"kind": ExtractType.HASH_SHA256.value, "classification": "unknown"},
     "MaliciousURL": {"kind": ExtractType.URI.value, "classification": "unknown"},
     "BitcoinID": {"kind": ExtractType.BANK_ACCOUNT.value, "classification": "unknown"},
-    "BitcoinWalletID": {"kind": ExtractType.BANK_ACCOUNT.value, "classification": "unknown"},
+    "BitcoinWalletID": {"kind": ExtractType.BANK_ACCOUNT.value,
+                        "classification": "unknown"},
     "IPAddress": {"kind": ExtractType.IPV4.value, "classification": "unknown"},
     "ActorWebsite": {"kind": ExtractType.URI.value, "classification": "unknown"},
     "ActorDomain": {"kind": ExtractType.DOMAIN.value, "classification": "unknown"},
@@ -454,4 +281,21 @@ MOTIVATION_INTENT = {
     "CC": ["Financial or Economic"],
     "CE": ["Political", "Military"],
     "HA": ["Ideological"],
+}
+
+RELIABILITY = {
+    "A": "Admiralty Code - Completely reliable",
+    "B": "Admiralty Code - Usually reliable",
+    "C": "Admiralty Code - Fairly reliable",
+    "D": "Admiralty Code - Not usually reliable",
+    "E": "Admiralty Code - Unreliable",
+    "F": "Admiralty Code - Reliability cannot be judged",
+}
+CREDIBILITY = {
+    "1": "Admiralty Code - Confirmed by other sources",
+    "2": "Admiralty Code - Probably True",
+    "3": "Admiralty Code - Possibly True",
+    "4": "Admiralty Code - Doubtful",
+    "5": "Admiralty Code - Improbable",
+    "6": "Admiralty Code - Truth cannot be judged",
 }

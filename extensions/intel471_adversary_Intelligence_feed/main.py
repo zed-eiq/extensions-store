@@ -1,6 +1,5 @@
 # !/usr/bin/env python3
 import json
-import math
 from datetime import datetime
 
 from dateutil import parser
@@ -8,7 +7,9 @@ from eiq_edk import ImporterProcess
 from furl import furl
 
 from parsers import create_adversary_actors, create_adversary_report
-from utils import batch, fetch_results, fetch_with_paging, get_time_params, Intel471Exception, REPORT_ENDPOINT
+from utils import (
+    batch, fetch_results, fetch_with_paging, get_time_params, REPORT_ENDPOINT
+)
 
 
 class MainApp(ImporterProcess):
@@ -97,7 +98,9 @@ class MainApp(ImporterProcess):
             entities.append(actors)
             relations.extend(actor_relations)
 
-        self.save_transformed_data({"type": "linked-entities", "entities": entities, "relations": relations})
+        self.save_transformed_data(
+            {"type": "linked-entities", "entities": entities, "relations": relations}
+        )
         self.send_info({
             "code": "INF-0003",
             "message": "Execution completed successfuly",
