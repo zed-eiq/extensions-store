@@ -1,32 +1,29 @@
+import base64
+import hashlib
+import hmac
+import time
+from email import utils
 from urllib import parse
+
 import furl
 import requests
-import base64
-import time
-import hmac
-import hashlib
 from simplejson import errors
-from email import utils
 
-EXTENSION_NAME = "Fire Eye"
-PLATFORM_VERSION = '1'
-EXTENSION_VERSION = '0.1'
-USER_AGENT = f"EclecticIQ IC/{PLATFORM_VERSION} {EXTENSION_NAME}/{EXTENSION_VERSION}"
+USER_AGENT = f"EclecticIQ IC/1/Fire Eye/1.0"
 ACCEPT_VERSION = "2.6"
 REQUESTS_TIMEOUT = 120
 SERVICE_TIMEOUT = 5  # seconds
 PAGE_SIZE = 1000
 
 
-
 def get_reports_list(
-    api_url: str,
-    search_path: str,
-    public_key: str,
-    private_key: str,
-    verify_ssl: bool,
-    ext_type: str,
-    params: dict,
+        api_url: str,
+        search_path: str,
+        public_key: str,
+        private_key: str,
+        verify_ssl: bool,
+        ext_type: str,
+        params: dict,
 ) -> list[dict]:
     results = []
     offset = 0
@@ -44,15 +41,14 @@ def get_reports_list(
     return results
 
 
-
 def send_reports_query(
-    ext_type: str,
-    public_key: str,
-    private_key: str,
-    verify_ssl: bool,
-    api_url: str,
-    path: str,
-    query: str,
+        ext_type: str,
+        public_key: str,
+        private_key: str,
+        verify_ssl: bool,
+        api_url: str,
+        path: str,
+        query: str,
 ):
     content_type = "application/json"
     headers = make_headers(public_key, private_key, path + query, content_type)
@@ -69,21 +65,20 @@ def send_reports_query(
         return response.json()["message"], response.content
     except ValueError:
         raise FireeyeException({
-            'code' : 'ERR-0000',
+            'code': 'ERR-0000',
             'description': 'Unexpected data type encountered',
-            'message' : f"{ext_type} failed, unexpected data type encountered"
+            'message': f"{ext_type} failed, unexpected data type encountered"
         })
 
 
-
 def get_report(
-    api_url: str,
-    public_key: str,
-    private_key: str,
-    report: str,
-    verify_ssl: bool,
-    ext_type: str,
-    pdf: bool = False,
+        api_url: str,
+        public_key: str,
+        private_key: str,
+        report: str,
+        verify_ssl: bool,
+        ext_type: str,
+        pdf: bool = False,
 ):
     report_query = "report/{}".format(report)
     content_type = "application/pdf" if pdf else "application/json"
@@ -102,7 +97,7 @@ def get_report(
     except requests.exceptions.HTTPError:
         # handle report downloads gracefully, don't break the feed
         if pdf:
-            raise  FireeyeWarningException({
+            raise FireeyeWarningException({
                 'code': 'WAR-0001',
                 'description': "PDF file couldn't be downloaded for report",
                 'message': f"PDF file couldn't be downloaded for response {response}"
@@ -129,8 +124,6 @@ def get_report(
         })
 
 
-
-
 def make_request(ext_type: str, **kwargs) -> requests.Response:
     already_tried = kwargs.pop("already_tried", False)
     kwargs["timeout"] = REQUESTS_TIMEOUT
@@ -152,7 +145,6 @@ def make_request(ext_type: str, **kwargs) -> requests.Response:
         response.reason = fireeye_message or response.reason
 
         if response.status_code >= 500 and not already_tried:
-
             time.sleep(SERVICE_TIMEOUT)
             kwargs["already_tried"] = True
             return make_request(ext_type, **kwargs)
@@ -163,7 +155,7 @@ def make_request(ext_type: str, **kwargs) -> requests.Response:
 
 # generate time-based password
 def make_headers(
-    public_key: str, private_key: str, query: str, content_type: str
+        public_key: str, private_key: str, query: str, content_type: str
 ) -> dict:
     time_stamp = utils.formatdate(localtime=True)
     raw_string = "/" + query + ACCEPT_VERSION + content_type + time_stamp
@@ -179,13 +171,11 @@ def make_headers(
     }
 
 
-
 class FireeyeException(Exception):
-    
+
     def __init__(self, message):
         self.message = message
         super().__init__()
-
 
 
 class FireeyeWarningException(Exception):

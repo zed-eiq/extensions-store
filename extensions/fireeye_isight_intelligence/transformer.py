@@ -1,27 +1,23 @@
 import datetime
 import re
 import uuid
-import xml.sax.saxutils  # nosec
 from typing import List, Optional
-from marshmallow import ValidationError
-from dev_kit.eiq_edk.schemas.entities import ExtractType
-from eiq_edk.schemas.entities import (ProducerSchema,IndicatorDataSchema,
-                                      ReportDataSchema,ThreatActorDataSchema,
-                                      TTPDataSchema, ExtractSchema, EntitySchema,
-                                      ObservableObjectSchema, ObservableSchema)
 
+from eiq_edk import create_entity, create_extract
+from eiq_edk._data_objects import ExtractType
+from eiq_edk.schemas.entities import (ExtractSchema, EntitySchema)
 
 BAD_FILENAMES = ["unavailable", "unknown", "(none)"]
 INDICATOR_DESCRIPTION = {
     "Attacker": "This indicator has been confirmed hosting malicious content "
-    "and has functioned as a command and control (C2) server, "
-    "and/or otherwise acted as a source of malicious activity.",
+                "and has functioned as a command and control (C2) server, "
+                "and/or otherwise acted as a source of malicious activity.",
     "Compromised": "This indicator has been confirmed to host malicious "
-    "content due to compromise or abuse. The exact time and "
-    "length of compromise is unknown unless disclosed within the report.",
+                   "content due to compromise or abuse. The exact time and "
+                   "length of compromise is unknown unless disclosed within the report.",
     "Related": "This indicator is likely related to an attack but has only "
-    "been partially confirmed. It has been detailed by one or "
-    "more methods, like passive DNS, geo-location and connectivity detection.",
+               "been partially confirmed. It has been detailed by one or "
+               "more methods, like passive DNS, geo-location and connectivity detection."
 }
 
 """
@@ -30,47 +26,46 @@ https://docs.fireeye.com/iSight/index.html#/report_index
 """
 
 
-def transform_reports(report: dict) -> dict:
+def transform_reports(reports_data: list) -> dict:
     entities = []
     relations = []
+    for report in reports_data:
+        if report["intelligenceType"] == "vulnerability":
+            entities.append(create_vulnerability_report(report))
 
-    if report["intelligenceType"] == "vulnerability":
-        entities.append(create_vulnerability_report(report))
+        elif report["intelligenceType"] == "overview":
+            process_overview(report, entities, relations)
 
-    elif report["intelligenceType"] == "overview":
-        process_overview(report, entities, relations)
+        elif report["intelligenceType"] in ["malware", "threat"]:
+            main_section = process_malware_main_section(report)
 
-    elif report["intelligenceType"] in ["malware", "threat"]:
-        main_section = process_malware_main_section(report)
-
-        if report["intelligenceType"] == "malware":
-            entities.append(
-                create_malware_report(
-                    report,
-                    main_section["extracts"],
-                    main_section["tags"] + main_section["report_tags"],
-                    main_section["countries_block"],
+            if report["intelligenceType"] == "malware":
+                entities.append(
+                    create_malware_report(
+                        report,
+                        main_section["extracts"],
+                        main_section["tags"] + main_section["report_tags"],
+                        main_section["countries_block"],
+                    )
                 )
-            )
 
-        else:
-            entities.append(
-                create_threat_report(
-                    report,
-                    main_section["extracts"],
-                    main_section["tags"] + main_section["report_tags"],
-                    main_section["countries_block"],
+            else:
+                entities.append(
+                    create_threat_report(
+                        report,
+                        main_section["extracts"],
+                        main_section["tags"] + main_section["report_tags"],
+                        main_section["countries_block"],
+                    )
                 )
-            )
-            process_threat_actors(report, entities, relations, main_section["tags"])
+                process_threat_actors(report, entities, relations, main_section["tags"])
 
-        for fun in [
-            process_malware_files,
-            process_malware_networks,
-            process_malware_emails,
-        ]:
-
-            fun(report, entities, relations, main_section["tags"])
+            for fun in [
+                process_malware_files,
+                process_malware_networks,
+                process_malware_emails,
+            ]:
+                fun(report, entities, relations, main_section["tags"])
 
     return {"type": "linked-entities", "entities": entities, "relations": relations}
 
@@ -96,57 +91,67 @@ def create_vulnerability_report(report: dict) -> dict:
 
     extracts = report.get("extracts", [])
     for item in report.get("cveIds", dict()).get("cveId", []):
-        add_extract(
-            extracts, ExtractType.CVE.value, item.replace("CVE-", ""), classification="safe"
-        )
+        extract = {
+            "kind": ExtractType.CVE.value,
+            "value": item.replace("CVE-", ""),
+            "classification": "safe"
+        }
+        extracts.append(create_extract(extract))
 
-    recomendations = report.get("mitigationDetails", "") + report.get("vendorFix", "")
+    recommendations = report.get("mitigationDetails", "") + report.get("vendorFix", "")
     for item in report.get("vendorFixUrls", dict()).get("vendorFixUrl", []):
         if item.get("name"):
             if item.get("url"):
-                recomendations += f"<p><a href=\"{item['url']}\">{item['name']}</a></p>"
+                recommendations += f"<p><a href=\"{item['url']}\">{item['name']}</a></p>"
             else:
-                recomendations += f"<p>{item['name']}</p>"
+                recommendations += f"<p>{item['name']}</p>"
         if item.get("url"):
             references.append(item["url"])
-    if recomendations:
-        recomendations = (
+    if recommendations:
+        recommendations = (
             f'<section itemscope itemtype="http://eclecticiq.com/microdata/section">'
             f'<h1 itemprop="title">Recommendations</h1>'
-            f'<div itemprop="content">{recomendations}</div>'
+            f'<div itemprop="content">{recommendations}</div>'
             f"</section>"
         )
     description = (
         f"{report.get('summary', '')}"
-        f"<br>>{report.get('vulnerableProducts', '')}<br>{recomendations}"
+        f"<br>>{report.get('vulnerableProducts', '')}<br>{recommendations}"
     )
     tags = [
         f"Mitigation - {item}"
         for item in report.get("mitigations", dict()).get("mitigation", [])
     ]
-    return create_report(
-        create_fireeye_report_uuid(report),
-        report.get("title") or "Untitled",
-        timestamp=publish_date,
-        description=description,
-        information_source=create_fireeye_info_source(
-            references=references, role="Aggregator"
-        ),
-        summary=report.get("execSummary", ""),
-        tags=tags,
-        extracts=extracts,
-        threat_start_time=publish_date,
-        observed_time=discovered_date,
-        attachments=[report["attachment"]] if report.get("attachment") else [],
-    )
+    report_data = {
+        "id": create_fireeye_report_uuid(report),
+        "title": report.get("title") or "Untitled",
+        "timestamp": publish_date,
+        "description": description,
+        "producer": create_fireeye_info_source(references=references, role="Aggregator"),
+        "short_description": report.get("execSummary", ""),
+    }
+    report_meta = {
+        "tags": tags,
+        "bundled_extracts": extracts,
+        "estimated_threat_start_time": publish_date,
+        "estimated_observed_time": discovered_date,
+    }
+
+    return create_entity({
+        "type": "report",
+        "data": report_data,
+        "meta": report_meta,
+        "attachments": [report["attachment"]] if report.get("attachment") else []
+    })
+
 
 def parse_published_date(report: dict) -> str:
     # just in case sometimes we don't receive publishDate,
     # set the default date to today (it actually never happened before)
     publish_date = datetime.datetime.utcnow().isoformat()
     if report.get("publishDate"):
-        publish_date = datetime.datetime.strptime(
-            report["publishDate"], "%B %d, %Y %I:%M:%S %p"
+        publish_date = datetime.datetime.fromtimestamp(
+            report["publishDate"]
         ).isoformat()
     return publish_date
 
@@ -154,8 +159,8 @@ def parse_published_date(report: dict) -> str:
 def add_extract(extracts, kind, value, classification='unknown', maliciousness=None):
     try:
         extract = ExtractSchema().load({
-            'kind' : kind,
-            'value' : value,
+            'kind': kind,
+            'value': value,
         })
         extract['classification'] = classification
         if extract:
@@ -173,48 +178,48 @@ def create_fireeye_report_uuid(report: dict) -> str:
 def create_fireeye_info_source(references: list = [], role: str = '') -> dict:
     role = role or "Initial Author"
 
-    producer = ProducerSchema().load({
-        'identity' :"FireEye iSIGHT Intelligence Report API",
-        'description' : "https://api.isightpartners.com",
-        'references' : references,
-        'roles' : [role]
-    })
-    return  producer
+    producer = {
+        'identity': "FireEye iSIGHT Intelligence Report API",
+        'description': "https://api.isightpartners.com",
+        'references': references,
+        'roles': [role]
+    }
+    return producer
+
 
 def create_report(stix_id: str,
-    title: str,
-    description: str = '',
-    short_description: str = None,
-    information_source: dict = {},
-    observed_time: str = '',
-    threat_start_time: str = '',
-    threat_end_time: str = '',
-    timestamp: str = '',
-    extracts: list = [],
-    tags: list = [],
-    summary: str = '',
-    intents: list = [],
-    extraction_ignore_paths: list = [],
-    attachments: list = [],
-    tlp_color: str = 'NONE',
-    half_life: int = 1,
-    observable: list = None,
-    taxonomy: list = [],
-    taxonomy_paths: list = None,
-    relationship: str = None,
-    attacks: list = []):
-
+                  title: str,
+                  description: str = '',
+                  short_description: str = None,
+                  information_source: dict = {},
+                  observed_time: str = '',
+                  threat_start_time: str = '',
+                  threat_end_time: str = '',
+                  timestamp: str = '',
+                  extracts: list = [],
+                  tags: list = [],
+                  summary: str = '',
+                  intents: list = [],
+                  extraction_ignore_paths: list = [],
+                  attachments: list = [],
+                  tlp_color: str = 'NONE',
+                  half_life: int = 1,
+                  observable: list = None,
+                  taxonomy: list = [],
+                  taxonomy_paths: list = None,
+                  relationship: str = None,
+                  attacks: list = []):
     meta_part = {
-    'estimated_observed_time' : observed_time,
-    'estimated_threat_start_time' : threat_start_time,
-    'estimated_threat_end_time' : threat_end_time,
-    'half_life' : half_life,
-    'tags' : tags,
-    'taxonomy' : taxonomy,
-    'attack' : attacks,
-    'tlp_color' : tlp_color,
-    'bundled_extracts' : extracts,
-    'extraction_ignore_paths' : extraction_ignore_paths
+        'estimated_observed_time': observed_time,
+        'estimated_threat_start_time': threat_start_time,
+        'estimated_threat_end_time': threat_end_time,
+        'half_life': half_life,
+        'tags': tags,
+        'taxonomy': taxonomy,
+        'attack': attacks,
+        'tlp_color': tlp_color,
+        'bundled_extracts': extracts,
+        'extraction_ignore_paths': extraction_ignore_paths
     }
 
     report_part = {
@@ -225,20 +230,19 @@ def create_report(stix_id: str,
         'short_description': summary,
         'producer': information_source,
         'timestamp': timestamp,
-        'intents' : intents
+        'intents': intents
     }
 
-
     retrun_data = EntitySchema().load({
-        'data' : report_part,
-        'meta' : meta_part,
-        'attachments' : attachments
+        'data': report_part,
+        'meta': meta_part,
+        'attachments': attachments
     })
 
     return retrun_data
 
 
-#Overview
+# Overview
 
 def process_overview(report: dict, entities: List[dict], relations: List[dict]):
     publish_date = parse_published_date(report)
@@ -275,34 +279,53 @@ def process_overview(report: dict, entities: List[dict], relations: List[dict]):
                 }
             )
 
+
 def create_malware_overview_report(
         report: dict, publish_date: str, tags: List[str]
 ) -> dict:
-    return create_report(
-        create_fireeye_report_uuid(report),
-        report.get("title") or "Untitled",
-        description=report.get("threatDescription"),
-        timestamp=publish_date,
-        information_source=create_fireeye_info_source(),
-        tags=[item for item in tags if item],
-        observed_time=publish_date,
-        threat_start_time=publish_date,
-        extracts=report.get("extracts", []),
-        attachments=[report["attachment"]] if report.get("attachment") else [],
-    )
+    report_data = {
+        "id": create_fireeye_report_uuid(report),
+        "title": report.get("title") or "Untitled",
+        "timestamp": publish_date,
+        "description": report.get("threatDescription"),
+        "producer": create_fireeye_info_source(),
+    }
+    report_meta = {
+        "tags": [item for item in tags if item],
+        "bundled_extracts": report.get("extracts", []),
+        "estimated_threat_start_time": publish_date,
+        "estimated_observed_time": publish_date,
+    }
+
+    return create_entity({
+        "type": "report",
+        "data": report_data,
+        "meta": report_meta,
+        "attachments": [report["attachment"]] if report.get("attachment") else []
+    })
+
 
 def create_actor_overview_report(report: dict, publish_date: str) -> dict:
-    return create_report(
-        create_fireeye_report_uuid(report),
-        report.get("title") or "Untitled",
-        description=report.get("threatDescription"),
-        timestamp=publish_date,
-        information_source=create_fireeye_info_source(),
-        observed_time=publish_date,
-        threat_start_time=publish_date,
-        extracts=report.get("extracts", []),
-        attachments=[report["attachment"]] if report.get("attachment") else [],
-    )
+    report_data = {
+        "id": create_fireeye_report_uuid(report),
+        "title": report.get("title") or "Untitled",
+        "timestamp": publish_date,
+        "description": report.get("threatDescription"),
+        "producer": create_fireeye_info_source(),
+    }
+    report_meta = {
+        "bundled_extracts": report.get("extracts", []),
+        "estimated_threat_start_time": publish_date,
+        "estimated_observed_time": publish_date,
+    }
+
+    return create_entity({
+        "type": "report",
+        "data": report_data,
+        "meta": report_meta,
+        "attachments": [report["attachment"]] if report.get("attachment") else []
+    })
+
 
 def create_actor_overview_actors(report: dict, publish_date: str) -> List[dict]:
     results = []
@@ -314,29 +337,30 @@ def create_actor_overview_actors(report: dict, publish_date: str) -> List[dict]:
         uid = str(uuid.uuid5(uuid.NAMESPACE_X500, actor_title))
         _id = f"{{https://api.isightpartners.com/}}threat-actor-{uid}"
 
-        threat_actor ={
+        threat_actor_data = {
             "id": _id,
             "title": actor_title,
-            "type": "threat-actor",
-            'producer' : create_fireeye_info_source(),
-            'description': report.get("threatDescription"),
-            'identity': actor['name'],
-            'timestamp': publish_date,
+            "producer": create_fireeye_info_source(),
+            "description": report.get("threatDescription"),
+            "identity": actor['name'],
+            "timestamp": publish_date,
         }
-        meta = {
-            'estimated_observed_time' : publish_date,
-            'estimated_threat_start_time' : publish_date,
+        threat_actor_meta = {
+            "estimated_observed_time": publish_date,
+            "estimated_threat_start_time": publish_date,
         }
 
-        entity_data = EntitySchema().load({
-            'data': threat_actor,
-            'meta' : meta
-        })
-        results.append(entity_data)
+        results.append(
+            create_entity({
+                "type": "threat-actor",
+                "data": threat_actor_data,
+                "meta": threat_actor_meta
+            })
+        )
     return results
 
 
-#Overview
+# Overview
 
 def process_malware_main_section(report: dict):
     extracts = []
@@ -380,70 +404,76 @@ def process_malware_main_section(report: dict):
         "countries_block": countries_block,
     }
 
+
 # MALWARE
 
 
 def create_malware_report(
-    report: dict, extracts: List[dict], tags: List[str], countries_block: str
+        report: dict, extracts: List[dict], tags: List[str], countries_block: str
 ) -> dict:
     publish_date = parse_published_date(report)
-    return create_report(
-        create_fireeye_report_uuid(report),
-        report.get("title") or "Untitled",
-        timestamp=publish_date,
-        description=report.get("analysis", "") + countries_block,
-        information_source=create_fireeye_info_source(),
-        summary=report.get("execSummary", ""),
-        tags=tags,
-        extracts=extracts + report.get("extracts", []),
-        threat_start_time=publish_date,
-        observed_time=publish_date,
-        attachments=[report["attachment"]] if report.get("attachment") else [],
-    )
+    report_data = {
+        "id": create_fireeye_report_uuid(report),
+        "title": report.get("title") or "Untitled",
+        "timestamp": publish_date,
+        "description": report.get("analysis", "") + countries_block,
+        "producer": create_fireeye_info_source(),
+        "short_description": report.get("execSummary", ""),
+    }
+    report_meta = {
+        "tags": tags,
+        "bundled_extracts": extracts + report.get("extracts", []),
+        "estimated_threat_start_time": publish_date,
+        "estimated_observed_time": publish_date,
+    }
+    return create_entity({
+        "type": "report",
+        "data": report_data,
+        "meta": report_meta,
+        "attachments": [report["attachment"]] if report.get("attachment") else []
+    })
 
 
 def process_malware_files(
-    report: dict, entities: List[dict], relations: List[dict], tags: List[str]
+        report: dict, entities: List[dict], relations: List[dict], tags: List[str]
 ):
     if (
-         report.get("tagSection")
-        or  report["tagSection"].get("files")
-        or  report["tagSection"]["files"].get("file")
+            report.get("tagSection")
+            or report["tagSection"].get("files")
+            or report["tagSection"]["files"].get("file")
     ):
-
         return process_indicators(report, tags, entities, relations, "file")
 
 
 def process_malware_networks(
-    report: dict, entities: List[dict], relations: List[dict], tags: List[str]
+        report: dict, entities: List[dict], relations: List[dict], tags: List[str]
 ):
     if (
-         report.get("tagSection")
-        or  report["tagSection"].get("networks")
-        or  report["tagSection"]["networks"].get("network")
+            report.get("tagSection")
+            or report["tagSection"].get("networks")
+            or report["tagSection"]["networks"].get("network")
     ):
         return process_indicators(report, tags, entities, relations, "network")
 
 
 def process_malware_emails(
-    report: dict, entities: List[dict], relations: List[dict], tags: List[str]
+        report: dict, entities: List[dict], relations: List[dict], tags: List[str]
 ):
     if (
-         report.get("tagSection")
-        or  report["tagSection"].get("emails")
-        or  report["tagSection"]["emails"].get("email")
+            report.get("tagSection")
+            or report["tagSection"].get("emails")
+            or report["tagSection"]["emails"].get("email")
     ):
         return process_indicators(report, tags, entities, relations, "email")
 
 
 def process_indicators(
-    report: dict,
-    tags: List[str],
-    entities: List[dict],
-    relations: List[dict],
-    section: str,
+        report: dict,
+        tags: List[str],
+        entities: List[dict],
+        relations: List[dict],
+        section: str,
 ):
-
     publish_date = parse_published_date(report)
     confidence = determine_confidence(report.get("analysis", ""))
     data_keys = {
@@ -465,7 +495,6 @@ def process_indicators(
     }
     parent = data_keys[section]["parent"]
     child = data_keys[section]["child"]
-    data = {}
 
     data = report["tagSection"].get(parent, {}).get(child, {})
 
@@ -491,15 +520,15 @@ def determine_confidence(analysis: str) -> str:
 
 
 def add_or_merge_indicator(
-    item: dict, indicator: dict, entities: List[dict], relations: List[dict]
+        item: dict, indicator: dict, entities: List[dict], relations: List[dict]
 ):
     if not indicator:
         return
 
     for entity in entities:
         if (
-            entity["data"]["type"] != "indicator"
-            or entity["data"]["id"] != indicator["data"]["id"]
+                entity["data"]["type"] != "indicator"
+                or entity["data"]["id"] != indicator["data"]["id"]
         ):
             continue
         # if indicators' stix ids are the same, then merge them, because they won't
@@ -536,12 +565,12 @@ def merge_extracts(entity: dict, indicator: dict):
         if (extract["kind"], extract["value"]) in entity_extracts:
             continue
         entity["meta"]["bundled_extracts"].append(extract)
-        try:
-            entity["data"]["observable"]["composition"].extend(
-                create_observables([extract])
-            )
-        except:
-            pass
+        # try:
+        #     entity["data"]["observable"]["composition"].extend(
+        #         create_observables([extract])
+        #     )
+        # except:
+        #     pass
 
 
 def merge_types(existing_indicator: dict, indicator: dict):
@@ -552,27 +581,27 @@ def merge_types(existing_indicator: dict, indicator: dict):
 
 
 def add_targeted_victim(
-    entities: List[dict],
-    relations: List[dict],
-    item: dict,
-    section: str,
-    date: str,
-    tags: List[str],
+        entities: List[dict],
+        relations: List[dict],
+        item: dict,
+        section: str,
+        date: str,
+        tags: List[str],
 ):
     if section == "file":
         victim_name = (
-            item.get("md5")
-            or item.get("sha1")
-            or item.get("sha256")
-            or item.get("fileName")
+                item.get("md5")
+                or item.get("sha1")
+                or item.get("sha256")
+                or item.get("fileName")
         )
     elif section == "network":
         victim_name = (
-            item.get("domain")
-            or item.get("ip")
-            or item.get("url")
-            or item.get("registrantEmail")
-            or item.get("asn")
+                item.get("domain")
+                or item.get("ip")
+                or item.get("url")
+                or item.get("registrantEmail")
+                or item.get("asn")
         )
     else:
         victim_name = item.get("senderAddress")
@@ -583,19 +612,18 @@ def add_targeted_victim(
     title = f"Targeted Victim: {victim_name}"
     uid = str(uuid.uuid5(uuid.NAMESPACE_X500, title))
     _id = f"{{https://api.isightpartners.com/}}TTP-{uid}"
-
-    entities.append(
-        create_ttp(
-            title,
-            _id,
-            information_source=create_fireeye_info_source(),
-            tags=tags or [],
-            extraction_ignore_paths=["title", "behavior"],
-            timestamp=date,
-            observed_time=date,
-            threat_start_time=date,
-        )
-    )
+    ttp_data = {
+        "id": _id,
+        "title": title,
+        "timestamp": date,
+    }
+    ttp_meta = {
+        "tags": tags or [],
+        "estimated_threat_start_time": date,
+        "estimated_observed_time": date,
+        "extraction_ignore_paths": ["title", "behavior"],
+    }
+    entities.append(create_entity({"type": "ttp", "data": ttp_data, "meta": ttp_meta}))
     relations.append(
         {
             "data": {
@@ -610,90 +638,43 @@ def add_targeted_victim(
     )
 
 
-def create_ttp(
-    stix_id: str,
-    title: str,
-    information_source: dict = {},
-    description: str = '',
-    observed_time: str = '',
-    threat_start_time: str = '',
-    threat_end_time: str = '',
-    timestamp: str = '',
-    extracts: list = [],
-    tags: list = [],
-    extraction_ignore_paths: list = [],
-    tlp_color: str = 'NONE',
-    half_life: int = 1,
-    observable: list = None,
-    taxonomy: list = [],
-    taxonomy_paths: list = None,
-    behaviour: dict = {},
-    victim_targeting: dict = {},
-    intended_effects: list = [],
-    attacks: list = [],
-) -> dict:
-
-    meta_part = {
-        'estimated_observed_time': observed_time,
-        'estimated_threat_start_time': threat_start_time,
-        'estimated_threat_end_time': threat_end_time,
-        'half_life': half_life,
-        'tags': tags,
-        'taxonomy': taxonomy,
-        'attack': attacks,
-        'tlp_color': tlp_color,
-        'bundled_extracts': extracts,
-        'extraction_ignore_paths': extraction_ignore_paths
-    }
-
-    ttp_part = {
-        "id": stix_id,
-        "title": title,
-        "type": "ttp",
-        'description': description,
-        'producer': information_source,
-        'timestamp': timestamp,
-        'behavior' : behaviour,
-        'victim_targeting' : victim_targeting,
-        'intended_effects' : intended_effects
-    }
-
-    retrun_data = EntitySchema().load({
-        'data': ttp_part,
-        'meta': meta_part,
-    })
-
-    return retrun_data
-
-
 # THREAT
 
 
 def create_threat_report(
-    report: dict, extracts: List[dict], tags: List[str], countries_block: str
+        report: dict, extracts: List[dict], tags: List[str], countries_block: str
 ) -> dict:
     publish_date = parse_published_date(report)
     for cve in report.get("cveIds", dict()).get("cveId", []):
         add_extract(
             extracts, ExtractType.CVE, cve.replace("CVE-", ""), classification="safe"
         )
-    return create_report(
-        create_fireeye_report_uuid(report),
-        report.get("title") or "Untitled",
-        summary=report.get("execSummary", ""),
-        description=report.get("threatDetail", "") + countries_block,
-        timestamp=publish_date,
-        information_source=create_fireeye_info_source(),
-        observed_time=publish_date,
-        threat_start_time=publish_date,
-        tags=tags,
-        extracts=extracts + report.get("extracts", []),
-        attachments=[report["attachment"]] if report.get("attachment") else [],
-    )
+
+    report_data = {
+        "id": create_fireeye_report_uuid(report),
+        "title": report.get("title") or "Untitled",
+        "timestamp": publish_date,
+        "description": report.get("threatDetail", "") + countries_block,
+        "producer": create_fireeye_info_source(),
+        "short_description": report.get("execSummary", ""),
+    }
+    report_meta = {
+        "tags": tags,
+        "bundled_extracts": extracts + report.get("extracts", []),
+        "estimated_threat_start_time": publish_date,
+        "estimated_observed_time": publish_date,
+    }
+
+    return create_entity({
+        "type": "report",
+        "data": report_data,
+        "meta": report_meta,
+        "attachments": [report["attachment"]] if report.get("attachment") else []
+    })
 
 
 def process_threat_actors(
-    report: dict, entities: List[dict], relations: List[dict], tags: List[str]
+        report: dict, entities: List[dict], relations: List[dict], tags: List[str]
 ):
     main_section = report.get("tagSection", dict()).get("main")
     if main_section:
@@ -713,13 +694,14 @@ def process_threat_actors(
                 }
             )
 
+
 # COMMON
 def create_file_indicator(
-    report: dict,
-    file: dict,
-    publish_date: str,
-    tags: List[str] = None,
-    confidence: str = "High",
+        report: dict,
+        file: dict,
+        publish_date: str,
+        tags: List[str] = None,
+        confidence: str = "High",
 ) -> Optional[dict]:
     extracts = []
     title = None
@@ -769,29 +751,37 @@ def create_file_indicator(
     if not title:
         return None
 
-    return create_indicator(
-        create_fireeye_indicator_uuid(report, title),
-        title,
-        description=description or title,
-        confidence=confidence,
-        observable=create_observables(extracts),
-        types=["File Hash Watchlist"],
-        information_source=create_fireeye_info_source(),
-        timestamp=publish_date,
-        observed_time=publish_date,
-        threat_start_time=publish_date,
-        extracts=extracts,
-        tags=tags,
-        extraction_ignore_paths=["title"],
-    )
+    indicator_data = {
+        "id": create_fireeye_indicator_uuid(report, title),
+        "title": title,
+        "timestamp": publish_date,
+        "description": description or title,
+        "confidence": confidence,
+        "producer": create_fireeye_info_source(),
+        "types": ["File Hash Watchlist"],
+        "short_description": report.get("execSummary", ""),
+    }
+    indicator_meta = {
+        "tags": tags,
+        "bundled_extracts": extracts,
+        "estimated_threat_start_time": publish_date,
+        "estimated_observed_time": publish_date,
+        "extraction_ignore_paths": ["title"],
+    }
+
+    return create_entity({
+        "type": "indicator",
+        "data": indicator_data,
+        "meta": indicator_meta
+    })
 
 
 def create_network_indicator(  # noqa:C901
-    report: dict,
-    network: dict,
-    publish_date: str,
-    tags: List[str] = None,
-    confidence: str = "High",
+        report: dict,
+        network: dict,
+        publish_date: str,
+        tags: List[str] = None,
+        confidence: str = "High",
 ) -> Optional[dict]:
     extracts = []
     types = []
@@ -833,10 +823,11 @@ def create_network_indicator(  # noqa:C901
             network["url"],
             classification="high",
         )
-        types.append( "URL Watchlist")
+        types.append("URL Watchlist")
     if network.get("asn"):
         title = title or network["asn"]
-        add_extract(extracts, ExtractType.ASN.value, network["asn"], classification="safe")
+        add_extract(extracts, ExtractType.ASN.value, network["asn"],
+                    classification="safe")
     if network.get("registrantEmail"):
         title = title or network["registrantEmail"]
         add_extract(extracts, ExtractType.EMAIL.value, network["registrantEmail"])
@@ -849,29 +840,36 @@ def create_network_indicator(  # noqa:C901
     if not title or not extracts:
         return None
 
-    return create_indicator(
-        create_fireeye_indicator_uuid(report, title),
-        title,
-        description=description or title,
-        confidence=confidence,
-        observable=create_observables(extracts),
-        types=types,
-        information_source=create_fireeye_info_source(),
-        timestamp=publish_date,
-        observed_time=publish_date,
-        threat_start_time=publish_date,
-        extracts=extracts,
-        tags=tags,
-        extraction_ignore_paths=["title"],
-    )
+    indicator_data = {
+        "id": create_fireeye_indicator_uuid(report, title),
+        "title": title,
+        "timestamp": publish_date,
+        "description": description or title,
+        "confidence": confidence,
+        "producer": create_fireeye_info_source(),
+        "types": types,
+    }
+    indicator_meta = {
+        "tags": tags,
+        "bundled_extracts": extracts,
+        "estimated_threat_start_time": publish_date,
+        "estimated_observed_time": publish_date,
+        "extraction_ignore_paths": ["title"],
+    }
+
+    return create_entity({
+        "type": "indicator",
+        "data": indicator_data,
+        "meta": indicator_meta
+    })
 
 
 def create_email_indicator(
-    report: dict,
-    email: dict,
-    publish_date: str,
-    tags: List[str] = None,
-    confidence: str = "High",
+        report: dict,
+        email: dict,
+        publish_date: str,
+        tags: List[str] = None,
+        confidence: str = "High",
 ) -> Optional[dict]:
     if not email.get("senderAddress"):
         return None
@@ -899,158 +897,29 @@ def create_email_indicator(
             classification="low",
         )
 
-    return create_indicator(
-        create_fireeye_indicator_uuid(report, title),
-        title,
-        description=description or title,
-        timestamp=publish_date,
-        confidence=confidence,
-        observable=create_observables(extracts),
-        types=[ "Malicious E-mail"],
-        information_source=create_fireeye_info_source(),
-        observed_time=publish_date,
-        threat_start_time=publish_date,
-        extracts=extracts,
-        tags=tags,
-        extraction_ignore_paths=["title"],
-    )
-
-
-
-def create_indicator(
-    stix_id: str,
-    title: str,
-    description: str = '',
-    information_source: dict = {},
-    types: list = [],
-    observed_time: str = '',
-    threat_start_time: str = '',
-    threat_end_time: str = '',
-    confidence: dict = {},
-    timestamp: str = '',
-    extracts: list = [],
-    tags: list = [],
-    summary: str = '',
-    extraction_ignore_paths: list = [],
-    tlp_color: str = 'NONE',
-    half_life: int = 1,
-    observable: list = None,
-    taxonomy: list = [],
-    taxonomy_paths: list = None,
-    likely_impact: str = 'Unknown',
-    test_mechanisms: list = [],
-    relationship: str = None,
-    attacks: list = [],
-) -> dict:
-
-
-    indicator_schema = {
-        "id": stix_id,
+    indicator_data = {
+        "id": create_fireeye_indicator_uuid(report, title),
         "title": title,
+        "timestamp": publish_date,
+        "description": description or title,
+        "confidence": confidence,
+        "producer": create_fireeye_info_source(),
+        "types": ["Malicious E-mail"],
+    }
+    indicator_meta = {
+        "tags": tags,
+        "bundled_extracts": extracts,
+        "estimated_threat_start_time": publish_date,
+        "estimated_observed_time": publish_date,
+        "extraction_ignore_paths": ["title"],
+    }
+
+    return create_entity({
         "type": "indicator",
-        'description': description,
-        'short_description': summary,
-        'producer': information_source,
-        'timestamp': timestamp,
-        'types' : types,
-        'likely_impact':likely_impact,
-        'test_mechanisms' :test_mechanisms,
-        'confidence':confidence,
-    }
-    meta_part = {
-        'estimated_observed_time': observed_time,
-        'estimated_threat_start_time': threat_start_time,
-        'estimated_threat_end_time': threat_end_time,
-        'half_life': half_life,
-        'tags': tags,
-        'taxonomy': taxonomy,
-        'attack': attacks,
-        'tlp_color': tlp_color,
-        'bundled_extracts': extracts,
-        'extraction_ignore_paths': extraction_ignore_paths
-    }
-
-    ret_data = EntitySchema().load({
-       'data' : indicator_schema,
-        'meta' : meta_part,
-   })
-    return ret_data
-
-def make_confidence(confidence: str, description: str = None) -> dict:
-    confidence = confidence.capitalize()
-    if confidence not in ["Low", "Medium", "High"]:
-        confidence = "Unknown"
-    final_confidence = {
-        "type": "confidence",
-        "value": confidence,
-        "value_vocab": "{http://stix.mitre.org/default_vocabularies-1}"
-        "HighMediumLowVocab-1.0",
-    }
-    if description:
-        final_confidence["description"] = description
-    return final_confidence
-
-
-def create_threat_actor(
-    stix_id: str,
-    title: str,
-    description: str = '',
-    information_source: dict = {},
-    observed_time: str = '',
-    threat_start_time: str = '',
-    threat_end_time: str = '',
-    confidence: dict = None,
-    timestamp: str = '',
-    extracts: list = [],
-    tags: list = [],
-    summary: str = '',
-    extraction_ignore_paths: list = [],
-    attachments : list = [],
-    tlp_color: str = 'NONE',
-    half_life: int = 1,
-    observable: list = None,
-    taxonomy: list = [],
-    taxonomy_paths: list = None,
-    motivations: list = [],
-    actor_types: list = None,
-    intended_effects: list = [],
-    sophistication: list = [],
-    actor_identity: str = 'kita',
-    attacks: list = [],
-) -> dict:
-    data_threat_actor = {
-        "id": stix_id,
-        "title": title,
-        "type": "threat-actor",
-        'description': description,
-        'short_description': summary,
-        'producer': information_source,
-        'identity' : actor_identity,
-        'timestamp': timestamp,
-        'intended_effects' : intended_effects,
-        'motivations' : motivations,
-        'sophistication' :sophistication,
-    }
-    meta_part = {
-        'estimated_observed_time': observed_time,
-        'estimated_threat_start_time': threat_start_time,
-        'estimated_threat_end_time': threat_end_time,
-        'half_life': half_life,
-        'tags': tags,
-        'taxonomy': taxonomy,
-        'attack': attacks,
-        'tlp_color': tlp_color,
-        'bundled_extracts': extracts,
-        'extraction_ignore_paths': extraction_ignore_paths
-    }
-
-    ret_data  = EntitySchema().load({
-        'data' : data_threat_actor,
-        'meta' : meta_part,
-        'attachments' : attachments
+        "data": indicator_data,
+        "meta": indicator_meta
     })
 
-    return ret_data
 
 def create_threat_actors(
         main_section: dict, publish_date: str, tags: List[str]
@@ -1076,24 +945,29 @@ def create_threat_actors(
             continue
         actor_title = "Intrusion Set: {}".format(actor["name"])
         id5 = str(uuid.uuid5(uuid.NAMESPACE_X500, actor_title))
-        threat_actor = create_threat_actor(
-            f"{{http://api.isightpartners.com/}}threat-actor-{id5}",
-            actor_title,
-            timestamp=publish_date,
-            actor_identity=actor["name"],
-            information_source=create_fireeye_info_source(),
-            observed_time=publish_date,
-            threat_start_time=publish_date,
-            tags=tags,
-        )
-        if motivations:
-            threat_actor["data"]["motivations"] = motivations
-        if intended_effects:
-            threat_actor["data"]["intended_effects"] = intended_effects
 
-        actors.append(threat_actor)
+        threat_actor_data = {
+            "id": f"{{http://api.isightpartners.com/}}threat-actor-{id5}",
+            "title": actor_title,
+            "producer": create_fireeye_info_source(),
+            "timestamp": publish_date,
+            "identity": actor["name"],
+            "motivations": motivations or [],
+            "intended_effects": intended_effects or []
+        }
+        threat_actor_meta = {
+            "tags": tags,
+            "estimated_observed_time": publish_date,
+            "estimated_threat_start_time": publish_date,
+        }
+        actors.append(create_entity({
+            "type": "threat-actor",
+            "data": threat_actor_data,
+            "meta": threat_actor_meta
+        }))
 
     return actors
+
 
 def create_actor_motivations(data: List) -> List[dict]:
     motivations = []
@@ -1101,32 +975,15 @@ def create_actor_motivations(data: List) -> List[dict]:
         if not item:
             continue
         for motivation in THREAT_ACTOR_MOTIVATIONS.get(item, [item]):
-            motivations.append(
-                {
-                    "type": "statement",
-                    "value": motivation,
-                    "value_vocab": (
-                        "{http://stix.mitre.org/default_vocabularies-1}"
-                        "MotivationVocab-1.1"
-                    ),
-                }
-            )
+            motivations.append(motivation)
     return motivations
+
 
 def create_actor_intended_effects(data: List[str]) -> List[dict]:
     intended_effects = []
     for item in data:
         for intended_effect in THREAT_ACTOR_INTENDED_EFFECTS.get(item, [item]):
-            intended_effects.append(
-                {
-                    "type": "statement",
-                    "value": intended_effect,
-                    "value_vocab": (
-                        "{http://stix.mitre.org/default_vocabularies-1}"
-                        "IntendedEffectVocab-1.0"
-                    ),
-                }
-            )
+            intended_effects.append(intended_effect)
     return intended_effects
 
 
@@ -1141,6 +998,7 @@ def create_fireeye_indicator_uuid(report: dict, indicator: str) -> str:
     return "{{https://api.isightpartners.com/}}Indicator-{}".format(
         str(uuid.uuid5(uuid.NAMESPACE_X500, identifier + indicator))
     )
+
 
 def create_indicator_description(indicator: dict, current_description: str = "") -> str:
     description_lines = []
@@ -1160,25 +1018,27 @@ def create_indicator_description(indicator: dict, current_description: str = "")
             description_lines.append(text)
     return "\n\n".join(description_lines)
 
-def create_observables(extracts: List[dict]) -> List[dict]:
-    observables = []
-    for extract in extracts:
-        if extract and extract["kind"] in formats:
-            observables.append(create_observable(extract["kind"], extract["value"]))
-    return observables
 
-def create_observable(kind: str, value: str) -> dict:
+# def create_observables(extracts: List[dict]) -> List[dict]:
+#     observables = []
+#     for extract in extracts:
+#         if extract and extract["kind"] in formats:
+#             observables.append(create_observable(extract["kind"], extract["value"]))
+#     return observables
 
-    observable_object = ObservableObjectSchema().load({
-        "properties_xml": formats.get(kind).format(
-            xml.sax.saxutils.escape(str(value).lower())
-        ),
-        "properties_xml_type": properties_xml_types.get(kind),
-    })
-    observable_schema = ObservableSchema().load({
-        "object" : observable_object
-    })
-    return observable_schema
+
+# def create_observable(kind: str, value: str) -> dict:
+#     observable_object = ObservableObjectSchema().load({
+#         "properties_xml": formats.get(kind).format(
+#             xml.sax.saxutils.escape(str(value).lower())
+#         ),
+#         "properties_xml_type": properties_xml_types.get(kind),
+#     })
+#     observable_schema = ObservableSchema().load({
+#         "object": observable_object
+#     })
+#     return observable_schema
+
 
 THREAT_ACTOR_MOTIVATIONS = {
     "Ego": ["Ego"],
@@ -1531,164 +1391,164 @@ OVERVIEW_MALWARE_TYPES = {
     "Utility": "Malware - Utility",
 }
 
-properties_xml_types = {
-    "cve": "{http://cybox.mitre.org/objects#ProductObject-2}ProductObjectType",
-    "file": "{http://cybox.mitre.org/objects#FileObject-2}FileObjectType",
-    "hash-md5": "{http://cybox.mitre.org/objects#FileObject-2}FileObjectType",
-    "hash-sha1": "{http://cybox.mitre.org/objects#FileObject-2}FileObjectType",
-    "hash-sha256": "{http://cybox.mitre.org/objects#FileObject-2}FileObjectType",
-    "product": "{http://cybox.mitre.org/objects#ProductObject-2}ProductObjectType",
-    "uri": "{http://cybox.mitre.org/objects#URIObject-2}URIObjectType",
-    "ipv4": "{http://cybox.mitre.org/objects#AddressObject-2}AddressObjectType",
-    "port": "{http://cybox.mitre.org/objects#PortObject-2}PortObjectType",
-    "domain": "{http://cybox.mitre.org/objects#DomainNameObject-1}"
-    "DomainNameObjectType",
-    "email": "{http://cybox.mitre.org/objects#AddressObject-2}AddressObjectType",
-}
-
-cybox_cve_format = """
-    <cybox:Properties
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:ProductObj = "http://cybox.mitre.org/objects#ProductObject-2"
-        xmlns:DeviceObj = "http://cybox.mitre.org/objects#DeviceObject-2"
-        xmlns:SystemObj = "http://cybox.mitre.org/objects#SystemObject-2"
-        xmlns:cyboxCommon = "http://cybox.mitre.org/common-2"
-        xmlns:cybox = "http://cybox.mitre.org/cybox-2"
-        xsi:type = "ProductObj:ProductObjectType">
-        <ProductObj:Product>{product}</ProductObj:Product>
-        <ProductObj:Vendor>{vendor}</ProductObj:Vendor>
-        <ProductObj:Version>{version}</ProductObj:Version>
-    </cybox:Properties>
-"""
-
-cybox_file_name_format = """
-    <cybox:Properties
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns:cybox="http://cybox.mitre.org/cybox-2"
-            xmlns:cyboxCommon="http://cybox.mitre.org/common-2"
-            xmlns:cyboxVocabs="http://cybox.mitre.org/default_vocabularies-2"
-            xmlns:FileObj="http://cybox.mitre.org/objects#FileObject-2"
-            xsi:type="FileObj:FileObjectType">
-        <FileObj:File_Name>{}</FileObj:File_Name>
-    </cybox:Properties>"""
-
-cybox_md5_format = """
-    <cybox:Properties
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns:cybox="http://cybox.mitre.org/cybox-2"
-            xmlns:common="http://cybox.mitre.org/common-2"
-            xmlns:FileObj="http://cybox.mitre.org/objects#FileObject-2"
-            xsi:type="FileObj:FileObjectType">
-        <FileObj:Hashes>
-            <common:Hash>
-                <common:Type>MD5</common:Type>
-                <common:Simple_Hash_Value>{}</common:Simple_Hash_Value>
-            </common:Hash>
-        </FileObj:Hashes>
-    </cybox:Properties>"""
-
-cybox_sha1_format = """
-    <cybox:Properties
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns:cybox="http://cybox.mitre.org/cybox-2"
-            xmlns:common="http://cybox.mitre.org/common-2"
-            xmlns:FileObj="http://cybox.mitre.org/objects#FileObject-2"
-            xsi:type="FileObj:FileObjectType">
-        <FileObj:Hashes>
-            <common:Hash>
-                <common:Type>SHA1</common:Type>
-                <common:Simple_Hash_Value>{}</common:Simple_Hash_Value>
-            </common:Hash>
-        </FileObj:Hashes>
-    </cybox:Properties>"""
-
-cybox_sha256_format = """
-    <cybox:Properties
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns:cybox="http://cybox.mitre.org/cybox-2"
-            xmlns:common="http://cybox.mitre.org/common-2"
-            xmlns:FileObj="http://cybox.mitre.org/objects#FileObject-2"
-            xsi:type="FileObj:FileObjectType">
-        <FileObj:Hashes>
-            <common:Hash>
-                <common:Type>SHA256</common:Type>
-                <common:Simple_Hash_Value>{}</common:Simple_Hash_Value>
-            </common:Hash>
-        </FileObj:Hashes>
-    </cybox:Properties>"""
-
-cybox_product_format = """
-    <cybox:Properties
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:ProductObj = "http://cybox.mitre.org/objects#ProductObject-2"
-        xmlns:cyboxCommon = "http://cybox.mitre.org/common-2"
-        xmlns:cybox = "http://cybox.mitre.org/cybox-2"
-        xsi:type = "ProductObj:ProductObjectType">
-        <ProductObj:Product>{}</ProductObj:Product>
-    </cybox:Properties>
-"""
-
-cybox_uri_format = """
-    <cybox:Properties
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns:cybox="http://cybox.mitre.org/cybox-2"
-            xmlns:URIObj="http://cybox.mitre.org/objects#URIObject-2"
-            xsi:type="URIObj:URIObjectType"
-            type="URL">
-        <URIObj:Value condition="Equals">{}</URIObj:Value>
-    </cybox:Properties>"""
-
-cybox_ipv4_format = """
-    <cybox:Properties
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns:cybox="http://cybox.mitre.org/cybox-2"
-            xmlns:AddressObj="http://cybox.mitre.org/objects#AddressObject-2"
-            xsi:type="AddressObj:AddressObjectType"
-            category="ipv4-addr">
-        <AddressObj:Address_Value>{}</AddressObj:Address_Value>
-    </cybox:Properties>"""
-
-cybox_port_format = """
-    <cybox:Properties
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns:cybox="http://cybox.mitre.org/cybox-2"
-            xmlns:cyboxCommon="http://cybox.mitre.org/common-2"
-            xmlns:cyboxVocabs="http://cybox.mitre.org/default_vocabularies-2"
-            xmlns:PortObj="http://cybox.mitre.org/objects#PortObject-2"
-            xsi:type="PortObj:PortObjectType">
-        <PortObj:Port_Value>{}</PortObj:Port_Value>
-    </cybox:Properties>"""
-
-cybox_domain_name_format = """
-    <cybox:Properties
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns:cybox="http://cybox.mitre.org/cybox-2"
-            xmlns:DomainNameObj="http://cybox.mitre.org/objects#DomainNameObject-1"
-            xsi:type="DomainNameObj:DomainNameObjectType"
-            type="FQDN">
-        <DomainNameObj:Value>{}</DomainNameObj:Value>
-    </cybox:Properties>"""
-
-cybox_email_format = """
-    <cybox:Properties
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns:cybox="http://cybox.mitre.org/cybox-2"
-            xmlns:AddressObj="http://cybox.mitre.org/objects#AddressObject-2"
-            xsi:type="AddressObj:AddressObjectType"
-            category="e-mail">
-        <AddressObj:Address_Value>{}</AddressObj:Address_Value>
-    </cybox:Properties>"""
-
-formats = {
-    "cve": cybox_cve_format,
-    "file": cybox_file_name_format,
-    "hash-md5": cybox_md5_format,
-    "hash-sha1": cybox_sha1_format,
-    "hash-sha256": cybox_sha256_format,
-    "product": cybox_product_format,
-    "uri": cybox_uri_format,
-    "ipv4": cybox_ipv4_format,
-    "port": cybox_port_format,
-    "domain": cybox_domain_name_format,
-    "email": cybox_email_format,
-}
+# properties_xml_types = {
+#     "cve": "{http://cybox.mitre.org/objects#ProductObject-2}ProductObjectType",
+#     "file": "{http://cybox.mitre.org/objects#FileObject-2}FileObjectType",
+#     "hash-md5": "{http://cybox.mitre.org/objects#FileObject-2}FileObjectType",
+#     "hash-sha1": "{http://cybox.mitre.org/objects#FileObject-2}FileObjectType",
+#     "hash-sha256": "{http://cybox.mitre.org/objects#FileObject-2}FileObjectType",
+#     "product": "{http://cybox.mitre.org/objects#ProductObject-2}ProductObjectType",
+#     "uri": "{http://cybox.mitre.org/objects#URIObject-2}URIObjectType",
+#     "ipv4": "{http://cybox.mitre.org/objects#AddressObject-2}AddressObjectType",
+#     "port": "{http://cybox.mitre.org/objects#PortObject-2}PortObjectType",
+#     "domain": "{http://cybox.mitre.org/objects#DomainNameObject-1}"
+#               "DomainNameObjectType",
+#     "email": "{http://cybox.mitre.org/objects#AddressObject-2}AddressObjectType",
+# }
+#
+# cybox_cve_format = """
+#     <cybox:Properties
+#         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+#         xmlns:ProductObj = "http://cybox.mitre.org/objects#ProductObject-2"
+#         xmlns:DeviceObj = "http://cybox.mitre.org/objects#DeviceObject-2"
+#         xmlns:SystemObj = "http://cybox.mitre.org/objects#SystemObject-2"
+#         xmlns:cyboxCommon = "http://cybox.mitre.org/common-2"
+#         xmlns:cybox = "http://cybox.mitre.org/cybox-2"
+#         xsi:type = "ProductObj:ProductObjectType">
+#         <ProductObj:Product>{product}</ProductObj:Product>
+#         <ProductObj:Vendor>{vendor}</ProductObj:Vendor>
+#         <ProductObj:Version>{version}</ProductObj:Version>
+#     </cybox:Properties>
+# """
+#
+# cybox_file_name_format = """
+#     <cybox:Properties
+#             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+#             xmlns:cybox="http://cybox.mitre.org/cybox-2"
+#             xmlns:cyboxCommon="http://cybox.mitre.org/common-2"
+#             xmlns:cyboxVocabs="http://cybox.mitre.org/default_vocabularies-2"
+#             xmlns:FileObj="http://cybox.mitre.org/objects#FileObject-2"
+#             xsi:type="FileObj:FileObjectType">
+#         <FileObj:File_Name>{}</FileObj:File_Name>
+#     </cybox:Properties>"""
+#
+# cybox_md5_format = """
+#     <cybox:Properties
+#             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+#             xmlns:cybox="http://cybox.mitre.org/cybox-2"
+#             xmlns:common="http://cybox.mitre.org/common-2"
+#             xmlns:FileObj="http://cybox.mitre.org/objects#FileObject-2"
+#             xsi:type="FileObj:FileObjectType">
+#         <FileObj:Hashes>
+#             <common:Hash>
+#                 <common:Type>MD5</common:Type>
+#                 <common:Simple_Hash_Value>{}</common:Simple_Hash_Value>
+#             </common:Hash>
+#         </FileObj:Hashes>
+#     </cybox:Properties>"""
+#
+# cybox_sha1_format = """
+#     <cybox:Properties
+#             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+#             xmlns:cybox="http://cybox.mitre.org/cybox-2"
+#             xmlns:common="http://cybox.mitre.org/common-2"
+#             xmlns:FileObj="http://cybox.mitre.org/objects#FileObject-2"
+#             xsi:type="FileObj:FileObjectType">
+#         <FileObj:Hashes>
+#             <common:Hash>
+#                 <common:Type>SHA1</common:Type>
+#                 <common:Simple_Hash_Value>{}</common:Simple_Hash_Value>
+#             </common:Hash>
+#         </FileObj:Hashes>
+#     </cybox:Properties>"""
+#
+# cybox_sha256_format = """
+#     <cybox:Properties
+#             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+#             xmlns:cybox="http://cybox.mitre.org/cybox-2"
+#             xmlns:common="http://cybox.mitre.org/common-2"
+#             xmlns:FileObj="http://cybox.mitre.org/objects#FileObject-2"
+#             xsi:type="FileObj:FileObjectType">
+#         <FileObj:Hashes>
+#             <common:Hash>
+#                 <common:Type>SHA256</common:Type>
+#                 <common:Simple_Hash_Value>{}</common:Simple_Hash_Value>
+#             </common:Hash>
+#         </FileObj:Hashes>
+#     </cybox:Properties>"""
+#
+# cybox_product_format = """
+#     <cybox:Properties
+#         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+#         xmlns:ProductObj = "http://cybox.mitre.org/objects#ProductObject-2"
+#         xmlns:cyboxCommon = "http://cybox.mitre.org/common-2"
+#         xmlns:cybox = "http://cybox.mitre.org/cybox-2"
+#         xsi:type = "ProductObj:ProductObjectType">
+#         <ProductObj:Product>{}</ProductObj:Product>
+#     </cybox:Properties>
+# """
+#
+# cybox_uri_format = """
+#     <cybox:Properties
+#             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+#             xmlns:cybox="http://cybox.mitre.org/cybox-2"
+#             xmlns:URIObj="http://cybox.mitre.org/objects#URIObject-2"
+#             xsi:type="URIObj:URIObjectType"
+#             type="URL">
+#         <URIObj:Value condition="Equals">{}</URIObj:Value>
+#     </cybox:Properties>"""
+#
+# cybox_ipv4_format = """
+#     <cybox:Properties
+#             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+#             xmlns:cybox="http://cybox.mitre.org/cybox-2"
+#             xmlns:AddressObj="http://cybox.mitre.org/objects#AddressObject-2"
+#             xsi:type="AddressObj:AddressObjectType"
+#             category="ipv4-addr">
+#         <AddressObj:Address_Value>{}</AddressObj:Address_Value>
+#     </cybox:Properties>"""
+#
+# cybox_port_format = """
+#     <cybox:Properties
+#             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+#             xmlns:cybox="http://cybox.mitre.org/cybox-2"
+#             xmlns:cyboxCommon="http://cybox.mitre.org/common-2"
+#             xmlns:cyboxVocabs="http://cybox.mitre.org/default_vocabularies-2"
+#             xmlns:PortObj="http://cybox.mitre.org/objects#PortObject-2"
+#             xsi:type="PortObj:PortObjectType">
+#         <PortObj:Port_Value>{}</PortObj:Port_Value>
+#     </cybox:Properties>"""
+#
+# cybox_domain_name_format = """
+#     <cybox:Properties
+#             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+#             xmlns:cybox="http://cybox.mitre.org/cybox-2"
+#             xmlns:DomainNameObj="http://cybox.mitre.org/objects#DomainNameObject-1"
+#             xsi:type="DomainNameObj:DomainNameObjectType"
+#             type="FQDN">
+#         <DomainNameObj:Value>{}</DomainNameObj:Value>
+#     </cybox:Properties>"""
+#
+# cybox_email_format = """
+#     <cybox:Properties
+#             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+#             xmlns:cybox="http://cybox.mitre.org/cybox-2"
+#             xmlns:AddressObj="http://cybox.mitre.org/objects#AddressObject-2"
+#             xsi:type="AddressObj:AddressObjectType"
+#             category="e-mail">
+#         <AddressObj:Address_Value>{}</AddressObj:Address_Value>
+#     </cybox:Properties>"""
+#
+# formats = {
+#     "cve": cybox_cve_format,
+#     "file": cybox_file_name_format,
+#     "hash-md5": cybox_md5_format,
+#     "hash-sha1": cybox_sha1_format,
+#     "hash-sha256": cybox_sha256_format,
+#     "product": cybox_product_format,
+#     "uri": cybox_uri_format,
+#     "ipv4": cybox_ipv4_format,
+#     "port": cybox_port_format,
+#     "domain": cybox_domain_name_format,
+#     "email": cybox_email_format,
+# }
