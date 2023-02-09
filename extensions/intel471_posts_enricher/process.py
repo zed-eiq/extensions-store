@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import json
+
 from eiq_edk import EnrichmentProcess
 from datetime import datetime
 from eiq_edk.schemas.entities import ExtractType
@@ -43,8 +45,12 @@ class MainApp(EnrichmentProcess):
                 verify_ssl=True,
             )
         )
-        transformed = transform_posts(posts_response)
-        self.save_enrichment_result(entities=[transformed])
+        entities = transform_posts(posts_response)
+        self.save_enrichment_result(
+            entities=entities,
+            extracts=[],
+            raw_data=json.dumps(posts_response)
+        )
 
         self.send_info(
             {

@@ -242,13 +242,13 @@ def fetch_with_cursor(
         pass
 
 
-def transform_posts(posts: list) -> dict:
+def transform_posts(posts: list) -> list:
     entities = []
     if isinstance(posts, dict):
         posts = [posts]
     if posts:
         entities.append(create_posts_report(posts))
-    return {"type": "linked-entities", "entities": entities}
+    return entities
 
 
 def create_posts_report(posts: list) -> dict:
