@@ -55,7 +55,7 @@ class MainApp(EnrichmentProcess):
         )
 
     def supported_extract_types(self) -> List[ExtractType]:
-        return [ExtractType.ACTOR_ID.value, ExtractType.NAME.value]
+        return [ExtractType.ACTOR_ID, ExtractType.NAME]
 
 
 if __name__ == "__main__":

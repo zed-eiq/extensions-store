@@ -285,7 +285,11 @@ def create_posts_report(posts: list) -> dict:
         str(uuid.uuid5(uuid.NAMESPACE_X500, str(actor)))
     )
 
-    data = {"id": _id, 'title': f"Intel 471 Forum Posts - {actor}", 'description': analysis}
+    data = {
+        "id": _id,
+        'title': f"Intel 471 Forum Posts - {actor}",
+        'description': analysis
+    }
     meta = {
         'estimated_observed_time': set_dates(posts),
         'tags': tags,
