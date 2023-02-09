@@ -438,33 +438,36 @@ def process_malware_files(
         report: dict, entities: List[dict], relations: List[dict], tags: List[str]
 ):
     if (
-            report.get("tagSection")
+            not report.get("tagSection")
             or report["tagSection"].get("files")
             or report["tagSection"]["files"].get("file")
     ):
-        return process_indicators(report, tags, entities, relations, "file")
+        return
+    process_indicators(report, tags, entities, relations, "file")
 
 
 def process_malware_networks(
         report: dict, entities: List[dict], relations: List[dict], tags: List[str]
 ):
     if (
-            report.get("tagSection")
+            not report.get("tagSection")
             or report["tagSection"].get("networks")
             or report["tagSection"]["networks"].get("network")
     ):
-        return process_indicators(report, tags, entities, relations, "network")
+        return
+    process_indicators(report, tags, entities, relations, "network")
 
 
 def process_malware_emails(
         report: dict, entities: List[dict], relations: List[dict], tags: List[str]
 ):
     if (
-            report.get("tagSection")
+            not report.get("tagSection")
             or report["tagSection"].get("emails")
             or report["tagSection"]["emails"].get("email")
     ):
-        return process_indicators(report, tags, entities, relations, "email")
+        return 
+    process_indicators(report, tags, entities, relations, "email")
 
 
 def process_indicators(
