@@ -11,9 +11,6 @@ from parsers import transform_adversary_report, transform_posts
 from utils import fetch_results, fetch_alerts, download_related_reports, REPORT_ENDPOINT
 
 
-
-
-
 class MainApp(ImporterProcess):
 
     def download(self):
@@ -36,7 +33,7 @@ class MainApp(ImporterProcess):
         from_param = math.floor(since.timestamp()) * 1000
         auth = (api_email, api_key)
         alerts = fetch_alerts(
-            furl(api_url).add(path="alerts").url, auth, from_param, verify_ssl
+            self, furl(api_url).add(path="alerts").url, auth, from_param, verify_ssl
         )
         downloaded_alerts = set()
         for alert in alerts:
@@ -67,9 +64,9 @@ class MainApp(ImporterProcess):
                 alert_data["content_type"] = "intel471_posts"
             if alert_data:
                 timestamp = datetime.utcfromtimestamp(int(alert["foundTime"] / 1000))
-                self.save_raw_data({
-                        "raw_data": report, "timestamp": timestamp.isoformat()
-                    })
+                self.save_raw_data(json.dumps({
+                        "raw_data": alert_data, "timestamp": timestamp.isoformat()
+                    }).encode())
 
         self.send_info(
             {
@@ -99,8 +96,8 @@ class MainApp(ImporterProcess):
 
         self.send_info({
             "code": "INF-0003",
-            "message": "Execution completed successfuly",
-            "description": f"Intel471 transformed data successfuly."
+            "message": "Execution completed successfully",
+            "description": f"Intel471 transformed data successfully."
         })
 
 
