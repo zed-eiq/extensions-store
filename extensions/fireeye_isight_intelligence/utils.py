@@ -3,6 +3,7 @@ import hashlib
 import hmac
 import time
 from email import utils
+from typing import List
 from urllib import parse
 
 import furl
@@ -24,7 +25,7 @@ def get_reports_list(
         verify_ssl: bool,
         ext_type: str,
         params: dict,
-) -> list[dict]:
+) -> List[dict]:
     results = []
     offset = 0
     while True:
@@ -145,6 +146,13 @@ def make_request(ext_type: str, **kwargs) -> requests.Response:
         response.reason = fireeye_message or response.reason
 
         if response.status_code >= 500 and not already_tried:
+            FireeyeWarningException({
+                'code': 'WAR-0001',
+                'description': f"Request sent to Fireeye API failed:"
+                               f" {message}.\n",
+                'message': f"Service may be temporary unavailable, "
+                           f"trying again in {SERVICE_TIMEOUT} seconds"
+            })
             time.sleep(SERVICE_TIMEOUT)
             kwargs["already_tried"] = True
             return make_request(ext_type, **kwargs)

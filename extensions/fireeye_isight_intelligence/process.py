@@ -29,11 +29,11 @@ class MainApp(ImporterProcess):
 
         verify_ssl: bool = True
         ssl_cert: str = ''
-        include_threats: bool = True
-        include_malwares: bool = True
-        include_vulnerabilities: bool = True
-        include_overviews: bool = True
-        download_pdf: bool = True
+        include_threats: bool = self.config['include_threats']
+        include_malwares: bool = self.config['include_malwares']
+        include_vulnerabilities: bool = self.config['include_vulnerabilities']
+        include_overviews: bool = self.config['include_overviews']
+        download_pdf: bool = self.config['download_pdf']
         verify_ssl = ssl_cert or verify_ssl
 
         since = parser.isoparse(since)
@@ -80,7 +80,7 @@ class MainApp(ImporterProcess):
 
             report = get_report(
                 api_url, public_key, private_key, item["reportId"], verify_ssl,
-                'ext_type'
+                'Incoming Feed'
             )
             if not report:
                 continue
@@ -102,7 +102,7 @@ class MainApp(ImporterProcess):
                         "data": report_file,
                     }
             # timestamp is increased by a second to avoid downloading duplicates
-        self.save_raw_data(json.dumps(reports_list).encode())
+            self.save_raw_data(json.dumps(report).encode())
         self.send_info(
             {
                 "code": "INF-0001",

@@ -3,9 +3,8 @@ import re
 import uuid
 from typing import List, Optional
 
-from eiq_edk import create_entity, create_extract
+from eiq_edk import create_entity
 from eiq_edk._data_objects import ExtractType
-from eiq_edk.schemas.entities import (ExtractSchema, EntitySchema)
 
 BAD_FILENAMES = ["unavailable", "unknown", "(none)"]
 INDICATOR_DESCRIPTION = {
@@ -26,46 +25,45 @@ https://docs.fireeye.com/iSight/index.html#/report_index
 """
 
 
-def transform_reports(reports_data: list) -> dict:
+def transform_reports(report: dict) -> dict:
     entities = []
     relations = []
-    for report in reports_data:
-        if report["intelligenceType"] == "vulnerability":
-            entities.append(create_vulnerability_report(report))
+    if report["intelligenceType"] == "vulnerability":
+        entities.append(create_vulnerability_report(report))
 
-        elif report["intelligenceType"] == "overview":
-            process_overview(report, entities, relations)
+    elif report["intelligenceType"] == "overview":
+        process_overview(report, entities, relations)
 
-        elif report["intelligenceType"] in ["malware", "threat"]:
-            main_section = process_malware_main_section(report)
+    elif report["intelligenceType"] in ["malware", "threat"]:
+        main_section = process_malware_main_section(report)
 
-            if report["intelligenceType"] == "malware":
-                entities.append(
-                    create_malware_report(
-                        report,
-                        main_section["extracts"],
-                        main_section["tags"] + main_section["report_tags"],
-                        main_section["countries_block"],
-                    )
+        if report["intelligenceType"] == "malware":
+            entities.append(
+                create_malware_report(
+                    report,
+                    main_section["extracts"],
+                    main_section["tags"] + main_section["report_tags"],
+                    main_section["countries_block"],
                 )
+            )
 
-            else:
-                entities.append(
-                    create_threat_report(
-                        report,
-                        main_section["extracts"],
-                        main_section["tags"] + main_section["report_tags"],
-                        main_section["countries_block"],
-                    )
+        else:
+            entities.append(
+                create_threat_report(
+                    report,
+                    main_section["extracts"],
+                    main_section["tags"] + main_section["report_tags"],
+                    main_section["countries_block"],
                 )
-                process_threat_actors(report, entities, relations, main_section["tags"])
+            )
+            process_threat_actors(report, entities, relations, main_section["tags"])
 
-            for fun in [
-                process_malware_files,
-                process_malware_networks,
-                process_malware_emails,
-            ]:
-                fun(report, entities, relations, main_section["tags"])
+        for fun in [
+            process_malware_files,
+            process_malware_networks,
+            process_malware_emails,
+        ]:
+            fun(report, entities, relations, main_section["tags"])
 
     return {"type": "linked-entities", "entities": entities, "relations": relations}
 
@@ -96,7 +94,7 @@ def create_vulnerability_report(report: dict) -> dict:
             "value": item.replace("CVE-", ""),
             "classification": "safe"
         }
-        extracts.append(create_extract(extract))
+        extracts.append(extract)
 
     recommendations = report.get("mitigationDetails", "") + report.get("vendorFix", "")
     for item in report.get("vendorFixUrls", dict()).get("vendorFixUrl", []):
@@ -116,7 +114,7 @@ def create_vulnerability_report(report: dict) -> dict:
         )
     description = (
         f"{report.get('summary', '')}"
-        f"<br>>{report.get('vulnerableProducts', '')}<br>{recommendations}"
+        f"<br>{report.get('vulnerableProducts', '')}<br>{recommendations}"
     )
     tags = [
         f"Mitigation - {item}"
@@ -150,23 +148,10 @@ def parse_published_date(report: dict) -> str:
     # set the default date to today (it actually never happened before)
     publish_date = datetime.datetime.utcnow().isoformat()
     if report.get("publishDate"):
-        publish_date = datetime.datetime.fromtimestamp(
-            report["publishDate"]
+        publish_date = datetime.datetime.strptime(
+            report["publishDate"], "%B %d, %Y %I:%M:%S %p"
         ).isoformat()
     return publish_date
-
-
-def add_extract(extracts, kind, value, classification='unknown', maliciousness=None):
-    try:
-        extract = ExtractSchema().load({
-            'kind': kind,
-            'value': value,
-        })
-        extract['classification'] = classification
-        if extract:
-            extracts.append(extract)
-    except:
-        pass
 
 
 def create_fireeye_report_uuid(report: dict) -> str:
@@ -175,7 +160,7 @@ def create_fireeye_report_uuid(report: dict) -> str:
     )
 
 
-def create_fireeye_info_source(references: list = [], role: str = '') -> dict:
+def create_fireeye_info_source(references: List = [], role: str = '') -> dict:
     role = role or "Initial Author"
 
     producer = {
@@ -187,63 +172,7 @@ def create_fireeye_info_source(references: list = [], role: str = '') -> dict:
     return producer
 
 
-def create_report(stix_id: str,
-                  title: str,
-                  description: str = '',
-                  short_description: str = None,
-                  information_source: dict = {},
-                  observed_time: str = '',
-                  threat_start_time: str = '',
-                  threat_end_time: str = '',
-                  timestamp: str = '',
-                  extracts: list = [],
-                  tags: list = [],
-                  summary: str = '',
-                  intents: list = [],
-                  extraction_ignore_paths: list = [],
-                  attachments: list = [],
-                  tlp_color: str = 'NONE',
-                  half_life: int = 1,
-                  observable: list = None,
-                  taxonomy: list = [],
-                  taxonomy_paths: list = None,
-                  relationship: str = None,
-                  attacks: list = []):
-    meta_part = {
-        'estimated_observed_time': observed_time,
-        'estimated_threat_start_time': threat_start_time,
-        'estimated_threat_end_time': threat_end_time,
-        'half_life': half_life,
-        'tags': tags,
-        'taxonomy': taxonomy,
-        'attack': attacks,
-        'tlp_color': tlp_color,
-        'bundled_extracts': extracts,
-        'extraction_ignore_paths': extraction_ignore_paths
-    }
-
-    report_part = {
-        "id": stix_id,
-        "title": title,
-        "type": "report",
-        'description': description,
-        'short_description': summary,
-        'producer': information_source,
-        'timestamp': timestamp,
-        'intents': intents
-    }
-
-    retrun_data = EntitySchema().load({
-        'data': report_part,
-        'meta': meta_part,
-        'attachments': attachments
-    })
-
-    return retrun_data
-
-
 # Overview
-
 def process_overview(report: dict, entities: List[dict], relations: List[dict]):
     publish_date = parse_published_date(report)
 
@@ -439,8 +368,8 @@ def process_malware_files(
 ):
     if (
             not report.get("tagSection")
-            or report["tagSection"].get("files")
-            or report["tagSection"]["files"].get("file")
+            or not report["tagSection"].get("files")
+            or not report["tagSection"]["files"].get("file")
     ):
         return
     process_indicators(report, tags, entities, relations, "file")
@@ -451,8 +380,8 @@ def process_malware_networks(
 ):
     if (
             not report.get("tagSection")
-            or report["tagSection"].get("networks")
-            or report["tagSection"]["networks"].get("network")
+            or not report["tagSection"].get("networks")
+            or not report["tagSection"]["networks"].get("network")
     ):
         return
     process_indicators(report, tags, entities, relations, "network")
@@ -463,10 +392,10 @@ def process_malware_emails(
 ):
     if (
             not report.get("tagSection")
-            or report["tagSection"].get("emails")
-            or report["tagSection"]["emails"].get("email")
+            or not report["tagSection"].get("emails")
+            or not report["tagSection"]["emails"].get("email")
     ):
-        return 
+        return
     process_indicators(report, tags, entities, relations, "email")
 
 
@@ -649,9 +578,12 @@ def create_threat_report(
 ) -> dict:
     publish_date = parse_published_date(report)
     for cve in report.get("cveIds", dict()).get("cveId", []):
-        add_extract(
-            extracts, ExtractType.CVE, cve.replace("CVE-", ""), classification="safe"
-        )
+        extract = {
+            "kind": ExtractType.CVE.value,
+            "value": cve.replace("CVE-", ""),
+            "classification": "safe"
+        }
+        extracts.append(extract)
 
     report_data = {
         "id": create_fireeye_report_uuid(report),
@@ -713,43 +645,43 @@ def create_file_indicator(
 
     if file.get("md5"):
         title = file["md5"]
-        add_extract(
-            extracts,
-            ExtractType.HASH_MD5.value,
-            file["md5"],
-            classification="high",
-        )
+        extract = {
+            "kind": ExtractType.HASH_MD5.value,
+            "value": file["md5"],
+            "classification": "high"
+        }
+        extracts.append(extract)
     if file.get("sha1"):
         title = title or file["sha1"]
-        add_extract(
-            extracts,
-            ExtractType.HASH_SHA1.value,
-            file["sha1"],
-            classification="high",
-        )
+        extract = {
+            "kind": ExtractType.HASH_SHA1.value,
+            "value": file["sha1"],
+            "classification": "high"
+        }
+        extracts.append(extract)
     if file.get("sha256"):
         title = title or file["sha256"]
-        add_extract(
-            extracts,
-            ExtractType.HASH_SHA256.value,
-            file["sha256"],
-            classification="high",
-        )
+        extract = {
+            "kind": ExtractType.HASH_SHA256.value,
+            "value": file["sha256"],
+            "classification": "high"
+        }
+        extracts.append(extract)
     if file.get("fileName", "unknown").lower() not in BAD_FILENAMES:
         title = title or file["fileName"]
-        add_extract(
-            extracts,
-            ExtractType.FILE.value,
-            file["fileName"],
-            classification="low",
-        )
+        extract = {
+            "kind": ExtractType.FILE.value,
+            "value": file["fileName"],
+            "classification": "low"
+        }
+        extracts.append(extract)
     if file.get("userAgent"):
         for user_agent in file["userAgent"]:
-            add_extract(
-                extracts,
-                ExtractType.PRODUCT.value,
-                user_agent,
-            )
+            extract = {
+                "kind": ExtractType.PRODUCT.value,
+                "value": user_agent,
+            }
+            extracts.append(extract)
 
     if not title:
         return None
@@ -771,7 +703,8 @@ def create_file_indicator(
         "estimated_observed_time": publish_date,
         "extraction_ignore_paths": ["title"],
     }
-
+    with open("/tmp/indicator-file.log", "w") as f:
+        f.write(f"{indicator_data}")
     return create_entity({
         "type": "indicator",
         "data": indicator_data,
@@ -794,51 +727,67 @@ def create_network_indicator(  # noqa:C901
 
     if network.get("ip"):
         title = title or network["ip"]
-        add_extract(
-            extracts,
-            ExtractType.IPV4.value,
-            network["ip"],
-            classification="high",
-        )
+        extract = {
+            "kind": ExtractType.IPV4.value,
+            "value": network["ip"],
+            "classification": "high"
+        }
+        extracts.append(extract)
         types.append("IP Watchlist")
     if network.get("cidr"):
         title = title or network["cidr"]
-        add_extract(
-            extracts,
-            ExtractType.IPV4.value,
-            network["cidr"],
-            classification="high",
-        )
+        extract = {
+            "kind": ExtractType.IPV4.value,
+            "value": network["cidr"],
+            "classification": "high"
+        }
+        extracts.append(extract)
     if network.get("domain"):
         title = title or network["domain"]
-        add_extract(
-            extracts,
-            ExtractType.DOMAIN.value,
-            network["domain"],
-            classification="high",
-        )
+        extract = {
+            "kind": ExtractType.DOMAIN.value,
+            "value": network["domain"],
+            "classification": "high"
+        }
+        extracts.append(extract)
         types.append("Domain Watchlist")
     if network.get("url"):
         title = title or network["url"]
-        add_extract(
-            extracts,
-            ExtractType.URI.value,
-            network["url"],
-            classification="high",
-        )
+        extract = {
+            "kind": ExtractType.URI.value,
+            "value": network["url"],
+            "classification": "high"
+        }
+        extracts.append(extract)
         types.append("URL Watchlist")
     if network.get("asn"):
         title = title or network["asn"]
-        add_extract(extracts, ExtractType.ASN.value, network["asn"],
-                    classification="safe")
+        extract = {
+            "kind": ExtractType.ASN.value,
+            "value": network["asn"],
+            "classification": "safe"
+        }
+        extracts.append(extract)
     if network.get("registrantEmail"):
         title = title or network["registrantEmail"]
-        add_extract(extracts, ExtractType.EMAIL.value, network["registrantEmail"])
+        extract = {
+            "kind": ExtractType.EMAIL.value,
+            "value": network["registrantEmail"],
+        }
+        extracts.append(extract)
     if network.get("registrantName"):
         title = title or network["registrantName"]
-        add_extract(extracts, ExtractType.NAME.value, network["registrantName"])
+        extract = {
+            "kind": ExtractType.NAME.value,
+            "value": network["registrantName"],
+        }
+        extracts.append(extract)
     if network.get("port"):
-        add_extract(extracts, ExtractType.PORT.value, network["port"])
+        extract = {
+            "kind": ExtractType.PORT.value,
+            "value": network["port"],
+        }
+        extracts.append(extract)
 
     if not title or not extracts:
         return None
@@ -882,23 +831,31 @@ def create_email_indicator(
     description = create_indicator_description(email)
 
     extracts = []
-    add_extract(extracts, ExtractType.EMAIL.value, email.get("senderAddress"))
+    extract = {
+        "kind": ExtractType.EMAIL.value,
+        "value": email.get("senderAddress"),
+    }
+    extracts.append(extract)
     if email.get("senderName"):
-        add_extract(extracts, ExtractType.NAME.value, email["senderName"])
+        extract = {
+            "kind": ExtractType.NAME.value,
+            "value": email.get("senderName"),
+        }
+        extracts.append(extract)
     if email.get("sourceDomain"):
-        add_extract(
-            extracts,
-            ExtractType.DOMAIN.value,
-            email["sourceDomain"],
-            classification="low",
-        )
+        extract = {
+            "kind": ExtractType.DOMAIN.value,
+            "value": email.get("sourceDomain"),
+            "classification": "low"
+        }
+        extracts.append(extract)
     if email.get("sourceIp"):
-        add_extract(
-            extracts,
-            ExtractType.IPV4.value,
-            email["sourceIp"],
-            classification="low",
-        )
+        extract = {
+            "kind": ExtractType.IPV4.value,
+            "value": email.get("sourceIp"),
+            "classification": "low"
+        }
+        extracts.append(extract)
 
     indicator_data = {
         "id": create_fireeye_indicator_uuid(report, title),
