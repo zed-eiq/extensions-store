@@ -75,15 +75,15 @@ class MainApp(ExporterProcess):
             pushed_indicators = self.stash["pushed_indicators"].split(",")
 
         # in REPLACE mode, first delete everything pushed by this feed
-#        if self.config['update_strategy'] == "REPLACE" and pushed_indicators:
-#            deleted_indicators.extend(pushed_indicators)
-#            pushed_indicators = []
+       if self.config['update_strategy'] == "REPLACE" and pushed_indicators:
+           deleted_indicators.extend(pushed_indicators)
+           pushed_indicators = []
 
         populate_indicator_lists(
                 new_indicators,
                 deleted_indicators,
                 json.loads(raw_data.decode()),
-                "APPEND" #self.config['update_strategy'],
+                self.config['update_strategy'],
             )
         package = []
         for index, indicator in enumerate(deleted_indicators):

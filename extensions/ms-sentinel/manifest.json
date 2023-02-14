@@ -11,7 +11,10 @@
   "version": "0.0.1",
   "programming_language": "Python",
   "programming_language_version": "3.8",
-  "supported_update_strategies": ["APPEND", "REPLACE", "DIFF"],
+  "supported_update_strategies": {
+    "default": "APPEND",
+    "enum": ["APPEND", "REPLACE", "DIFF"],
+  },
   "content_types": [
     {
       "id": "urn:eiq-edk:eclectiiq:ms-sentinel:0.0.1",
@@ -22,7 +25,7 @@
       "mime_type": "application/json",
       "configuration": [
         {
-          "default": "https://graph.microsoft.com/beta/",
+          "default": "https://login.microsoftonline.com/{}/oauth2/v2.0/token",
           "required": true,
           "type": "string",
           "description": "The URL pointing to the API endpoint exposing the service.",
