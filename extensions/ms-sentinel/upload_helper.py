@@ -161,10 +161,7 @@ class MicrosoftSentinelService:
                     'message': f'Service received {len(package)}'
                 }
             )
-
         self.refresh_headers()
-        the_word = "entities" if len(package) > 1 else "entity"
-
         response = requests.post(
             self.delete_multi_external_url,
             headers=self.headers,

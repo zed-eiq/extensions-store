@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 import json
+
 from eiq_edk import ExporterProcess
+
 from packer import to_ms_sentinel_json
 from upload_helper import Oauth2Service, MicrosoftSentinelService, MSSentinelException
-from requests import HTTPError
 
 MS_SENTINEL_API = "https://graph.microsoft.com/beta/"
 PACKAGE_LIMIT = 100
+
 
 class MainApp(ExporterProcess):
 
@@ -21,7 +23,8 @@ class MainApp(ExporterProcess):
         )
 
         data = json.loads(raw_data.decode())
-        packed_data = to_ms_sentinel_json(data)
+        update_strategy = self.args.update_strategy
+        packed_data = to_ms_sentinel_json(update_strategy, data)
         self.save_packed_data(json.dumps(packed_data).encode())
 
         self.send_info(
@@ -53,8 +56,8 @@ class MainApp(ExporterProcess):
                 scope_field="scope",
                 scope_value="https://graph.microsoft.com/.default",
                 tenant_id=self.config['tenant_id'],
-                client_id = self.config['client_id'],
-                client_secret = self.config['client_secret'],
+                client_id=self.config['client_id'],
+                client_secret=self.config['client_secret'],
             )
             ms_sentinel_service = MicrosoftSentinelService(
                 self.config.get('api_url', MS_SENTINEL_API), token_service
@@ -74,17 +77,17 @@ class MainApp(ExporterProcess):
         if self.stash.get("pushed_indicators"):
             pushed_indicators = self.stash["pushed_indicators"].split(",")
 
-        # in REPLACE mode, first delete everything pushed by this feed
-       if self.args.update_strategy == "REPLACE" and pushed_indicators:
-           deleted_indicators.extend(pushed_indicators)
-           pushed_indicators = []
+            # in REPLACE mode, first delete everything pushed by this feed
+        if self.args.update_strategy == "REPLACE" and pushed_indicators:
+            deleted_indicators.extend(pushed_indicators)
+            pushed_indicators = []
 
         populate_indicator_lists(
-                new_indicators,
-                deleted_indicators,
-                json.loads(raw_data.decode()),
-                self.args.update_strategy,
-            )
+            new_indicators,
+            deleted_indicators,
+            json.loads(raw_data.decode()),
+            self.args.update_strategy,
+        )
         package = []
         for index, indicator in enumerate(deleted_indicators):
             package.append(indicator)
@@ -118,20 +121,19 @@ class MainApp(ExporterProcess):
 
 
 def populate_indicator_lists(
-    new_indicators, deleted_indicators, indicators, update_strategy
+        new_indicators, deleted_indicators, indicators, update_strategy
 ):
     if not indicators:
         return
 
-    if update_strategy != "DIFF":
-        for external_id in indicators.keys():
-            for key in indicators[external_id].keys():
-                new_indicators.append(indicators[external_id][key])
-    else:
+    if update_strategy == "DIFF":
         _new_indicators, _deleted_indicators = split_indicators(indicators)
         new_indicators.extend(_new_indicators)
         deleted_indicators.extend(_deleted_indicators)
-
+    else:
+        for external_id in indicators.keys():
+            for key in indicators[external_id].keys():
+                new_indicators.append(indicators[external_id][key])
 
 
 def split_indicators(indicators):

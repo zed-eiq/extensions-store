@@ -1,27 +1,37 @@
-# from eiq.platform.extracts import extract_from_entity
 import copy
+import datetime
 import logging
 import re
-import datetime
 from typing import Union
+
 import dateutil
 import pytz
-
-
-from eiq_edk.schemas.entities import SUPPORTED_EXTRACT_TYPES, TLP_COLORS_ORDERED
+from eiq_edk.schemas.entities import TLP_COLORS_ORDERED
 
 log = logging.getLogger(__name__)
 
 
-def to_ms_sentinel_json(list_elements):
+def to_ms_sentinel_json(update_strategy, list_elements):
     results = dict()
     indicator_ids = []
-
     for element in list_elements:  #### package level
         if str(element["id"]) in indicator_ids:
             continue
 
-        indicators = make_ms_sentinel_indicators(element)
+        deleted = element.get("diff") == "del"
+        if entity_has_expired(element["meta"]):
+            # handle expired data
+            if (
+                    update_strategy in ["APPEND", "REPLACE"]
+                    or element.get("diff") == "add"
+            ):
+                continue
+            deleted = True
+
+        if deleted:
+            indicators = {str(element["id"]): {"deleted": True}}
+        else:
+            indicators = make_ms_sentinel_indicators(element)
         indicator_ids.append(str(element["id"]))
         results.update(indicators)
 
@@ -127,10 +137,10 @@ def make_ms_sentinel_indicator(entity_stream_element, extract_confidence):
     if entity_stream_element["meta"].get("estimated_threat_start_time"):
         half_life = int(entity_stream_element["meta"].get("half_life", 0))
         expiration_date_time = (
-            dateutil.parser.isoparse(
-                entity_stream_element["meta"].get("estimated_threat_start_time")
-            )
-            + datetime.timedelta(days=half_life)
+                dateutil.parser.isoparse(
+                    entity_stream_element["meta"].get("estimated_threat_start_time")
+                )
+                + datetime.timedelta(days=half_life)
         ).isoformat()
 
     indicator_confidence = 0
@@ -153,7 +163,7 @@ def make_ms_sentinel_indicator(entity_stream_element, extract_confidence):
         "targetProduct": "Azure Sentinel",
         "externalId": str(entity_stream_element["id"]),
         "description": f"Entity from EclecticIQ Platform. "
-        f"{entity_stream_element['data']['title']}",
+                       f"{entity_stream_element['data']['title']}",
         "tlpLevel": tlp_color,
         "confidence": indicator_confidence,
         "severity": SENTINEL_SEVERITY.get(CONFIDENCE[extract_confidence or 0].lower()),
