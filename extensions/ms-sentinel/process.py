@@ -75,7 +75,7 @@ class MainApp(ExporterProcess):
             pushed_indicators = self.stash["pushed_indicators"].split(",")
 
         # in REPLACE mode, first delete everything pushed by this feed
-       if self.config['update_strategy'] == "REPLACE" and pushed_indicators:
+       if self.args.update_strategy == "REPLACE" and pushed_indicators:
            deleted_indicators.extend(pushed_indicators)
            pushed_indicators = []
 
@@ -83,7 +83,7 @@ class MainApp(ExporterProcess):
                 new_indicators,
                 deleted_indicators,
                 json.loads(raw_data.decode()),
-                self.config['update_strategy'],
+                self.args.update_strategy,
             )
         package = []
         for index, indicator in enumerate(deleted_indicators):
