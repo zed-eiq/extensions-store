@@ -8,6 +8,20 @@ All Extensions in this repository are designed to be executed and run on the Ecl
 
 The EclecticIQ Extensions Developer Kit is not tied to any EclecticIQ product and therefore extensions in this repository can be used with any upstream or downstream tools (SIEM's, SOAR's, TIP's, etc.).
 
+## Structure of this repository
+
+The Extensions in this repository are organised in the following directory structure:
+
+* extensions
+  * `<VENDOR NAME>`
+    * incoming_feeds
+      * `<EXTENSION NAME>`
+        * `<EXTENSION FILES / DOCS>`
+    * outgoing_feeds
+      * `...`
+    * enrichments
+      * `...`
+
 ## Types of Extensions
 
 There are three types of Extensions in this repository:
