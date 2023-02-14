@@ -19,7 +19,7 @@
     {
       "id": "urn:eiq-edk:eclectic_iq:intel471_malware_feed:0.1.0",
       "name": "Intel471 posts enricher",
-      "description": "Intel471 posts enricher",
+      "description": "Intel471 adversary intelligence enricher",
       "content_groups": ["edk_intel471_extension"],
       "file_extension": "json",
       "mime_type": "application/json",
