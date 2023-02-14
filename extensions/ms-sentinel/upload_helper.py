@@ -114,6 +114,8 @@ class MicrosoftSentinelService:
 
         return response.json()["value"]
 
+    # The three functions - submit_indicator, update_indicators, delete_indicators
+    # can be only one function, for next release make this to be reusable
     def submit_indicators(self, package, already_tried=False):
         self.refresh_headers()
 
