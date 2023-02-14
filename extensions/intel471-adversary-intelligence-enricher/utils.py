@@ -21,68 +21,6 @@ API_URL = "https://api.intel471.com/v1/"
 ACTORS_CONTACT_INFO = ["ICQ", "Jabber", "MSN", "YahooIM", "AIM", "Skype"]
 
 
-def fetch_with_paging(
-        self,
-        api_url,
-        count_col_name,
-        root_node,
-        created_col_name,
-        auth,
-        query_params,
-        verify_ssl,
-        page_size=PAGE_SIZE,
-):
-    offset = 0
-    last_report_timestamp = query_params["from"]
-    while True:
-        query_params.update({"count": page_size, "offset": offset})
-        response = fetch_results(
-            self, url=api_url, auth=auth, verify_ssl=verify_ssl, params=query_params
-        )
-        if response:
-            item_count = response.get(count_col_name, 0)
-            items = response.get(root_node, [])
-
-            for item in items:
-                if root_node == "posts":
-                    item["searched_actor"] = query_params.get("actor")
-
-                # allow both [activity.first|activity.last] and [date|created|etc]
-                # to be passed as created_col_name argument
-                parts = created_col_name.split(".")
-                if len(parts) > 1:
-                    parent = item.get(parts[0])
-                    field = parts[1]
-                else:
-                    parent = item
-                    field = parts[0]
-                last_report_timestamp = parent.get(field, last_report_timestamp)
-
-                yield item
-
-            if item_count <= offset + page_size:
-                break
-        else:
-            self.send_error(
-                {
-                    "code": "404",
-                    "description": "Not Found error, we handle that with custom exception on first",
-                    "message": f"API returned error for {api_url}",
-                }
-            )
-            raise Intel471Exception(
-                'Provided parameters result with "404: not found" error'
-            )
-
-        if offset + page_size > 1000:
-            # offset is out the range [0-1000]
-            # reset offset and move time filters
-            offset = 0
-            query_params.update({"from": last_report_timestamp, "offset": offset})
-        else:
-            offset += page_size
-
-
 def fetch_results(self, url, auth, verify_ssl, ext_type="Provider", **params):
     try:
         response = requests.get(

@@ -12,13 +12,14 @@
   "programming_language": "Python",
   "programming_language_version": "3.8",
   "supported_extract_types": [
-        "actor-id"
+        "actor-id", "handle", "name"
    ],
   "source_reliability": "A",
+  "source_url": [],
   "content_types": [
     {
-      "id": "urn:eiq-edk:eclectic_iq:intel471_malware_feed:0.1.0",
-      "name": "Intel471 posts enricher",
+      "id": "urn:eiq-edk:eclectic_iq:intel471_adversary_enricher:0.1.0",
+      "name": "Intel471 adversary enricher",
       "description": "Intel471 adversary intelligence enricher",
       "content_groups": ["edk_intel471_extension"],
       "file_extension": "json",
@@ -47,14 +48,6 @@
           "description": "A valid email address to be granted access to the Intel 471 API endpoint.",
           "title": "email",
           "name": "email"
-        },
-          {
-          "default": "",
-          "required": false,
-          "type": "string",
-          "description": "Place value here to lookup forum posts the actor has written.",
-          "title": "Actor",
-          "name": "actor"
         }
       ]
     }
