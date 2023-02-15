@@ -26,14 +26,14 @@ class MainApp(ImporterProcess):
         api_email = self.config['email']
         api_key = self.config['api_key']
         since = self.config['since']
-        until = self.config['until']
         verify = True
         since = parser.isoparse(since)
         verify_ssl = verify
         from_param = math.floor(since.timestamp()) * 1000
+        timestamp = datetime.utcfromtimestamp(from_param)
         auth = (api_email, api_key)
         alerts = fetch_alerts(
-            self, furl(api_url).add(path="alerts").url, auth, from_param, verify_ssl
+            self, furl(api_url).add(path="alerts").url, auth, timestamp, verify_ssl
         )
         downloaded_alerts = set()
         for alert in alerts:
@@ -71,8 +71,8 @@ class MainApp(ImporterProcess):
         self.send_info(
             {
                 "code": "INF-0003",
-                "message": "Execution completed successfuly",
-                "description": "Intel471 stored raw data  completed successfuly."
+                "message": "Execution completed successfully",
+                "description": "Intel471 stored raw data  completed successfully."
             }
         )
 

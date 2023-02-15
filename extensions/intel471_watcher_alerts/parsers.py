@@ -6,24 +6,19 @@ from urllib import parse
 
 from utils import set_dates
 from eiq_edk import create_entity, create_extract
-from eiq_edk._data_objects import ExtractType
+from eiq_edk.schemas.entities import ExtractType
 from eiq_edk.schemas.entities import CONFIDENCES_EXTRACT_VALUES
 
 import iso3166
-import structlog
-from validator_collection import validators
-
-log = structlog.get_logger(__name__)
+import validators
 
 
 def transform_posts(posts: List) -> Dict:
-    log.info("Transformer started")
     entities = []
     if isinstance(posts, dict):
         posts = [posts]
     if posts:
         entities.append(create_posts_report(posts))
-    log.info("Transformer finished successfully")
     return {"type": "linked-entities", "entities": entities}
 
 
@@ -124,7 +119,6 @@ def transform_adversary_report(blob: bytes) -> Dict:
     """
     Transformer for Intel471 Report JSON blob, fetched by Intel471Provider.
     """
-    log.info("Transformer started")
     entities, relations = [], []
     data = blob
     if type(data) == bytes:
@@ -137,7 +131,6 @@ def transform_adversary_report(blob: bytes) -> Dict:
         entities.append(actors)
         relations.extend(actor_relations)
 
-    log.info("Transformer finished successfully")
     return {"type": "linked-entities", "entities": entities, "relations": relations}
 
 
@@ -148,7 +141,7 @@ def create_adversary_actors(data: dict, entities: list) -> Tuple[Dict, List]:
 
     # Tags
     tags = data.get("tags") or list()
-    taxonomy = list()
+    # taxonomy = list()
     actor_motivations = list()
     # Admiralty tags
     if data.get("admiraltyCode"):

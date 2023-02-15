@@ -4,11 +4,9 @@ import sys
 from typing import Tuple, List, Set
 
 import requests
-import structlog
 from datetime import datetime
 from furl import furl
 
-log = structlog.get_logger(__name__)
 
 HEADERS = {}
 
@@ -197,7 +195,6 @@ def fetch_alerts(self, api_url: str, auth: Tuple, from_param: datetime, verify_s
             # When user make invalid URL to make request Intel471 API return
             # 404: Not Found error, we handle that with custom exception on first
             # request from pagination
-            log.error(f"API returned error for {api_url}")
             raise Intel471Exception(
                 'Provided parameters result with "404: not found" error'
             )
