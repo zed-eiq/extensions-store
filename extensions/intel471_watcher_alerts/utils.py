@@ -1,12 +1,12 @@
 import itertools
+import math
 import re
 import sys
+from datetime import datetime
 from typing import Tuple, List, Set
 
 import requests
-from datetime import datetime
 from furl import furl
-
 
 HEADERS = {}
 
@@ -31,15 +31,15 @@ def batch(iterable, size):
 
 
 def fetch_with_paging(
-    self,
-    api_url,
-    count_col_name,
-    root_node,
-    created_col_name,
-    auth,
-    query_params,
-    verify_ssl,
-    page_size=PAGE_SIZE,
+        self,
+        api_url,
+        count_col_name,
+        root_node,
+        created_col_name,
+        auth,
+        query_params,
+        verify_ssl,
+        page_size=PAGE_SIZE,
 ):
     offset = 0
     last_report_timestamp = query_params["from"]
@@ -113,7 +113,7 @@ def fetch_results(self, url, auth, verify_ssl, ext_type="Provider", **params):
                 "description": f"{ext_type}  failed, service unavailable",
                 "message": f"{response.text}"})
             return {}
-        handle_errors(response, ext_type)
+        handle_errors(self, response, ext_type)
         response.raise_for_status()
     try:
         data = response.json()
@@ -124,17 +124,17 @@ def fetch_results(self, url, auth, verify_ssl, ext_type="Provider", **params):
         # so we remove that image to ingest the report
         the_text = ""
         complete_fields_size = (
-            data.get("researcherComments", "")
-            + data.get("rawText", "")
-            + data.get("rawTextTranslated", "")
+                data.get("researcherComments", "")
+                + data.get("rawText", "")
+                + data.get("rawTextTranslated", "")
         )
 
         if sys.getsizeof(complete_fields_size) > DESCRIPTION_SIZE_LIMIT:
             for field in ["researcherComments", "rawText", "rawTextTranslated"]:
                 remove_images_from_description(data, field)
                 if (
-                    sys.getsizeof(data.get(field, "") + the_text)
-                    < DESCRIPTION_SIZE_LIMIT
+                        sys.getsizeof(data.get(field, "") + the_text)
+                        < DESCRIPTION_SIZE_LIMIT
                 ):
                     the_text += data.get(field, "")
                 else:
@@ -181,9 +181,11 @@ def handle_errors(self, response, ext_type):
         pass
 
 
-def fetch_alerts(self, api_url: str, auth: Tuple, from_param: datetime, verify_ssl: bool):
+def fetch_alerts(self, api_url: str, auth: Tuple, from_param: datetime,
+                 verify_ssl: bool):
     offset = 0
-    query_params = {"from": from_param, "sort": "earliest", "count": PAGE_SIZE}
+    query_params = {"from": math.floor(from_param.timestamp()) * 1000,
+                    "sort": "earliest", "count": PAGE_SIZE}
     results = []
     while True:
         if offset:
@@ -208,12 +210,13 @@ def fetch_alerts(self, api_url: str, auth: Tuple, from_param: datetime, verify_s
 
 
 def download_related_reports(
-    api_url: str,
-    email: str,
-    api_key: str,
-    verify_ssl: bool,
-    related_reports: List,
-    downloaded_reports: Set,
+        self,
+        api_url: str,
+        email: str,
+        api_key: str,
+        verify_ssl: bool,
+        related_reports: List,
+        downloaded_reports: Set,
 ):
     results = []
     for report in related_reports:
@@ -221,6 +224,7 @@ def download_related_reports(
             continue
         results.append(
             download_report(
+                self,
                 furl(api_url).add(path=REPORT_ENDPOINT.format(report["uid"])).url,
                 (email, api_key),
                 verify_ssl,
@@ -230,9 +234,9 @@ def download_related_reports(
     return results, downloaded_reports
 
 
-def download_report(url: str, auth: Tuple, verify_ssl: bool):
+def download_report(self, url: str, auth: Tuple, verify_ssl: bool):
     # fetch report and reduce the blob size - rawText(Translated) can be 2MB big!
-    report = fetch_results(url, auth, verify_ssl, ext_type="Provider")
+    report = fetch_results(self, url, auth, verify_ssl, ext_type="Provider")
     if report.get("rawTextTranslated") and report.get("rawText"):
         report.pop("rawText")
     return report

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import json
-import math
 from datetime import datetime
 
 from dateutil import parser
@@ -29,8 +28,7 @@ class MainApp(ImporterProcess):
         verify = True
         since = parser.isoparse(since)
         verify_ssl = verify
-        from_param = math.floor(since.timestamp()) * 1000
-        timestamp = datetime.utcfromtimestamp(from_param)
+        timestamp = datetime.fromtimestamp(since.timestamp())
         auth = (api_email, api_key)
         alerts = fetch_alerts(
             self, furl(api_url).add(path="alerts").url, auth, timestamp, verify_ssl
@@ -50,6 +48,7 @@ class MainApp(ImporterProcess):
                 report = fetch_results(self, report_url, auth, verify_ssl)
                 if report:
                     report["relatedReports"], downloaded_reports = download_related_reports(
+                        self,
                         api_url,
                         api_email,
                         api_key,
@@ -86,13 +85,12 @@ class MainApp(ImporterProcess):
             }
         )
 
-        raw_data = json.loads(raw_data.decode("utf-8"))['raw_data']
+        raw_data = json.loads(raw_data)['raw_data']
         alert_transformer = {
             "intel471_adversary_report": transform_adversary_report,
             "intel471_posts": transform_posts,
         }
-        alert_data = json.loads(raw_data.decode("utf-8"))['raw_data']
-        self.save_transformed_data(alert_transformer[alert_data["content_type"]](alert_data)) 
+        self.save_transformed_data(alert_transformer[raw_data["content_type"]](raw_data))
 
         self.send_info({
             "code": "INF-0003",
