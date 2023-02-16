@@ -497,12 +497,6 @@ def merge_extracts(entity: dict, indicator: dict):
         if (extract["kind"], extract["value"]) in entity_extracts:
             continue
         entity["meta"]["bundled_extracts"].append(extract)
-        # try:
-        #     entity["data"]["observable"]["composition"].extend(
-        #         create_observables([extract])
-        #     )
-        # except:
-        #     pass
 
 
 def merge_types(existing_indicator: dict, indicator: dict):
@@ -711,7 +705,7 @@ def create_file_indicator(
     })
 
 
-def create_network_indicator(  # noqa:C901
+def create_network_indicator(
         report: dict,
         network: dict,
         publish_date: str,
@@ -976,27 +970,6 @@ def create_indicator_description(indicator: dict, current_description: str = "")
         if text and text not in current_description:
             description_lines.append(text)
     return "\n\n".join(description_lines)
-
-
-# def create_observables(extracts: List[dict]) -> List[dict]:
-#     observables = []
-#     for extract in extracts:
-#         if extract and extract["kind"] in formats:
-#             observables.append(create_observable(extract["kind"], extract["value"]))
-#     return observables
-
-
-# def create_observable(kind: str, value: str) -> dict:
-#     observable_object = ObservableObjectSchema().load({
-#         "properties_xml": formats.get(kind).format(
-#             xml.sax.saxutils.escape(str(value).lower())
-#         ),
-#         "properties_xml_type": properties_xml_types.get(kind),
-#     })
-#     observable_schema = ObservableSchema().load({
-#         "object": observable_object
-#     })
-#     return observable_schema
 
 
 THREAT_ACTOR_MOTIVATIONS = {
