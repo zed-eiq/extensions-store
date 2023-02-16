@@ -1,0 +1,575 @@
+{
+	"type": "linked-entities",
+	"entities": [
+		{
+			"data": {
+				"id": "{https://api.isightpartners.com/}Report-f7f88083-fc5d-5f01-88ca-64d3c4b0e448",
+				"title": "CLONE-Regional Campaign Observed Targeting Financial Sector of Former Soviet Bloc Countries; Tenuous Links to Previously Observed Campaigns",
+				"type": "report",
+				"short_description": "test",
+				"description": "<html report here><div>Countries: Russian Federation</div>",
+				"timestamp": "2017-05-10T02:45:00",
+				"information_source": {
+					"description": "https://api.isightpartners.com",
+					"type": "information-source",
+					"identity": {
+						"name": "FireEye iSIGHT Intelligence Report API",
+						"type": "identity"
+					},
+					"roles": [
+						{
+							"value": "Initial Author",
+							"vocab": "{http://stix.mitre.org/default_vocabularies-1}InformationSourceRoleVocab-1.0"
+						}
+					]
+				}
+			},
+			"meta": {
+				"estimated_observed_time": "2017-05-10T02:45:00",
+				"estimated_threat_start_time": "2017-05-10T02:45:00",
+				"tags": [
+					"Industry Sector - Financial Services",
+					"Malware: Buhtrap",
+					"Malware: Carbanak",
+					"Malware: DRIFTPIN",
+					"Malware: METASTAGE",
+					"Motivation - Financial or Economic",
+					"TTP - Malware Propagation and Deployment",
+					"TTP - Social Engineering",
+					"Theft"
+				]
+			}
+		},
+		{
+			"data": {
+				"id": "{http://api.isightpartners.com/}threat-actor-a12365fb-82bd-538a-a733-251ab39e4bf2",
+				"type": "threat-actor",
+				"title": "Intrusion Set: FIN7",
+				"timestamp": "2017-05-10T02:45:00",
+				"identity": {
+					"name": "FIN7",
+					"type": "identity"
+				},
+				"information_source": {
+					"description": "https://api.isightpartners.com",
+					"type": "information-source",
+					"identity": {
+						"name": "FireEye iSIGHT Intelligence Report API",
+						"type": "identity"
+					},
+					"roles": [
+						{
+							"value": "Initial Author",
+							"vocab": "{http://stix.mitre.org/default_vocabularies-1}InformationSourceRoleVocab-1.0"
+						}
+					]
+				},
+				"motivations": [
+					{
+						"type": "statement",
+						"value": "Financial or Economic",
+						"value_vocab": "{http://stix.mitre.org/default_vocabularies-1}MotivationVocab-1.1"
+					}
+				],
+				"intended_effects": [
+					{
+						"type": "statement",
+						"value": "Theft",
+						"value_vocab": "{http://stix.mitre.org/default_vocabularies-1}IntendedEffectVocab-1.0"
+					},
+					{
+						"type": "statement",
+						"value": "Advantage - Economic",
+						"value_vocab": "{http://stix.mitre.org/default_vocabularies-1}IntendedEffectVocab-1.0"
+					}
+				]
+			},
+			"meta": {
+				"estimated_observed_time": "2017-05-10T02:45:00",
+				"estimated_threat_start_time": "2017-05-10T02:45:00",
+				"tags": [
+					"Industry Sector - Financial Services",
+					"Malware: Buhtrap",
+					"Malware: Carbanak",
+					"Malware: DRIFTPIN",
+					"Malware: METASTAGE",
+					"Motivation - Financial or Economic",
+					"Theft"
+				]
+			}
+		},
+		{
+			"data": {
+				"id": "{http://api.isightpartners.com/}threat-actor-016eb87c-152d-5cca-84f8-757ee4e5d2c0",
+				"type": "threat-actor",
+				"title": "Intrusion Set: TEMP.APT TEST INTRUSION SET",
+				"timestamp": "2017-05-10T02:45:00",
+				"identity": {
+					"name": "TEMP.APT TEST INTRUSION SET",
+					"type": "identity"
+				},
+				"information_source": {
+					"description": "https://api.isightpartners.com",
+					"type": "information-source",
+					"identity": {
+						"name": "FireEye iSIGHT Intelligence Report API",
+						"type": "identity"
+					},
+					"roles": [
+						{
+							"value": "Initial Author",
+							"vocab": "{http://stix.mitre.org/default_vocabularies-1}InformationSourceRoleVocab-1.0"
+						}
+					]
+				},
+				"motivations": [
+					{
+						"type": "statement",
+						"value": "Financial or Economic",
+						"value_vocab": "{http://stix.mitre.org/default_vocabularies-1}MotivationVocab-1.1"
+					}
+				],
+				"intended_effects": [
+					{
+						"type": "statement",
+						"value": "Theft",
+						"value_vocab": "{http://stix.mitre.org/default_vocabularies-1}IntendedEffectVocab-1.0"
+					},
+					{
+						"type": "statement",
+						"value": "Advantage - Economic",
+						"value_vocab": "{http://stix.mitre.org/default_vocabularies-1}IntendedEffectVocab-1.0"
+					}
+				]
+			},
+			"meta": {
+				"estimated_observed_time": "2017-05-10T02:45:00",
+				"estimated_threat_start_time": "2017-05-10T02:45:00",
+				"tags": [
+					"Industry Sector - Financial Services",
+					"Malware: Buhtrap",
+					"Malware: Carbanak",
+					"Malware: DRIFTPIN",
+					"Malware: METASTAGE",
+					"Motivation - Financial or Economic",
+					"Theft"
+				]
+			}
+		},
+		{
+			"data": {
+				"id": "{https://api.isightpartners.com/}Indicator-d898620e-b944-5f9f-9b2d-0f260be33bfb",
+				"type": "indicator",
+				"title": "85d074aa473f3ae94275f885f8a7d37e",
+				"description": "This indicator has been confirmed hosting malicious content and has functioned as a command and control (C2) server, and/or otherwise acted as a source of malicious activity.",
+				"timestamp": "2017-05-10T02:45:00",
+				"confidence": {
+					"type": "confidence",
+					"value": "Unknown",
+					"value_vocab": "{http://stix.mitre.org/default_vocabularies-1}HighMediumLowVocab-1.0"
+				},
+				"observable": {
+					"type": "observable",
+					"composition": [
+						{
+							"type": "observable",
+							"object": {
+								"type": "cybox-object",
+								"properties_xml": "\n    <cybox:Properties\n            xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n            xmlns:cybox=\"http://cybox.mitre.org/cybox-2\"\n            xmlns:common=\"http://cybox.mitre.org/common-2\"\n            xmlns:FileObj=\"http://cybox.mitre.org/objects#FileObject-2\"\n            xsi:type=\"FileObj:FileObjectType\">\n        <FileObj:Hashes>\n            <common:Hash>\n                <common:Type>MD5</common:Type>\n                <common:Simple_Hash_Value>85d074aa473f3ae94275f885f8a7d37e</common:Simple_Hash_Value>\n            </common:Hash>\n        </FileObj:Hashes>\n    </cybox:Properties>",
+								"properties_xml_type": "{http://cybox.mitre.org/objects#FileObject-2}FileObjectType"
+							}
+						},
+						{
+							"type": "observable",
+							"object": {
+								"type": "cybox-object",
+								"properties_xml": "\n    <cybox:Properties\n            xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n            xmlns:cybox=\"http://cybox.mitre.org/cybox-2\"\n            xmlns:common=\"http://cybox.mitre.org/common-2\"\n            xmlns:FileObj=\"http://cybox.mitre.org/objects#FileObject-2\"\n            xsi:type=\"FileObj:FileObjectType\">\n        <FileObj:Hashes>\n            <common:Hash>\n                <common:Type>SHA1</common:Type>\n                <common:Simple_Hash_Value>33ef1a39c9bb8dde67e9fd86b3eee2b3b4e15b81</common:Simple_Hash_Value>\n            </common:Hash>\n        </FileObj:Hashes>\n    </cybox:Properties>",
+								"properties_xml_type": "{http://cybox.mitre.org/objects#FileObject-2}FileObjectType"
+							}
+						},
+						{
+							"type": "observable",
+							"object": {
+								"type": "cybox-object",
+								"properties_xml": "\n    <cybox:Properties\n            xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n            xmlns:cybox=\"http://cybox.mitre.org/cybox-2\"\n            xmlns:common=\"http://cybox.mitre.org/common-2\"\n            xmlns:FileObj=\"http://cybox.mitre.org/objects#FileObject-2\"\n            xsi:type=\"FileObj:FileObjectType\">\n        <FileObj:Hashes>\n            <common:Hash>\n                <common:Type>SHA256</common:Type>\n                <common:Simple_Hash_Value>1c423933af5f5c95201ec9efffed171af1a3074cdeb1377b86dcaf8177cf5cb9</common:Simple_Hash_Value>\n            </common:Hash>\n        </FileObj:Hashes>\n    </cybox:Properties>",
+								"properties_xml_type": "{http://cybox.mitre.org/objects#FileObject-2}FileObjectType"
+							}
+						},
+						{
+							"type": "observable",
+							"object": {
+								"type": "cybox-object",
+								"properties_xml": "\n    <cybox:Properties\n            xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n            xmlns:cybox=\"http://cybox.mitre.org/cybox-2\"\n            xmlns:cyboxCommon=\"http://cybox.mitre.org/common-2\"\n            xmlns:cyboxVocabs=\"http://cybox.mitre.org/default_vocabularies-2\"\n            xmlns:FileObj=\"http://cybox.mitre.org/objects#FileObject-2\"\n            xsi:type=\"FileObj:FileObjectType\">\n        <FileObj:File_Name>salary project.doc</FileObj:File_Name>\n    </cybox:Properties>",
+								"properties_xml_type": "{http://cybox.mitre.org/objects#FileObject-2}FileObjectType"
+							}
+						}
+					],
+					"composition_operator": "OR"
+				},
+				"types": [
+					{
+						"value": "File Hash Watchlist"
+					}
+				],
+				"producer": {
+					"description": "https://api.isightpartners.com",
+					"type": "information-source",
+					"identity": {
+						"name": "FireEye iSIGHT Intelligence Report API",
+						"type": "identity"
+					},
+					"roles": [
+						{
+							"value": "Initial Author",
+							"vocab": "{http://stix.mitre.org/default_vocabularies-1}InformationSourceRoleVocab-1.0"
+						}
+					]
+				}
+			},
+			"meta": {
+				"bundled_extracts": [
+					{
+						"kind": "hash-md5",
+						"value": "85d074aa473f3ae94275f885f8a7d37e",
+						"link_type": "observed",
+						"classification": "bad",
+						"confidence": "high"
+					},
+					{
+						"kind": "hash-sha1",
+						"value": "33ef1a39c9bb8dde67e9fd86b3eee2b3b4e15b81",
+						"link_type": "observed",
+						"classification": "bad",
+						"confidence": "high"
+					},
+					{
+						"kind": "hash-sha256",
+						"value": "1c423933af5f5c95201ec9efffed171af1a3074cdeb1377b86dcaf8177cf5cb9",
+						"link_type": "observed",
+						"classification": "bad",
+						"confidence": "high"
+					},
+					{
+						"kind": "file",
+						"value": "Salary project.doc",
+						"link_type": "observed",
+						"classification": "bad",
+						"confidence": "low"
+					}
+				],
+				"tags": [
+					"Industry Sector - Financial Services",
+					"Malware: Buhtrap",
+					"Malware: Carbanak",
+					"Malware: DRIFTPIN",
+					"Malware: METASTAGE",
+					"Motivation - Financial or Economic",
+					"Theft"
+				],
+				"estimated_observed_time": "2017-05-10T02:45:00",
+				"estimated_threat_start_time": "2017-05-10T02:45:00",
+				"extraction_ignore_paths": ["title"]
+			}
+		},
+		{
+			"data": {
+				"id": "{https://api.isightpartners.com/}Indicator-b790825c-3f86-5eb3-9f2c-2460c05b79c7",
+				"type": "indicator",
+				"title": "098f6bcd4621d373cade4e832627b4f6",
+				"description": "This indicator has been confirmed hosting malicious content and has functioned as a command and control (C2) server, and/or otherwise acted as a source of malicious activity.",
+				"timestamp": "2017-05-10T02:45:00",
+				"confidence": {
+					"type": "confidence",
+					"value": "Unknown",
+					"value_vocab": "{http://stix.mitre.org/default_vocabularies-1}HighMediumLowVocab-1.0"
+				},
+				"observable": {
+					"type": "observable",
+					"composition": [
+						{
+							"type": "observable",
+							"object": {
+								"type": "cybox-object",
+								"properties_xml": "\n    <cybox:Properties\n            xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n            xmlns:cybox=\"http://cybox.mitre.org/cybox-2\"\n            xmlns:common=\"http://cybox.mitre.org/common-2\"\n            xmlns:FileObj=\"http://cybox.mitre.org/objects#FileObject-2\"\n            xsi:type=\"FileObj:FileObjectType\">\n        <FileObj:Hashes>\n            <common:Hash>\n                <common:Type>MD5</common:Type>\n                <common:Simple_Hash_Value>098f6bcd4621d373cade4e832627b4f6</common:Simple_Hash_Value>\n            </common:Hash>\n        </FileObj:Hashes>\n    </cybox:Properties>",
+								"properties_xml_type": "{http://cybox.mitre.org/objects#FileObject-2}FileObjectType"
+							}
+						},
+						{
+							"type": "observable",
+							"object": {
+								"type": "cybox-object",
+								"properties_xml": "\n    <cybox:Properties\n            xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n            xmlns:cybox=\"http://cybox.mitre.org/cybox-2\"\n            xmlns:common=\"http://cybox.mitre.org/common-2\"\n            xmlns:FileObj=\"http://cybox.mitre.org/objects#FileObject-2\"\n            xsi:type=\"FileObj:FileObjectType\">\n        <FileObj:Hashes>\n            <common:Hash>\n                <common:Type>SHA1</common:Type>\n                <common:Simple_Hash_Value>a94a8fe5ccb19ba61c4c0873d391e987982fbbd3</common:Simple_Hash_Value>\n            </common:Hash>\n        </FileObj:Hashes>\n    </cybox:Properties>",
+								"properties_xml_type": "{http://cybox.mitre.org/objects#FileObject-2}FileObjectType"
+							}
+						},
+						{
+							"type": "observable",
+							"object": {
+								"type": "cybox-object",
+								"properties_xml": "\n    <cybox:Properties\n            xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n            xmlns:cybox=\"http://cybox.mitre.org/cybox-2\"\n            xmlns:common=\"http://cybox.mitre.org/common-2\"\n            xmlns:FileObj=\"http://cybox.mitre.org/objects#FileObject-2\"\n            xsi:type=\"FileObj:FileObjectType\">\n        <FileObj:Hashes>\n            <common:Hash>\n                <common:Type>SHA256</common:Type>\n                <common:Simple_Hash_Value>9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08</common:Simple_Hash_Value>\n            </common:Hash>\n        </FileObj:Hashes>\n    </cybox:Properties>",
+								"properties_xml_type": "{http://cybox.mitre.org/objects#FileObject-2}FileObjectType"
+							}
+						}
+					],
+					"composition_operator": "OR"
+				},
+				"types": [
+					{
+						"value": "File Hash Watchlist"
+					}
+				],
+				"producer": {
+					"description": "https://api.isightpartners.com",
+					"type": "information-source",
+					"identity": {
+						"name": "FireEye iSIGHT Intelligence Report API",
+						"type": "identity"
+					},
+					"roles": [
+						{
+							"value": "Initial Author",
+							"vocab": "{http://stix.mitre.org/default_vocabularies-1}InformationSourceRoleVocab-1.0"
+						}
+					]
+				}
+			},
+			"meta": {
+				"bundled_extracts": [
+					{
+						"kind": "hash-md5",
+						"value": "098f6bcd4621d373cade4e832627b4f6",
+						"link_type": "observed",
+						"classification": "bad",
+						"confidence": "high"
+					},
+					{
+						"kind": "hash-sha1",
+						"value": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3",
+						"link_type": "observed",
+						"classification": "bad",
+						"confidence": "high"
+					},
+					{
+						"kind": "hash-sha256",
+						"value": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+						"link_type": "observed",
+						"classification": "bad",
+						"confidence": "high"
+					}
+				],
+				"tags": [
+					"Industry Sector - Financial Services",
+					"Malware: Buhtrap",
+					"Malware: Carbanak",
+					"Malware: DRIFTPIN",
+					"Malware: METASTAGE",
+					"Motivation - Financial or Economic",
+					"Theft"
+				],
+				"estimated_observed_time": "2017-05-10T02:45:00",
+				"estimated_threat_start_time": "2017-05-10T02:45:00",
+				"extraction_ignore_paths": ["title"]
+			}
+		},
+		{
+			"data": {
+				"id": "{https://api.isightpartners.com/}Indicator-171b870c-04aa-5d1e-95df-2b15aca1cfd8",
+				"type": "indicator",
+				"title": "http://flyingducks.eu/svchost.exe",
+				"description": "This indicator has been confirmed hosting malicious content and has functioned as a command and control (C2) server, and/or otherwise acted as a source of malicious activity.",
+				"timestamp": "2017-05-10T02:45:00",
+				"confidence": {
+					"type": "confidence",
+					"value": "Unknown",
+					"value_vocab": "{http://stix.mitre.org/default_vocabularies-1}HighMediumLowVocab-1.0"
+				},
+				"observable": {
+					"type": "observable",
+					"composition": [
+						{
+							"type": "observable",
+							"object": {
+								"type": "cybox-object",
+								"properties_xml": "\n    <cybox:Properties\n            xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n            xmlns:cybox=\"http://cybox.mitre.org/cybox-2\"\n            xmlns:URIObj=\"http://cybox.mitre.org/objects#URIObject-2\"\n            xsi:type=\"URIObj:URIObjectType\"\n            type=\"URL\">\n        <URIObj:Value condition=\"Equals\">http://flyingducks.eu/svchost.exe</URIObj:Value>\n    </cybox:Properties>",
+								"properties_xml_type": "{http://cybox.mitre.org/objects#URIObject-2}URIObjectType"
+							}
+						}
+					],
+					"composition_operator": "OR"
+				},
+				"types": [
+					{
+						"value": "URL Watchlist"
+					}
+				],
+				"producer": {
+					"description": "https://api.isightpartners.com",
+					"type": "information-source",
+					"identity": {
+						"name": "FireEye iSIGHT Intelligence Report API",
+						"type": "identity"
+					},
+					"roles": [
+						{
+							"value": "Initial Author",
+							"vocab": "{http://stix.mitre.org/default_vocabularies-1}InformationSourceRoleVocab-1.0"
+						}
+					]
+				}
+			},
+			"meta": {
+				"bundled_extracts": [
+					{
+						"kind": "uri",
+						"value": "http://flyingducks.eu/svchost.exe",
+						"link_type": "observed",
+						"classification": "bad",
+						"confidence": "high"
+					}
+				],
+				"tags": [
+					"Industry Sector - Financial Services",
+					"Malware: Buhtrap",
+					"Malware: Carbanak",
+					"Malware: DRIFTPIN",
+					"Malware: METASTAGE",
+					"Motivation - Financial or Economic",
+					"Theft"
+				],
+				"estimated_observed_time": "2017-05-10T02:45:00",
+				"estimated_threat_start_time": "2017-05-10T02:45:00",
+				"extraction_ignore_paths": ["title"]
+			}
+		},
+		{
+			"data": {
+				"id": "{https://api.isightpartners.com/}Indicator-b637f349-98b6-5151-ad46-f07cc8a3052f",
+				"type": "indicator",
+				"title": "test@test.com",
+				"description": "test@test.com",
+				"timestamp": "2017-05-10T02:45:00",
+				"confidence": {
+					"type": "confidence",
+					"value": "Unknown",
+					"value_vocab": "{http://stix.mitre.org/default_vocabularies-1}HighMediumLowVocab-1.0"
+				},
+				"observable": {
+					"type": "observable",
+					"composition": [
+						{
+							"type": "observable",
+							"object": {
+								"type": "cybox-object",
+								"properties_xml": "\n    <cybox:Properties\n            xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n            xmlns:cybox=\"http://cybox.mitre.org/cybox-2\"\n            xmlns:AddressObj=\"http://cybox.mitre.org/objects#AddressObject-2\"\n            xsi:type=\"AddressObj:AddressObjectType\"\n            category=\"e-mail\">\n        <AddressObj:Address_Value>test@test.com</AddressObj:Address_Value>\n    </cybox:Properties>",
+								"properties_xml_type": "{http://cybox.mitre.org/objects#AddressObject-2}AddressObjectType"
+							}
+						}
+					],
+					"composition_operator": "OR"
+				},
+				"types": [
+					{
+						"value": "Malicious E-mail"
+					}
+				],
+				"producer": {
+					"description": "https://api.isightpartners.com",
+					"type": "information-source",
+					"identity": {
+						"name": "FireEye iSIGHT Intelligence Report API",
+						"type": "identity"
+					},
+					"roles": [
+						{
+							"value": "Initial Author",
+							"vocab": "{http://stix.mitre.org/default_vocabularies-1}InformationSourceRoleVocab-1.0"
+						}
+					]
+				}
+			},
+			"meta": {
+				"bundled_extracts": [
+					{
+						"kind": "email",
+						"value": "test@test.com",
+						"link_type": "observed"
+					}
+				],
+				"tags": [
+					"Industry Sector - Financial Services",
+					"Malware: Buhtrap",
+					"Malware: Carbanak",
+					"Malware: DRIFTPIN",
+					"Malware: METASTAGE",
+					"Motivation - Financial or Economic",
+					"Theft"
+				],
+				"estimated_observed_time": "2017-05-10T02:45:00",
+				"estimated_threat_start_time": "2017-05-10T02:45:00",
+				"extraction_ignore_paths": ["title"]
+			}
+		}
+	],
+	"relations": [
+		{
+			"data": {
+				"source": 0,
+				"target": 1,
+				"key": "threat_actors",
+				"source_type": "report",
+				"target_type": "threat-actor",
+				"type": "relation"
+			}
+		},
+		{
+			"data": {
+				"source": 0,
+				"target": 2,
+				"key": "threat_actors",
+				"source_type": "report",
+				"target_type": "threat-actor",
+				"type": "relation"
+			}
+		},
+		{
+			"data": {
+				"source": 0,
+				"target": 3,
+				"key": "indicators",
+				"source_type": "report",
+				"target_type": "indicator",
+				"type": "relation"
+			}
+		},
+		{
+			"data": {
+				"source": 0,
+				"target": 4,
+				"key": "indicators",
+				"source_type": "report",
+				"target_type": "indicator",
+				"type": "relation"
+			}
+		},
+		{
+			"data": {
+				"source": 0,
+				"target": 5,
+				"key": "indicators",
+				"source_type": "report",
+				"target_type": "indicator",
+				"type": "relation"
+			}
+		},
+		{
+			"data": {
+				"source": 0,
+				"target": 6,
+				"key": "indicators",
+				"source_type": "report",
+				"target_type": "indicator",
+				"type": "relation"
+			}
+		}
+	]
+}

@@ -1,0 +1,392 @@
+{
+   "type":"linked-entities",
+   "entities":[
+      {
+         "meta":{
+            "taxonomy":[
+
+            ],
+            "tlp_color":"NONE",
+            "estimated_threat_start_time":"2017-05-10T02:42:00+00:00",
+            "tags":[
+               "Targeted Technology - Users/Application and Software",
+               "Industry Sector - Financial Services",
+               "Targeted Information - Customer Data",
+               "Targeted Information - Financial Data",
+               "Targeted Information - Credentials",
+               "Motivation - Financial or Economic",
+               "Malware: trickbot",
+               "Malware: Dyre",
+               "TTP - Malware Propagation and Deployment",
+               "TTP - Fraud"
+            ],
+            "half_life":1,
+            "estimated_observed_time":"2017-05-10T02:42:00+00:00",
+            "estimated_threat_end_time":"None",
+            "extraction_ignore_paths":[
+               "information_source",
+               "producer"
+            ],
+            "bundled_extracts":[
+
+            ],
+            "attack":[
+
+            ]
+         },
+         "data":{
+            "type":"report",
+            "timestamp":"2017-05-10T02:42:00+00:00",
+            "intents":[
+
+            ],
+            "title":"CLONE-Indicator Report: TrickBot Activity Report (March 10 to 17, 2017)",
+            "id":"{https://api.isightpartners.com/}Report-30d13de7-479c-559f-8873-cabb5353d5e3",
+            "short_description":"TEST",
+            "description":"<div>TEST with high confidence</div>",
+            "information_source":{
+               "type":"information-source",
+               "description":"https://api.isightpartners.com",
+               "references":[
+
+               ],
+               "roles":[
+                  {
+                     "value":"Initial Author",
+                     "vocab":"{http://stix.mitre.org/default_vocabularies-1}InformationSourceRoleVocab-1.0"
+                  }
+               ],
+               "identity":{
+                  "name":"FireEye iSIGHT Intelligence Report API",
+                  "type":"identity"
+               }
+            }
+         },
+         "attachments":[
+
+         ]
+      },
+      {
+         "meta":{
+            "taxonomy":[
+
+            ],
+            "tlp_color":"NONE",
+            "estimated_threat_start_time":"2017-05-10T02:42:00+00:00",
+            "tags":[
+               "Targeted Technology - Users/Application and Software",
+               "Industry Sector - Financial Services",
+               "Targeted Information - Customer Data",
+               "Targeted Information - Financial Data",
+               "Targeted Information - Credentials",
+               "Motivation - Financial or Economic",
+               "Malware: trickbot",
+               "Malware: Dyre"
+            ],
+            "half_life":1,
+            "estimated_observed_time":"2017-05-10T02:42:00+00:00",
+            "estimated_threat_end_time":"None",
+            "extraction_ignore_paths":[
+               "information_source",
+               "producer",
+               "title"
+            ],
+            "bundled_extracts":[
+               {
+                  "kind":"hash-md5",
+                  "value":"703c0f739bdfcc5123111c39f0bc01b5",
+                  "classification":"bad",
+                  "confidence":"high"
+               },
+               {
+                  "kind":"hash-sha1",
+                  "value":"ac9648be141be1eb115b410b30e28bb76764829f",
+                  "classification":"bad",
+                  "confidence":"high"
+               },
+               {
+                  "kind":"hash-sha256",
+                  "value":"deb510c3b0ca5818bb095c03d64f8c22cd22a85eb3400447a55f42a777f2bfc5",
+                  "classification":"bad",
+                  "confidence":"high"
+               },
+               {
+                  "kind":"product",
+                  "value":"HardCore Software For : Public",
+                  "classification":"unknown"
+               }
+            ],
+            "attack":[
+
+            ]
+         },
+         "data":{
+            "type":"indicator",
+            "timestamp":"2017-05-10T02:42:00+00:00",
+            "confidence":{
+               "type":"confidence",
+               "value":"High",
+               "value_vocab":"{http://stix.mitre.org/default_vocabularies-1}HighMediumLowVocab-1.0"
+            },
+            "title":"703c0f739bdfcc5123111c39f0bc01b5",
+            "test_mechanisms":[
+
+            ],
+            "id":"{https://api.isightpartners.com/}Indicator-e59d41a0-fa20-5046-b39e-e8a87df5bea2",
+            "short_description":"",
+            "description":"This indicator has been confirmed hosting malicious content and has functioned as a command and control (C2) server, and/or otherwise acted as a source of malicious activity.\n\nMalware: trickbot",
+            "likely_impact":{
+               "type":"statement",
+               "value":"Unknown",
+               "value_vocab":"{http://stix.mitre.org/default_vocabularies-1}HighMediumLowVocab-1.0"
+            },
+            "types":[
+               {
+                  "value":"File Hash Watchlist"
+               }
+            ],
+            "producer":{
+               "type":"information-source",
+               "description":"https://api.isightpartners.com",
+               "references":[
+
+               ],
+               "roles":[
+                  {
+                     "value":"Initial Author",
+                     "vocab":"{http://stix.mitre.org/default_vocabularies-1}InformationSourceRoleVocab-1.0"
+                  }
+               ],
+               "identity":{
+                  "name":"FireEye iSIGHT Intelligence Report API",
+                  "type":"identity"
+               }
+            }
+         }
+      },
+      {
+         "meta":{
+            "taxonomy":[
+
+            ],
+            "tlp_color":"NONE",
+            "estimated_threat_start_time":"2017-05-10T02:42:00+00:00",
+            "tags":[
+               "Targeted Technology - Users/Application and Software",
+               "Industry Sector - Financial Services",
+               "Targeted Information - Customer Data",
+               "Targeted Information - Financial Data",
+               "Targeted Information - Credentials",
+               "Motivation - Financial or Economic",
+               "Malware: trickbot",
+               "Malware: Dyre"
+            ],
+            "half_life":1,
+            "estimated_observed_time":"2017-05-10T02:42:00+00:00",
+            "estimated_threat_end_time":"None",
+            "extraction_ignore_paths":[
+               "information_source",
+               "producer",
+               "title"
+            ],
+            "bundled_extracts":[
+               {
+                  "kind":"ipv4",
+                  "value":"200.116.206.58",
+                  "classification":"bad",
+                  "confidence":"high"
+               },
+               {
+                  "kind":"asn",
+                  "value":"13489",
+                  "classification":"good"
+               },
+               {
+                  "kind":"port",
+                  "value":"443",
+                  "classification":"unknown"
+               },
+               {
+                  "kind":"port",
+                  "value":"80",
+                  "classification":"unknown"
+               }
+            ],
+            "attack":[
+
+            ]
+         },
+         "data":{
+            "type":"indicator",
+            "timestamp":"2017-05-10T02:42:00+00:00",
+            "confidence":{
+               "type":"confidence",
+               "value":"High",
+               "value_vocab":"{http://stix.mitre.org/default_vocabularies-1}HighMediumLowVocab-1.0"
+            },
+            "title":"200.116.206.58",
+            "test_mechanisms":[
+
+            ],
+            "id":"{https://api.isightpartners.com/}Indicator-8884c0b2-fd92-5e9a-be45-555807faaf18",
+            "short_description":"",
+            "description":"This indicator has been confirmed to host malicious content due to compromise or abuse. The exact time and length of compromise is unknown unless disclosed within the report.\n\nMalware: trickbot\n\nThis indicator has been confirmed hosting malicious content and has functioned as a command and control (C2) server, and/or otherwise acted as a source of malicious activity.\n\nMalware: testMalware",
+            "likely_impact":{
+               "type":"statement",
+               "value":"Unknown",
+               "value_vocab":"{http://stix.mitre.org/default_vocabularies-1}HighMediumLowVocab-1.0"
+            },
+            "types":[
+               {
+                  "value":"IP Watchlist"
+               }
+            ],
+            "producer":{
+               "type":"information-source",
+               "description":"https://api.isightpartners.com",
+               "references":[
+
+               ],
+               "roles":[
+                  {
+                     "value":"Initial Author",
+                     "vocab":"{http://stix.mitre.org/default_vocabularies-1}InformationSourceRoleVocab-1.0"
+                  }
+               ],
+               "identity":{
+                  "name":"FireEye iSIGHT Intelligence Report API",
+                  "type":"identity"
+               }
+            }
+         }
+      },
+      {
+         "meta":{
+            "taxonomy":[
+
+            ],
+            "tlp_color":"NONE",
+            "estimated_threat_start_time":"2017-05-10T02:42:00+00:00",
+            "tags":[
+               "Targeted Technology - Users/Application and Software",
+               "Industry Sector - Financial Services",
+               "Targeted Information - Customer Data",
+               "Targeted Information - Financial Data",
+               "Targeted Information - Credentials",
+               "Motivation - Financial or Economic",
+               "Malware: trickbot",
+               "Malware: Dyre"
+            ],
+            "half_life":1,
+            "estimated_observed_time":"2017-05-10T02:42:00+00:00",
+            "estimated_threat_end_time":"None",
+            "extraction_ignore_paths":[
+               "information_source",
+               "producer",
+               "title"
+            ],
+            "bundled_extracts":[
+               {
+                  "kind":"domain",
+                  "value":"test.com",
+                  "classification":"bad",
+                  "confidence":"high"
+               },
+               {
+                  "kind":"uri",
+                  "value":"https://test.com:443/testing1",
+                  "classification":"bad",
+                  "confidence":"high"
+               },
+               {
+                  "kind":"uri",
+                  "value":"https://test.com:443/testing2",
+                  "classification":"bad",
+                  "confidence":"high"
+               }
+            ],
+            "attack":[
+
+            ]
+         },
+         "data":{
+            "type":"indicator",
+            "timestamp":"2017-05-10T02:42:00+00:00",
+            "confidence":{
+               "type":"confidence",
+               "value":"High",
+               "value_vocab":"{http://stix.mitre.org/default_vocabularies-1}HighMediumLowVocab-1.0"
+            },
+            "title":"test.com",
+            "test_mechanisms":[
+
+            ],
+            "id":"{https://api.isightpartners.com/}Indicator-7b59e575-3fef-5a8d-a09b-34758e17016e",
+            "short_description":"",
+            "description":"This indicator has been confirmed hosting malicious content and has functioned as a command and control (C2) server, and/or otherwise acted as a source of malicious activity.\n\nMalware: trickbot",
+            "likely_impact":{
+               "type":"statement",
+               "value":"Unknown",
+               "value_vocab":"{http://stix.mitre.org/default_vocabularies-1}HighMediumLowVocab-1.0"
+            },
+            "types":[
+               {
+                  "value":"Domain Watchlist"
+               },
+               {
+                  "value":"URL Watchlist"
+               }
+            ],
+            "producer":{
+               "type":"information-source",
+               "description":"https://api.isightpartners.com",
+               "references":[
+
+               ],
+               "roles":[
+                  {
+                     "value":"Initial Author",
+                     "vocab":"{http://stix.mitre.org/default_vocabularies-1}InformationSourceRoleVocab-1.0"
+                  }
+               ],
+               "identity":{
+                  "name":"FireEye iSIGHT Intelligence Report API",
+                  "type":"identity"
+               }
+            }
+         }
+      }
+   ],
+   "relations":[
+      {
+         "data":{
+            "source":0,
+            "target":1,
+            "key":"indicators",
+            "source_type":"report",
+            "target_type":"indicator",
+            "type":"relation"
+         }
+      },
+      {
+         "data":{
+            "source":0,
+            "target":2,
+            "key":"indicators",
+            "source_type":"report",
+            "target_type":"indicator",
+            "type":"relation"
+         }
+      },
+      {
+         "data":{
+            "source":0,
+            "target":3,
+            "key":"indicators",
+            "source_type":"report",
+            "target_type":"indicator",
+            "type":"relation"
+         }
+      }
+   ]
+}
