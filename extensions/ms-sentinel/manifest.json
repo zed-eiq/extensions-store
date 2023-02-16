@@ -13,7 +13,7 @@
   "programming_language_version": "3.8",
   "supported_update_strategies": {
     "default": "APPEND",
-    "enum": ["APPEND", "REPLACE"]
+    "enum": ["APPEND", "REPLACE", "DIFF"]
   },
   "content_types": [
     {
