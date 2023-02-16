@@ -141,7 +141,6 @@ def create_adversary_actors(data: dict, entities: list) -> Tuple[Dict, List]:
 
     # Tags
     tags = data.get("tags") or list()
-    # taxonomy = list()
     actor_motivations = list()
     # Admiralty tags
     if data.get("admiraltyCode"):
@@ -173,7 +172,6 @@ def create_adversary_actors(data: dict, entities: list) -> Tuple[Dict, List]:
     threat_actor_meta = {
         "bundled_extracts": create_actor_extracts(data),
         "tags": tags,
-        # "taxonomy_paths": taxonomy
     }
 
     threat_actor = create_entity({
@@ -269,7 +267,6 @@ def create_adversary_report(data: dict) -> Dict:
     report_meta = {
         "bundled_extracts": bundled_extracts,
         "tags": tags,
-        # "taxonomy_paths": taxonomy,
         "estimated_observed_time": report_date.isoformat()
 
     }
