@@ -108,8 +108,8 @@ def fetch_results(self, url, auth, verify_ssl, ext_type="Provider", **params):
         raise
     if not response.ok:
         if response.status_code == 404:
-            self.send_error({
-                "code": "ERR-0000",
+            self.send_warning({
+                "code": "WAR-0000",
                 "description": f"{ext_type}  failed, service unavailable",
                 "message": f"{response.text}"})
             return {}
