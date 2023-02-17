@@ -1,0 +1,209 @@
+{
+	"type": "linked-entities",
+	"entities": [
+		{
+			"data": {
+				"id": "{http://www.intel471.com/}Report-14a10d32-d316-5520-a4d9-27cbf895a63a",
+				"title": "Actor mullah offers to sell alleged zero-day vulnerability in Mac OS X version 10.13, one-day remote code execution vulnerability in Apple Safari web browser, zero-day vulnerability in Foxmail freeware email client for Windows",
+				"description": "<strong><u>Researcher Comments</u></strong><p><p><strong>Actor and information assessment</strong></p><p>Based on the actor’s long-standing membership on the Exploit forum, positive reputation and our previous reporting, we assess the source Reliability as “B — Usually reliable.”</p><p>The actor <strong>mullah\\xa0</strong>provided our source with a video demonstrating the execution of the alleged zero-day vulnerability, however, no other evidence was provided. Therefore, we assess the Credibility of the claims as “3 — Possibly true.”</p><p>\\xa0</p><p><strong>Tactics, techniques and procedures</strong></p><p>The actor’s tactics, techniques and procedures (TTPs) include selling vulnerabilities for operating systems, applications and malware for Linux-based systems.<br>\\xa0</p><p><strong>Information from our source</strong></p><p>On Feb. 3, 2020, our sensitive and reliable source chatted with <strong>mullah</strong> via the Jabber ID maga123@exploit.im and learned the following information about the alleged zero-day vulnerability (translated from Russian):<br>---</p><p>&lt;…&gt;<br>[<strong>source</strong>]: Is reboot needed for the successful exploitation?</p><p>[<strong>maga123</strong>]: Nope, only root privileges.</p><p>[<strong>source</strong>]: Does the vulnerability allows to run any number of unsigned kexts [Kernel Extention] or only one?</p><p>[<strong>maga123</strong>]: I don’t know, but let me clarify. The bypass will work only for one kext at a time.</p><p>[<strong>source</strong>]: Do you have PoC code for this vulnerability? Are you going to sell it to a single customer only?</p><p>[<strong>maga123</strong>]: We are going to sell it to a single customer, only if he/she agree to purchase it for the specified price.<br>[<strong>maga123</strong>]: Yes, we do have an operational PoC which dumps Keychain [the password management system] on the most recent version of macOS.</p><p>[<strong>source</strong>]: Any proofs?</p><p>[The actor recorded a video and sent to the source 40 minutes later]<br>---</p><p>The actor also offered to sell our source a remote code execution (RCE) vulnerability in the Safari web browser and another RCE vulnerability in Foxmail, a freeware email client for Windows Foxmail:<br>---</p><p>[<strong>maga123</strong>]: It is also possible to write a PoC code for an one-day RCE vulnerability in a Safari web browser.\\xa0<br>&lt;…&gt;<br>[<strong>maga123</strong>]: I’m not involved in this personally, and I am not sure if the guys are ready to invest time and resources in this now.<br>&lt;…&gt;</p><p>[<strong>maga123</strong>]: There is also a\\xa0RCE [vulnerability] of Foxmail [freeware email client for] Windows available?</p><p>[<strong>maga123</strong>]: Here is its description:</p><p>\\xa0</p><pre><code class=\"language-plaintext\">1. Today\"s Date\n01/02/2020\n2. Item name\nFoxMail RCE (Windows)\n3. Asking Price and availability of exclusive acquisition\n40000 USD\n4. Affected OS\nWindows 32/64 bit\n5. Vulnerable Target application versions and reliability. If 32 bit only, is 64 bit vulnerable? List complete point release range.\n32/64 bit\n6. Tested, functional against target application versions, list complete point release range. Explain tested on versions.\nFoxmail 7.2.15 (Released 10/01/2020 as autoupdate)\n7. Does this exploit affect the current target version?\n[X] Yes\n[ ] No\n8. Privilege Level Gained\n[x] As logged in user (Select Integrity level below for Windows)\n[ ] Web Browser\"s default (IE - Low, Others - Med)\n[ ] Low\n[ ] Medium\n[ ] High\n[ ] Root, Admin or System\n[ ] Ring 0/Kernel\n[ ] Other\n9. Exploit Type (select all that apply)\n[x] Remote code execution\n[ ] Privilege escalation\n[ ] Font based\n[ ] Sandbox escape\n[ ] Information disclosure (peek)\n[ ] Code signing bypass\n[ ] Persistency\n[ ] Other ___?\n11. Delivery Method\n[ ] Via web page\n[ ] Via file\n[ ] Via network protocol\n[ ] Local privilege escalation\n[x] Via email\n12. Bug Class\n[ ] memory corruption\n[x] design/logic flaw (auth-bypass / update issues)\n[x] input validation flaw (XSS/XSRF/SQLi/command injection, etc.)\n[ ] misconfiguration\n[ ] information disclosure\n[ ] cryptographic bug\n[ ] denial of service\n13. Number of bugs exploited in the item:\nA few logical bugs\n14. Exploitation Parameters\n[ ] Bypasses ASLR\n[ ] Bypasses DEP / W ^ X\n[ ] Bypasses Application Sandbox\n[ ] Bypasses SMEP/PXN\n[ ] Bypasses EMET Version ___\n[ ] Bypasses CFG (Win 8.1)\n[x] N/A\n15. Is ROP employed?\n[x] No\n[ ] Yes (but without fixed addresses)\n- Number of chains included ___ ?\n- Is the ROP set complete ___ ?\n- What module does ROP occur from ___ ?\n16. Does this item alert the target user? Explain.\nNo\n17. How long does exploitation take, in seconds?\n1-2 seconds\n18. Does this item require any specific user interactions?\nOpen (read) mail\n19. Any associated caveats or environmental factors? For example - does the exploit determine remote OS/App versioning, and is that required?\nNo\n20. Does it require additional work to be compatible with arbitrary payloads?\n[ ] Yes\n[x] No\n21. Is this a finished item you have in your possession that is ready for delivery immediately?\n[x] Yes\n[ ] No\n[ ] 1-5 days\n[ ] 6-10 days\n[ ] More:\n22. Impact on framework (crashes, etc....)\n23. Success rate (or number of necessary attempts)\n100%\n24. Does this item support continuation of execution?\nYes\n25. Description. Detail a list of deliverables including documentation.\n26. Testing Instructions\n27. Comments and other notes; unusual artifacts, other limitations, mitigations or other pieces of information.</code></pre><p>[<strong>source</strong>]: It looks like you already submitted it to some bug bounty program?</p><p>[<strong>maga123</strong>]: We have already sold it to one customer. But we did not submit it to any program. This is my form, I filled it.<br><br>[<strong>maga123</strong>]: The forms are mostly the same everywhere, I just picked up one and use it.<br>&lt;…&gt;<br>---</p><p>The actor <strong>mullah’s</strong> Jabber ID maga123@exploit.im shared the following fingerprint:</p><pre><code class=\"language-plaintext\">— Resource: jail.\n— Local time: 18:18:00 +0300.\n— Operating system: Windows XP.\n—Client:&amp;nbsp;Я.Онлайн 3.2.0.8873.\n---\n— Full name: maga123.</code></pre><p><br><strong>Detailed observations</strong><br><br>No further details about the alleged Mac OS zero-day vulnerability were provided. It is possible the one-day RCE vulnerability in the Apple Safari web browser <strong>mullah</strong> offered may refer to CVE-2019-8846, which recently was discovered and patched Dec. 10, 2019. The vulnerability exists due to a use-after-free error in the Scalable Vector Graphics (SVG) marker element feature of Apple Safari’s web kit. A remote attacker can use a specially crafted Hypertext Markup Language (HTML) webpage that triggers memory corruption when opened by a victim and executes arbitrary code on the target system. Successful exploitation of the vulnerability may allow an attacker to compromise the system.\\xa0<br><br>The actor provided no evidence of a PoC for the aforementioned vulnerability in Safari, and did not demonstrate the alleged zero-day vulnerability in the Foxmail client. Therefore, the truth of <strong>mullah’s\\xa0</strong>claims cannot be judged.<br><br>According to file metadata, the video <strong>mullah</strong> shared was recorded on a Mac OS X 10.15.3 (19D76). The video demonstrated loading the unsigned kernel text at /tmp/unharden.kext inside the Mac OS with enabled system integrity protection. The vulnerability PoC code was written in the C++ programming language. We also noticed two rather interesting strings in the PoC source code — “PS752_exploit” and “PS752_inject.” PS752 was the number of the Ukraine International Airlines Flight shot down Jan. 8, 2020, in Iran. However, there was no evidence suggesting the actor referred to that incident and it might be only a coincidence.<br><br>The actor’s repeated use of the pronoun “we” in the chat suggested <strong>mullah\\xa0</strong>most likely operates in a team.</p><p>\\xa0</p><p><strong>Key related activity</strong></p><p>Since our most recent update on the actor, <strong>mullah</strong> demonstrated a rather low level of public activity, added only 21 new posts on the forum and most were made in the forum section dedicated to software and malware development. The actor’s reputation improved to the seventh level and <strong>mullah\\xa0</strong>was endorsed by the actors <strong>Ameth</strong> and <strong>updated</strong>.</p><p>The actor’s most interesting posts included:</p><p>— Nov. 21, 2019: Sold an automated secure shell protocol (SSH)-based OpenSSH fuzzy-patching tool to embed backdoors (see: https://titan.intel471.com/post_thread/439559281f0e1b8c729ba85acbc1ce0f).</p><p>— March 25, 2019: Provided positive feedback for the actor <strong>Megatraffer</strong>, who provided code signing and secure sockets layer (SSL) certificates on the forum.</p><p>— Jan. 8, 2019: Offered a fully functional Linux kernel module (LKM) rootkit and miniature in-kernel implant with root back-connect functionality (see: https://titan.intel471.com/post_thread/a91c52af7d4ea8a5f8a0c0c903cd9456?post_uid=11dfc472da75580f0c461bdafb784bc4).</p><p><br><strong>Attachment</strong></p><p>— Screen Recording 2020-02-03 at 7.55.56 PM (sanitized).mov — A sanitized version of the demonstration video <strong>mullah</strong> shared.</p></p><p>On\\xa0Feb. 1, 2020, the actor <strong>mullah</strong> posted the following at the Exploit cybercrime forum:<br>---</p><p><strong>[OSX][0day] Unsigned KEXT load technique</strong><br>I'm selling a technique for loading an unsigned kernel extension (kext) implemented for OSX versions 10.13 and later (including the most recent one).<br>You will need root privileges to load an unsigned kext. Therefore, this exploit will most probably be a part of your exploit chain. Additionally, a POC sample has been developed to show this technique in action. The sample allows disabling run-time hardening and getting a _complete_ dump of the keychain (the system for storing keys and passwords) on the latest OSX version.<br>If you want to purchase it, PM me please. Don't forget to specify your price.<br>---<br>[source: https://titan.intel471.com/post_thread/98647fd9237856739d8d3cee80506e3c]</p>",
+				"type": "report",
+				"timestamp": "2020-02-03T00:00:00",
+				"information_source": {
+					"type": "information-source",
+					"description": "Intel 471 Adversary Intelligence Feed",
+					"references": [
+						"https://titan.intel471.com/report/e0a11334d45069c5cc1082ebb4668e61"
+					],
+					"identity": {
+						"name": "Intel 471 Adversary Intelligence Feed",
+						"type": "identity"
+					},
+					"roles": [
+						{
+							"value": "Initial Author",
+							"vocab": "{http://stix.mitre.org/default_vocabularies-1}InformationSourceRoleVocab-1.0"
+						}
+					]
+				},
+				"short_description": "<p><p>We previously covered <strong>mullah</strong> selling malware for Linux-based operating systems (see: Related Reports section). On Feb. 1, 2020, the actor\\xa0offered to sell an alleged zero-day vulnerability in Mac OS X versions 10.13 and later . The vulnerability proof of concept (PoC) code reportedly allows loading an unsigned kernel extension (aka “kext”) on Mac OS X versions 10.13 and later.\\xa0The actor claimed the available PoC code could disable the\\xa0hardened runtime service and obtain a dump of the keychain password management system. The actor suggested using the exploit in conjunction with a local privilege escalation (LPE) vulnerability, since it requires root privileges to load an unsigned kernel extension. The actor <strong>mullah\\xa0</strong>provided our source with a demonstration video of the alleged vulnerability.</p><p>The actor also offered our source a one-day remote code execution (RCE) vulnerability in the Apple Safari web browser and an alleged zero-day RCE vulnerability in the Foxmail version 7.2.15 freeware email client for Windows operating systems.</p></p><p>Information was derived from the Russian-language cybercrime forum Exploit and our sensitive and reliable source.</p>",
+				"intents": [
+					{
+						"value": "Threat Report"
+					}
+				]
+			},
+			"meta": {
+				"tags": [
+					"Cyber Crime",
+					"INFOREP",
+					"TTPs",
+					"Vulnerabilities & Exploits"
+				],
+				"estimated_threat_start_time": "None",
+				"estimated_threat_end_time": "None",
+				"estimated_observed_time": "2020-02-03T00:00:00",
+				"tlp_color": "None",
+				"half_life": 1,
+				"extraction_ignore_paths": [
+					"information_source",
+					"producer"
+				],
+				"bundled_extracts": [
+					{
+						"kind": "email",
+						"link_type": "observed",
+						"classification": "unknown",
+						"value": "jabber|maga123@exploit.im"
+					},
+					{
+						"kind": "name",
+						"link_type": "observed",
+						"classification": "unknown",
+						"value": "Ameth"
+					},
+					{
+						"kind": "name",
+						"link_type": "observed",
+						"classification": "unknown",
+						"value": "Megatraffer"
+					},
+					{
+						"kind": "name",
+						"link_type": "observed",
+						"classification": "unknown",
+						"value": "updated"
+					},
+					{
+						"kind": "name",
+						"link_type": "observed",
+						"classification": "unknown",
+						"value": "maga123"
+					}
+				],
+				"attack": []
+			},
+			"attachments": []
+		},
+		{
+			"data": {
+				"id": "{http://www.intel471.com/}threat-actor-9c08270e-2027-5410-a01e-64a1c0206cce",
+				"type": "threat-actor",
+				"title": "Threat Actor: mullah",
+				"information_source": {
+					"description": "Intel 471 Adversary Intelligence Feed",
+					"identity": {
+						"name": "Intel 471 Adversary Intelligence Feed",
+						"type": "identity"
+					},
+					"type": "information-source"
+				},
+				"confidence": {
+					"type": "confidence",
+					"value": "High",
+					"value_vocab": "{http://stix.mitre.org/default_vocabularies-1}HighMediumLowVocab-1.0"
+				},
+				"identity": {
+					"name": "mullah",
+					"type": "identity"
+				},
+				"motivations": [
+					{
+						"type": "statement",
+						"value": "Financial or Economic",
+						"value_vocab": "{http://stix.mitre.org/default_vocabularies-1}MotivationVocab-1.1"
+					}
+				]
+			},
+			"meta": {
+				"estimated_observed_time": "None",
+				"estimated_threat_start_time": "None",
+				"estimated_threat_end_time": "None",
+				"half_life": "None",
+				"taxonomy": "None",
+				"attack": "None",
+				"tlp_color": "None",
+				"extraction_ignore_paths": "None",
+				"bundled_extracts": [
+					{
+						"classification": "unknown",
+						"kind": "name",
+						"link_type": "observed",
+						"value": "ironfist101"
+					},
+					{
+						"classification": "unknown",
+						"kind": "name",
+						"link_type": "observed",
+						"value": "ironfist1001"
+					},
+					{
+						"classification": "unknown",
+						"kind": "name",
+						"link_type": "observed",
+						"value": "unbreakable1011"
+					},
+					{
+						"classification": "unknown",
+						"kind": "name",
+						"link_type": "observed",
+						"value": "Mantis Shrimp"
+					},
+					{
+						"classification": "unknown",
+						"kind": "name",
+						"link_type": "observed",
+						"value": "Boris"
+					},
+					{
+						"classification": "unknown",
+						"kind": "name",
+						"link_type": "observed",
+						"value": "cartoful"
+					},
+					{
+						"classification": "unknown",
+						"kind": "name",
+						"link_type": "observed",
+						"value": "stepup3d"
+					},
+					{
+						"classification": "unknown",
+						"kind": "name",
+						"link_type": "observed",
+						"value": "brucewayne1018"
+					},
+					{
+						"classification": "unknown",
+						"kind": "name",
+						"link_type": "observed",
+						"value": "TX-200"
+					},
+					{
+						"classification": "unknown",
+						"kind": "name",
+						"link_type": "observed",
+						"value": "ZODIAC"
+					}
+				],
+				"tags": [
+					"Cyber Crime",
+					"TTPs",
+					"Vulnerabilities & Exploits"
+				]
+			},
+			"attachments": "None"
+		}
+	],
+	"relations": [
+		{
+			"data": {
+				"source": 0,
+				"target": 1,
+				"key": "threat_actors",
+				"source_type": "report",
+				"target_type": "threat-actor",
+				"type": "relation"
+			}
+		}
+	]
+}

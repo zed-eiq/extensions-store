@@ -1,0 +1,196 @@
+{ 
+   "raw_data":
+   {
+      "uid":"1f76d2adc7627dff436766f2af9deb9242777a1c09dbfb9e6f2565af8a4bd120",
+      "documentFamily":"INFOREP",
+      "documentType":"INFOREP",
+      "admiraltyCode":"B3",
+      "motivation":[ 
+         "CC"
+      ],
+      "subject":"Actor mullah offers to sell alleged zero-day vulnerability in Mac OS X version 10.13, one-day remote code execution vulnerability in Apple Safari web browser, zero-day vulnerability in Foxmail freeware email client for Windows",
+      "created":1581341182000,
+      "dateOfInformation":1580688000000,
+      "sourceCharacterization":"Information was derived from the Russian-language cybercrime forum Exploit and our sensitive and reliable source.",
+      "relatedReports":[ 
+         { 
+            "uid":"13cab135540fa9b208f3922c966b99b9cbb35bb878fd6c2b3fea7fa01b900fed",
+            "documentFamily":"INFOREP",
+            "documentType":"INFOREP",
+            "admiraltyCode":"B2",
+            "motivation":[ 
+               "CC"
+            ],
+            "subject":"Actor mullah offers \"unique\" Linux root kit",
+            "created":1508466423000,
+            "dateOfInformation":1508025600000,
+            "sourceCharacterization":"Information was derived from the Russian-language cybercrime forum Exploit.",
+            "relatedReports":[ 
+               { 
+                  "uid":"1f76d2adc7627dff436766f2af9deb9242777a1c09dbfb9e6f2565af8a4bd120",
+                  "documentFamily":"INFOREP"
+               },
+               { 
+                  "uid":"b371c6474c1f828685139632b541f061a75f45d1e7163779704482d39d2a086b",
+                  "documentFamily":"INFOREP"
+               }
+            ],
+            "entities":[ 
+               { 
+                  "type":"Handle",
+                  "value":"SuperJITA"
+               },
+               { 
+                  "type":"Handle",
+                  "value":"pixe1"
+               },
+               { 
+                  "type":"Handle",
+                  "value":"500mhz"
+               },
+               { 
+                  "type":"Handle",
+                  "value":"recv32"
+               },
+               { 
+                  "type":"Handle",
+                  "value":"40gradusov"
+               },
+               { 
+                  "type":"Handle",
+                  "value":"mullah"
+               }
+            ],
+            "tags":[ 
+               "Malware",
+               "Tools",
+               "Vulnerabilities & Exploits"
+            ],
+            "portalReportUrl":"https://titan.intel471.com/report/2ab8e139fa47876b98bf71a54266ed41",
+            "lastUpdated":1576078781922,
+            "actorSubjectOfReport":[ 
+               { 
+                  "handle":"mullah"
+               }
+            ],
+            "researcherComments":"<p><strong>Assessment of the claim</strong></p>\r\n\r\n<p>This report serves as an Activity Update on the actor <strong>mullah</strong>, whom we earlier covered as a seller of a secure shell\\xa0(SSH),\\xa0secure copy (SCP) password sniffer and\\xa0keylogger targeting Linux systems (see Similar Reports .</p>\r\n\r\n<p>The actor’s new product seems to support our earlier conclusion that despite a low level of public activity and lack of reputation on the board, the actor is an experienced Linux software developer\\xa0who is privy to the Russian cybercrime underground.</p>\r\n\r\n<p>In our previous report, we mentioned the\\xa0actor\"s level of reputation on the board was negative (-1). However, in recent weeks\\xa0the actor enhanced his status following\\xa0praise from\\xa0three reputable forum members: ((<strong>500mhz</strong>)), ((<strong>SuperJITA</strong>)) and ((<strong>pixe1</strong>)). It is worth noting\\xa0the\\xa0actor’s only negative feedback was\\xa0deleted by the forum administrators, which is uncommon for the Exploit forum.</p>\r\n\r\n<p>Taking into account the abovementioned facts, we assess the actor’s claim with a Credibility of\\xa0“2 —\\xa0Probably True.”<br>\r\n\\xa0</p>\r\n\r\n<p><strong>Activity update</strong></p>\r\n\r\n<p>Since our last coverage, the actor added several new posts and\\xa0primarily was active in vulnerability-related discussions, including:<br>\r\n— Oct. 17, 2017: Commented on the actor ((<strong>40gradusov</strong>))<strong>’s</strong> post in which\\xa0<strong>40gradusov</strong>\\xa0put on sale an exploit for a recently discovered CVE-2017-11292 vulnerability in Adobe Flash Player, pointing out that the price of US $15,000 was too high for such a vulnerability;<br>\r\n— Oct. 11, 2017: Started a thread where he discussed a recently discovered flaw in Microsoft Office Dynamic Data Exchange (DDE) protocol, which allows execution of an arbitrary code; and<br>\r\n— Oct. 11, 2017: Criticized reputable forum member ((<strong>recv32</strong>))<strong>\"s</strong> article, in which\\xa0the author described \"advanced methods\" of bypassing anti-virus protection techniques. The actor\\xa0<strong>mullah </strong>claimed the article was “senseless,” suggesting the author had a lack of\\xa0understanding of the subject.</p>\r\n",
+            "rawTextTranslated":"<p>On Oct. 15, 2017, the actor <strong>mullah </strong>posted the following on the Exploit forum:<br>\r\n---</p>\r\n\r\n<p><strong>[Linux][Kernel][Rootkit] Studying demand</strong></p>\r\n\r\n<p>Hello everyone!<br>\r\nI have a unique rootkit for Linux that runs in the OS kernel. The rootkit hooks kernel functions. This seemingly simple solution opens a wide range of opportunities, such as:<br>\r\n- hiding files and directories (by name);<br>\r\n- hiding outgoing TCP connections (as well as the activity of RAW and UDP sockets);<br>\r\n- hiding processes and process hierarchy;<br>\r\n- hiding CPU usage by a process (for example, you can use this to hide an activity of a miner);<br>\r\n- hiding rootkit kernel module to prevent its detection by running lsmod or checking the /sys structure;<br>\r\n- disabling selinux/audit for selected processes;<br>\r\n- stealthy loading the kernel module (no warnings of incorrect signature, plus reverting the taint flags to normal status);<br>\r\n- adding LD_PRELOAD to a specific process upon execution (for example, you can load a password-stealing module into ssh/scp etc.);<br>\r\n- running a stealthy back connect [proxy] using one of the \"port knocking\" techniques.</p>\r\n\r\n<p>The rootkit is proven to work under CentOS 6.x/7.x and Ubuntu 14.x/16.x. It supports kernels from 2.6.32 to 4.x. There is not a single publicly known anti-rootkit tool that would detect this beast. So, I would like to know if people would be interested in buying such software either as a build or as a source code. Please note that it is not a some cheap GitHub-project, but a serious product.</p>\r\n\r\n<p>I also consider selling separately some approaches, used by the rootkit kernel module, for example:<br>\r\n- framework for hooking Linux kernel functions (symbols) (x86, based on disassembler length);<br>\r\n- framework for calling non-exported Linux kernel functions;<br>\r\n- technique for hiding processes, network sockets, application activity, process environment modifications upon running (like adding LD_PRELOAD);<br>\r\n- technique for setting up back-connect shells;<br>\r\n- technique for protecting the module against detection through lsmod and /sys;<br>\r\n- technique for stealthy module loading without warning of \"incorrect signature\" etc.;<br>\r\n- technique for filtering the kernel log (kmsg);<br>\r\n- something else perhaps, I can\"t recollect =)</p>\r\n\r\n<p>Furthermore, I can consider selling the technique for stealthy autorun on CentOS/Ubuntu. Well, anyway, I’m looking forward to your general questions. If you\"re interested in something specific, please contact me via a PM.</p>\r\n\r\n<p>P.S. A SSH/SCP sniffer written by me is still waiting for a buyer:</p>\r\n\r\n<p>[see: https://titan.intel471.com/post_thread/7f5e797c91447d8ff92c222b92ab61e9?post_uid=2fb1a7387cc78040e388fdc71bd3e419 ]<br>\r\n---<br>\r\n[source: https://titan.intel471.com/post_thread/e8a9b8812feceb98ecf5b232ae1a2795 ]</p>\r\n"
+         },
+         { 
+            "uid":"b371c6474c1f828685139632b541f061a75f45d1e7163779704482d39d2a086b",
+            "documentFamily":"INFOREP",
+            "documentType":"INFOREP",
+            "admiraltyCode":"B2",
+            "motivation":[ 
+               "CC"
+            ],
+            "subject":"Actor mullah selling SSH, SCP password sniffer, keylogger targeting Linux systems",
+            "created":1506307874000,
+            "dateOfInformation":1502668800000,
+            "sourceCharacterization":"Information derived from the Russian-language cybercrime forum Exploit.",
+            "relatedReports":[ 
+               { 
+                  "uid":"1f76d2adc7627dff436766f2af9deb9242777a1c09dbfb9e6f2565af8a4bd120",
+                  "documentFamily":"INFOREP"
+               },
+               { 
+                  "uid":"13cab135540fa9b208f3922c966b99b9cbb35bb878fd6c2b3fea7fa01b900fed",
+                  "documentFamily":"INFOREP"
+               }
+            ],
+            "entities":[ 
+               { 
+                  "type":"Handle",
+                  "value":"12309"
+               },
+               { 
+                  "type":"Handle",
+                  "value":"500mhz"
+               },
+               { 
+                  "type":"Handle",
+                  "value":"mullah"
+               },
+               { 
+                  "type":"Handle",
+                  "value":"pixe1"
+               }
+            ],
+            "tags":[ 
+               "Malware"
+            ],
+            "portalReportUrl":"https://titan.intel471.com/report/6709bb193d65096a0e32174dccb0d823",
+            "lastUpdated":1576078771568,
+            "actorSubjectOfReport":[ 
+               { 
+                  "handle":"mullah"
+               }
+            ],
+            "researcherComments":"<p><strong>Assessment of claim</strong></p>\r\n\r\n<p>Although the actor\\xa0<strong>mullah </strong>has a rather low level of reputation (-1) and lacks any prior activity on the board, he seems to be a reputable and skilled Linux coder, which is apparent from feedback provided by several reputable members of the Exploit forum. For example:<br>\r\n— the actor ((<strong>12309</strong>)) claimed he had a positive experience cooperating with <strong>mullah</strong>. <strong>12309 </strong>characterized <strong>mullah</strong> as a good developer\\xa0who specializes in low-level Linux programming;<br>\r\n— the actor ((<strong>500mhz</strong>)) also recommend <strong>mullah </strong>to fellow forum members, stating he has\\xa0been cooperating with him for a long time.\\xa0<strong>500mhz </strong>is a veteran of the\\xa0Russian-speaking cybercrime underground, who earlier was covered as a seller of zero-day LPE vulnerabilities in Red Hat, CentOS\\xa0and Ubuntu Linux distributions\\xa0(see: https://titan.intel471.com/report/d30a17b7544f156158e562308457fe83); and<br>\r\n— the forum moderator actor ((<strong>pixe1</strong>)) claimed <strong>mullah </strong>provided him some assistance with the CVE-2017-6074 vulnerability.</p>\r\n\r\n<p>The actor’s forum activity suggests he has been expressing strong interest in researching vulnerabilities in Linux and has been providing development services. Considering this expertise\\xa0and positive feedback from reputable forum members, we assess the actor’s claim with a Credibility of\\xa0“2 —\\xa0Probably True.”</p>\r\n\r\n<p><br><strong>Activity by the actor mullah</strong></p>\r\n\r\n<p>The actor has been a member of the Exploit community since Dec. 11, 2016. During his time at the board, the actor has only started two threads and made 18 posts. In one\\xa0of the\\xa0actor’s threads, it is of\\xa0interest\\xa0he was advertising his Linux kernel programming services. In his follow-up posts, the actor also shared\\xa0his reviews of Linux vulnerabilities\\xa0CVE-2017-6074, CVE-2017-2636 and\\xa0CVE-2017-7308.</p>\r\n",
+            "rawTextTranslated":"<p>On Aug. 14, 2017, the actor ((<strong>mullah</strong>)) posted the following on the Exploit forum:<br>\r\n---</p>\r\n\r\n<p><strong>SSH/SCP password sniffer for Linux</strong></p>\r\n\r\n<p>We would like to present a sniffer for harvesting SSH/SCP passwords on Linux operating systems\\xa0</p>\r\n\r\n<p>HOW IT WORKS:<br>\r\nThe sniffer operates leveraging a method of loading shared library using LD_PRELOAD.<br>\r\nThe library is loaded creating\\xa0SSH/SCP\\xa0shell-wrappers, which use LD_PRELOAD and are located in /usr/local/bin/{ssh,scp}. Therefore, due to the peculiarity of how executable files are searched in paths listed in a variable “PATH,”\\xa0SSH/SCP\\xa0is launched using installed shell-wrappers.</p>\r\n\r\n<p>FEATURES:<br>\r\nCurrently, the sniffer has the following functionality:<br>\r\n- interception of login, password and server address, which is being connected through SSH/SCP;<br>\r\n- sniffer operates flawlessly not only if a console is used to establish a connection, but also when additional GUI tools are used for entering a password (a so-called ASKPASS mode).</p>\r\n\r\n<p>All intercepted data are stored in a log\\xa0file, which have the following format:<br>\r\n[Mon Aug 14 11:11:35 2017] USR=(ubuntu) PSW=(hello) SSH=(/usr/bin/ssh user@127.0.0.1)</p>\r\n\r\n<p>WHAT YOU GET:<br>\r\nThe sniffer is delivered as a binary file. Additionally, you get a shell\\xa0script, which is used for installation and comprises a library assembled for a particular distributive (OS family). The price for a build is US $2,000.</p>\r\n\r\n<p>I may consider selling a source code as well —\\xa0the price would be US $4,000.</p>\r\n\r\n<p>Should you have any questions please ask here.\\xa0If you are interested in cooperation, please contact me in a private message.<br>\r\n---<br>\r\n[source: https://titan.intel471.com/post_thread/7f5e797c91447d8ff92c222b92ab61e9 ]</p>\r\n"
+         }
+      ],
+      "entities":[ 
+         { 
+            "type":"Jabber",
+            "value":"maga123@exploit.im"
+         },
+         { 
+            "type":"Handle",
+            "value":"Ameth"
+         },
+         { 
+            "type":"Handle",
+            "value":"Megatraffer"
+         },
+         { 
+            "type":"Handle",
+            "value":"mullah"
+         },
+         { 
+            "type":"Handle",
+            "value":"updated"
+         },
+         { 
+            "type":"Handle",
+            "value":"maga123"
+         }
+      ],
+      "tags":[ 
+         "TTPs",
+         "Vulnerabilities & Exploits"
+      ],
+      "portalReportUrl":"https://titan.intel471.com/report/e0a11334d45069c5cc1082ebb4668e61",
+      "lastUpdated":1581341186177,
+      "actorSubjectOfReport":[
+         {
+            "handle":"mullah",
+            "aliases": [
+               "ironfist101",
+               "ironfist1001",
+               "unbreakable1011",
+               "Mantis Shrimp",
+               "Boris",
+               "cartoful",
+               "stepup3d",
+               "brucewayne1018",
+               "TX-200",
+               "ZODIAC"
+         ]
+         }
+      ],
+      "reportAttachments":[ 
+         { 
+            "url":"https://api.intel471.com/v1/reports/download/e0a11334d45069c5cc1082ebb4668e61/8a3f0b643eca14d76b4afcc15300aaf3d90de4f17ba8933d0500191f31e56090",
+            "fileName":"Screen Recording 2020-02-03 at 7.55.56 PM (sanitized).mov",
+            "malicious": false,
+            "mimeType":"video/quicktime",
+            "fileSize":12813555
+         }
+      ],
+      "researcherComments":"<p><strong>Actor and information assessment</strong></p><p>Based on the actor’s long-standing membership on the Exploit forum, positive reputation and our previous reporting, we assess the source Reliability as “B — Usually reliable.”</p><p>The actor <strong>mullah\\xa0</strong>provided our source with a video demonstrating the execution of the alleged zero-day vulnerability, however, no other evidence was provided. Therefore, we assess the Credibility of the claims as “3 — Possibly true.”</p><p>\\xa0</p><p><strong>Tactics, techniques and procedures</strong></p><p>The actor’s tactics, techniques and procedures (TTPs) include selling vulnerabilities for operating systems, applications and malware for Linux-based systems.<br>\\xa0</p><p><strong>Information from our source</strong></p><p>On Feb. 3, 2020, our sensitive and reliable source chatted with <strong>mullah</strong> via the Jabber ID maga123@exploit.im and learned the following information about the alleged zero-day vulnerability (translated from Russian):<br>---</p><p>&lt;…&gt;<br>[<strong>source</strong>]: Is reboot needed for the successful exploitation?</p><p>[<strong>maga123</strong>]: Nope, only root privileges.</p><p>[<strong>source</strong>]: Does the vulnerability allows to run any number of unsigned kexts [Kernel Extention] or only one?</p><p>[<strong>maga123</strong>]: I don’t know, but let me clarify. The bypass will work only for one kext at a time.</p><p>[<strong>source</strong>]: Do you have PoC code for this vulnerability? Are you going to sell it to a single customer only?</p><p>[<strong>maga123</strong>]: We are going to sell it to a single customer, only if he/she agree to purchase it for the specified price.<br>[<strong>maga123</strong>]: Yes, we do have an operational PoC which dumps Keychain [the password management system] on the most recent version of macOS.</p><p>[<strong>source</strong>]: Any proofs?</p><p>[The actor recorded a video and sent to the source 40 minutes later]<br>---</p><p>The actor also offered to sell our source a remote code execution (RCE) vulnerability in the Safari web browser and another RCE vulnerability in Foxmail, a freeware email client for Windows Foxmail:<br>---</p><p>[<strong>maga123</strong>]: It is also possible to write a PoC code for an one-day RCE vulnerability in a Safari web browser.\\xa0<br>&lt;…&gt;<br>[<strong>maga123</strong>]: I’m not involved in this personally, and I am not sure if the guys are ready to invest time and resources in this now.<br>&lt;…&gt;</p><p>[<strong>maga123</strong>]: There is also a\\xa0RCE [vulnerability] of Foxmail [freeware email client for] Windows available?</p><p>[<strong>maga123</strong>]: Here is its description:</p><p>\\xa0</p><pre><code class=\"language-plaintext\">1. Today\"s Date\n01/02/2020\n2. Item name\nFoxMail RCE (Windows)\n3. Asking Price and availability of exclusive acquisition\n40000 USD\n4. Affected OS\nWindows 32/64 bit\n5. Vulnerable Target application versions and reliability. If 32 bit only, is 64 bit vulnerable? List complete point release range.\n32/64 bit\n6. Tested, functional against target application versions, list complete point release range. Explain tested on versions.\nFoxmail 7.2.15 (Released 10/01/2020 as autoupdate)\n7. Does this exploit affect the current target version?\n[X] Yes\n[ ] No\n8. Privilege Level Gained\n[x] As logged in user (Select Integrity level below for Windows)\n[ ] Web Browser\"s default (IE - Low, Others - Med)\n[ ] Low\n[ ] Medium\n[ ] High\n[ ] Root, Admin or System\n[ ] Ring 0/Kernel\n[ ] Other\n9. Exploit Type (select all that apply)\n[x] Remote code execution\n[ ] Privilege escalation\n[ ] Font based\n[ ] Sandbox escape\n[ ] Information disclosure (peek)\n[ ] Code signing bypass\n[ ] Persistency\n[ ] Other ___?\n11. Delivery Method\n[ ] Via web page\n[ ] Via file\n[ ] Via network protocol\n[ ] Local privilege escalation\n[x] Via email\n12. Bug Class\n[ ] memory corruption\n[x] design/logic flaw (auth-bypass / update issues)\n[x] input validation flaw (XSS/XSRF/SQLi/command injection, etc.)\n[ ] misconfiguration\n[ ] information disclosure\n[ ] cryptographic bug\n[ ] denial of service\n13. Number of bugs exploited in the item:\nA few logical bugs\n14. Exploitation Parameters\n[ ] Bypasses ASLR\n[ ] Bypasses DEP / W ^ X\n[ ] Bypasses Application Sandbox\n[ ] Bypasses SMEP/PXN\n[ ] Bypasses EMET Version ___\n[ ] Bypasses CFG (Win 8.1)\n[x] N/A\n15. Is ROP employed?\n[x] No\n[ ] Yes (but without fixed addresses)\n- Number of chains included ___ ?\n- Is the ROP set complete ___ ?\n- What module does ROP occur from ___ ?\n16. Does this item alert the target user? Explain.\nNo\n17. How long does exploitation take, in seconds?\n1-2 seconds\n18. Does this item require any specific user interactions?\nOpen (read) mail\n19. Any associated caveats or environmental factors? For example - does the exploit determine remote OS/App versioning, and is that required?\nNo\n20. Does it require additional work to be compatible with arbitrary payloads?\n[ ] Yes\n[x] No\n21. Is this a finished item you have in your possession that is ready for delivery immediately?\n[x] Yes\n[ ] No\n[ ] 1-5 days\n[ ] 6-10 days\n[ ] More:\n22. Impact on framework (crashes, etc....)\n23. Success rate (or number of necessary attempts)\n100%\n24. Does this item support continuation of execution?\nYes\n25. Description. Detail a list of deliverables including documentation.\n26. Testing Instructions\n27. Comments and other notes; unusual artifacts, other limitations, mitigations or other pieces of information.</code></pre><p>[<strong>source</strong>]: It looks like you already submitted it to some bug bounty program?</p><p>[<strong>maga123</strong>]: We have already sold it to one customer. But we did not submit it to any program. This is my form, I filled it.<br><br>[<strong>maga123</strong>]: The forms are mostly the same everywhere, I just picked up one and use it.<br>&lt;…&gt;<br>---</p><p>The actor <strong>mullah’s</strong> Jabber ID maga123@exploit.im shared the following fingerprint:</p><pre><code class=\"language-plaintext\">— Resource: jail.\n— Local time: 18:18:00 +0300.\n— Operating system: Windows XP.\n—Client:&amp;nbsp;Я.Онлайн 3.2.0.8873.\n---\n— Full name: maga123.</code></pre><p><br><strong>Detailed observations</strong><br><br>No further details about the alleged Mac OS zero-day vulnerability were provided. It is possible the one-day RCE vulnerability in the Apple Safari web browser <strong>mullah</strong> offered may refer to CVE-2019-8846, which recently was discovered and patched Dec. 10, 2019. The vulnerability exists due to a use-after-free error in the Scalable Vector Graphics (SVG) marker element feature of Apple Safari’s web kit. A remote attacker can use a specially crafted Hypertext Markup Language (HTML) webpage that triggers memory corruption when opened by a victim and executes arbitrary code on the target system. Successful exploitation of the vulnerability may allow an attacker to compromise the system.\\xa0<br><br>The actor provided no evidence of a PoC for the aforementioned vulnerability in Safari, and did not demonstrate the alleged zero-day vulnerability in the Foxmail client. Therefore, the truth of <strong>mullah’s\\xa0</strong>claims cannot be judged.<br><br>According to file metadata, the video <strong>mullah</strong> shared was recorded on a Mac OS X 10.15.3 (19D76). The video demonstrated loading the unsigned kernel text at /tmp/unharden.kext inside the Mac OS with enabled system integrity protection. The vulnerability PoC code was written in the C++ programming language. We also noticed two rather interesting strings in the PoC source code — “PS752_exploit” and “PS752_inject.” PS752 was the number of the Ukraine International Airlines Flight shot down Jan. 8, 2020, in Iran. However, there was no evidence suggesting the actor referred to that incident and it might be only a coincidence.<br><br>The actor’s repeated use of the pronoun “we” in the chat suggested <strong>mullah\\xa0</strong>most likely operates in a team.</p><p>\\xa0</p><p><strong>Key related activity</strong></p><p>Since our most recent update on the actor, <strong>mullah</strong> demonstrated a rather low level of public activity, added only 21 new posts on the forum and most were made in the forum section dedicated to software and malware development. The actor’s reputation improved to the seventh level and <strong>mullah\\xa0</strong>was endorsed by the actors <strong>Ameth</strong> and <strong>updated</strong>.</p><p>The actor’s most interesting posts included:</p><p>— Nov. 21, 2019: Sold an automated secure shell protocol (SSH)-based OpenSSH fuzzy-patching tool to embed backdoors (see: https://titan.intel471.com/post_thread/439559281f0e1b8c729ba85acbc1ce0f).</p><p>— March 25, 2019: Provided positive feedback for the actor <strong>Megatraffer</strong>, who provided code signing and secure sockets layer (SSL) certificates on the forum.</p><p>— Jan. 8, 2019: Offered a fully functional Linux kernel module (LKM) rootkit and miniature in-kernel implant with root back-connect functionality (see: https://titan.intel471.com/post_thread/a91c52af7d4ea8a5f8a0c0c903cd9456?post_uid=11dfc472da75580f0c461bdafb784bc4).</p><p><br><strong>Attachment</strong></p><p>— Screen Recording 2020-02-03 at 7.55.56 PM (sanitized).mov — A sanitized version of the demonstration video <strong>mullah</strong> shared.</p>",
+      "rawText":"<p>On\\xa0Feb. 1, 2020, the actor <strong>mullah</strong> posted the following at the Exploit cybercrime forum:<br>---</p><p><strong>[OSX][0day] Unsigned KEXT load technique</strong><br>Продаётся метод загрузки неподписанного kernel extension (kext), реализованный для OSX версий 10.13+ (включая, последнюю актуальную на данный момент).<br>Для загрузки неподписанного kext требуются root-привелении, таким образом данный эксплойт вероятнее всего будет являться частью вашей цепочки. В качестве примера использования данной техники дополнительно реализован POC, позволяющий на последней версии OSX отключить Run-time Hardening и получить _полный_ дамп keychain (хранилища ключей и паролей).<br>С предложениями о покупке пишите в личку, не забывая указывать цену.<br>---<br>[source: https://titan.intel471.com/post_thread/98647fd9237856739d8d3cee80506e3c]</p>",
+      "rawTextTranslated":"<p>On\\xa0Feb. 1, 2020, the actor <strong>mullah</strong> posted the following at the Exploit cybercrime forum:<br>---</p><p><strong>[OSX][0day] Unsigned KEXT load technique</strong><br>I'm selling a technique for loading an unsigned kernel extension (kext) implemented for OSX versions 10.13 and later (including the most recent one).<br>You will need root privileges to load an unsigned kext. Therefore, this exploit will most probably be a part of your exploit chain. Additionally, a POC sample has been developed to show this technique in action. The sample allows disabling run-time hardening and getting a _complete_ dump of the keychain (the system for storing keys and passwords) on the latest OSX version.<br>If you want to purchase it, PM me please. Don't forget to specify your price.<br>---<br>[source: https://titan.intel471.com/post_thread/98647fd9237856739d8d3cee80506e3c]</p>",
+      "executiveSummary":"<p>We previously covered <strong>mullah</strong> selling malware for Linux-based operating systems (see: Related Reports section). On Feb. 1, 2020, the actor\\xa0offered to sell an alleged zero-day vulnerability in Mac OS X versions 10.13 and later . The vulnerability proof of concept (PoC) code reportedly allows loading an unsigned kernel extension (aka “kext”) on Mac OS X versions 10.13 and later.\\xa0The actor claimed the available PoC code could disable the\\xa0hardened runtime service and obtain a dump of the keychain password management system. The actor suggested using the exploit in conjunction with a local privilege escalation (LPE) vulnerability, since it requires root privileges to load an unsigned kernel extension. The actor <strong>mullah\\xa0</strong>provided our source with a demonstration video of the alleged vulnerability.</p><p>The actor also offered our source a one-day remote code execution (RCE) vulnerability in the Apple Safari web browser and an alleged zero-day RCE vulnerability in the Foxmail version 7.2.15 freeware email client for Windows operating systems.</p>"
+   }
+}
