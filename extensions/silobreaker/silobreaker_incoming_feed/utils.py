@@ -2,10 +2,16 @@ import base64
 import hashlib
 import hmac
 from urllib import parse
+import uuid
+from datetime import datetime
+from typing import List
 
 import requests
 import structlog
 from pkg_resources import get_distribution as gd
+
+from eiq_edk.schemas.entities import ExtractType
+from eiq_edk import create_entity
 
 
 log = structlog.get_logger(__name__)
@@ -23,6 +29,26 @@ REQUEST_HEADERS = {
 }
 REQUESTS_TIMEOUT = 3 * 60  # not responsive as it should be
 ECLECTICIQ_HEADER = "6htbpuxf6rksxod27i11"
+DOC_ENTITIES = ["ThreatActor", "Malware", "Vulnerability"]
+DOC_TAGS = [
+    "ThreatActor",
+    "Attacktype",
+    "Malware",
+    "Vulnerability",
+    "Keyphrase",
+    "Hashtag",
+]
+KIND = {
+    "IPv4": ExtractType.IPV4,
+    "Malware": ExtractType.MALWARE,
+    "ThreatActor": ExtractType.ACTOR_ID,
+    "Vulnerability": ExtractType.CVE,
+    "Email": ExtractType.EMAIL,
+    "Domain": ExtractType.DOMAIN,
+    32: ExtractType.HASH_MD5,
+    40: ExtractType.HASH_SHA1,
+    64: ExtractType.HASH_SHA256,
+}
 
 
 def fetch_data(
@@ -37,7 +63,7 @@ def fetch_data(
         url = url + f"?{params}"
         data = f"GET {url}"
         url = make_url(url, api_key, shared_key, data)
-        REQUEST_HEADERS["SB-EclecticIQ-Secret"] = make_header_digest(data)
+        REQUEST_HEADERS["SB-EclecticIQ-Secret"] = make_header_digest(data).decode()
         response = requests.get(
             url, headers=REQUEST_HEADERS, timeout=REQUESTS_TIMEOUT, verify=verify
         )
@@ -112,4 +138,46 @@ def get_report_page(content: str) -> str:
 
 
 def get_summary(value: str, timestamp: str) -> str:
-    return f"<p>This is a Silobreaker In Focus Enrichment Report.</p><p>Enriched observable: {value}</p><p>Enrichment Date: {timestamp}</p>"  # noqa
+    return f"<p>This is a Silobreaker In Focus Enrichment Report.</p>" \
+           f"<p>Enriched observable: {value}</p>" \
+           f"<p>Enrichment Date: {timestamp}</p>"  # noqa
+
+
+def make_doc_report(
+    data: dict,
+    urls: List[str],
+    title: str,
+    extracts: List[dict],
+    tags: List[str],
+    description: str,
+    start_time: str,
+    observed_time: str,
+) -> dict:
+    timestamp = datetime.utcnow()
+    report_id = "{{https://api.silobreaker.com/}}report-{}".format(
+        str(uuid.uuid5(uuid.NAMESPACE_X500, data["Id"]))
+    )
+    information_source = {
+        "identity": "Silobreaker",
+        "references": urls,
+        "roles": ["Aggregator"]
+    }
+
+    report_data = {
+        "id": report_id,
+        "title": title,
+        "description": description,
+        "producer": information_source,
+        "intents": [{"value": "Collective Threat Intelligence"}],
+        "timestamp": timestamp.isoformat(),
+    }
+    report_meta = {
+        "bundled_extracts": extracts,
+        "tags": tags,
+        "estimated_observed_time": observed_time,
+        "estimated_threat_start_time": start_time
+    }
+    report = create_entity({
+        "type": "report", "data": report_data, "meta": report_meta
+    })
+    return report
