@@ -15,7 +15,7 @@
         "actor-id", "handle", "name"
    ],
   "source_reliability": "A",
-  "source_url": [],
+  "source_urls": [],
   "content_types": [
     {
       "id": "urn:eiq-edk:eclectic_iq:intel471_adversary_enricher:0.1.0",
