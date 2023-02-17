@@ -1,0 +1,59 @@
+{
+	"type": "linked-entities",
+	"entities": [
+		{
+			"attachments": [],
+			"data": {
+				"id": "{https://api.isightpartners.com/}Report-3d1b0861-f119-5fb8-9a44-05d3eaab5585",
+				"title": "Test Missing URL",
+				"type": "report",
+				"timestamp": "1800-11-14T12:54:00+00:00",
+				"description": "<br>>Test<br><section itemscope itemtype=\"http://eclecticiq.com/microdata/section\"><h1 itemprop=\"title\">Recommendations</h1><div itemprop=\"content\">Test Missing URLTest<p><a href=\"https://www.test-missing-url.com\">Test Missing URL</a></p><p>NO URL</p></div></section>",
+				"short_description": "Test Missing URL",
+				"intents": [],
+				"information_source": {
+					"description": "https://api.isightpartners.com",
+					"type": "information-source",
+					"identity": {
+						"name": "FireEye iSIGHT Intelligence Report API",
+						"type": "identity"
+					},
+					"roles": [
+						{
+							"value": "Aggregator",
+							"vocab": "{http://stix.mitre.org/default_vocabularies-1}InformationSourceRoleVocab-1.0"
+						}
+					],
+					"references": [
+						"https://www.test.com",
+						"https://www.test.com",
+						"https://www.test-missing-url.com"
+					]
+				}
+			},
+			"meta": {
+				"attack": [],
+				"tags": [
+					"Mitigation - Patch"
+				],
+				"bundled_extracts": [
+					{
+						"kind": "cve",
+						"value": "1234-5678",
+						"classification": "good"
+					}
+				],
+				"estimated_observed_time": "1800-09-07T01:00:00+00:00",
+                        "estimated_threat_end_time": null,
+                        "estimated_threat_start_time": "1800-11-14T12:54:00+00:00",
+                        "extraction_ignore_paths": ["information_source",
+                                                    "producer"],
+                        "half_life": 1,
+                        "tags": ["Mitigation - Patch"],
+                        "taxonomy": [],
+                        "tlp_color": "NONE"
+			}
+		}
+	],
+	"relations": []
+}

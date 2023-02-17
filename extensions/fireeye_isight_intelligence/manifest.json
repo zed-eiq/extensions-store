@@ -1,0 +1,92 @@
+{
+  "name": "FireEye iSIGHT Intelligence Report API",
+  "extension_type": "incoming",
+  "license": "MIT license",
+  "maintainer": "team PINT team.pint@eclecticiq.com",
+  "producer": "EclecticIQ",
+  "eiq_verified": false,
+  "repository": "https://github.com/eclecticiq/fireeye-isight-intelligence-",
+  "application_path": "process.py",
+  "edk_protocol": "1.0",
+  "version": "0.1",
+  "programming_language": "Python",
+  "programming_language_version": "3.9",
+  "content_types": [
+    {
+      "id": "urn:eiq-edk:eclecticiq:fireeye-isight-intelligence-:0.1",
+      "name": "Fireeye isight intelligence",
+      "description": "Fireeye isight intelligence",
+      "content_groups": [
+        "edk_fireeye_extension"
+      ],
+      "file_extension": "json",
+      "mime_type": "application/json",
+      "configuration": [
+        {
+          "default": "https://api.isightpartners.com",
+          "required": true,
+          "type": "string",
+          "description": "The URL pointing to the API endpoint to access the incoming feed.",
+          "title": "API URL",
+          "name": "api_url"
+        },
+        {
+          "default": "***",
+          "required": true,
+          "type": "string",
+          "description": "API public key to authorize your account.",
+          "title": "API key (public)",
+          "name": "public_key"
+        },
+        {
+          "default": "***",
+          "required": true,
+          "type": "string",
+          "description": "API private key to authorize your account.",
+          "title": "API key (private)",
+          "name": "private_key"
+        },
+        {
+          "default": true,
+          "required": true,
+          "type": "boolean",
+          "description": "Include Threat intelligence type",
+          "title": "Include Threat intelligence type",
+          "name": "include_threats"
+        },
+        {
+          "default": true,
+          "required": true,
+          "type": "boolean",
+          "description": "Include Malware intelligence type",
+          "title": "Include Malware intelligence type",
+          "name": "include_malwares"
+        },
+        {
+          "default": true,
+          "required": true,
+          "type": "boolean",
+          "description": "Include Vulnerability intelligence type",
+          "title": "Include Vulnerability intelligence type",
+          "name": "include_vulnerabilities"
+        },
+        {
+          "default": true,
+          "required": true,
+          "type": "boolean",
+          "description": "Include Overview intelligence type",
+          "title": "Include Overview intelligence type",
+          "name": "include_overviews"
+        },
+        {
+          "default": true,
+          "required": true,
+          "type": "boolean",
+          "description": "Download and attach PDF version of reports",
+          "title": "Download and attach PDF version of reports",
+          "name": "download_pdf"
+        }
+      ]
+    }
+  ]
+}

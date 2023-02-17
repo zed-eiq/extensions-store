@@ -1,0 +1,124 @@
+{
+  "success": true,
+  "message": [
+    {
+      "reportId": "001",
+      "title": "Test Vulnerability",
+      "ThreatScape": [
+        "Test ThreatScape"
+      ],
+      "audience": [
+        "Test audience"
+      ],
+      "publishDate": 1476179880,
+      "version": "1",
+      "version1PublishDate": 1476179880,
+      "intelligenceType": "vulnerability",
+      "reportType": "Test Vulnerability",
+      "reportLink": "https://api.isightpartners.com/report/001",
+      "webLink": "https://mysight.isightpartners.com/report/full/001"
+    },
+    {
+      "reportId": "002",
+      "title": "Test Malware",
+      "ThreatScape": [
+        "Test ThreatScape"
+      ],
+      "audience": [
+        "Test audience"
+      ],
+      "publishDate": 1476179880,
+      "version": "1",
+      "version1PublishDate": 1476179880,
+      "intelligenceType": "malware",
+      "reportType": "Test Malware",
+      "reportLink": "https://api.isightpartners.com/report/002",
+      "webLink": "https://mysight.isightpartners.com/report/full/002"
+    },
+    {
+      "reportId": "003",
+      "title": "Test Threat",
+      "ThreatScape": [
+        "Test ThreatScape"
+      ],
+      "audience": [
+        "Test audience"
+      ],
+      "publishDate": 1476179880,
+      "version": "1",
+      "version1PublishDate": 1476179880,
+      "intelligenceType": "threat",
+      "reportType": "Test Threat",
+      "reportLink": "https://api.isightpartners.com/report/003",
+      "webLink": "https://mysight.isightpartners.com/report/full/003"
+    },
+    {
+      "reportId": "004",
+      "title": "Test Vulnerability missing URL",
+      "ThreatScape": [
+        "Test ThreatScape"
+      ],
+      "audience": [
+        "Test audience"
+      ],
+      "publishDate": 1476179880,
+      "version": "1",
+      "version1PublishDate": 1476179880,
+      "intelligenceType": "vulnerability",
+      "reportType": "Test Vulnerability",
+      "reportLink": "https://api.isightpartners.com/report/004",
+      "webLink": "https://mysight.isightpartners.com/report/full/004"
+    },
+    {
+      "reportId": "005",
+      "title": "Test Malware Overview",
+      "ThreatScape": [
+        "Test ThreatScape"
+      ],
+      "audience": [
+        "Test audience"
+      ],
+      "publishDate": 1476179880,
+      "version": "1",
+      "version1PublishDate": 1476179880,
+      "intelligenceType": "overview",
+      "reportType": "Malware Overview",
+      "reportLink": "https://api.isightpartners.com/report/005",
+      "webLink": "https://mysight.isightpartners.com/report/full/005"
+    },
+    {
+      "reportId": "006",
+      "title": "Test Actor Overview",
+      "ThreatScape": [
+        "Test ThreatScape"
+      ],
+      "audience": [
+        "Test audience"
+      ],
+      "publishDate": 1476179880,
+      "version": "1",
+      "version1PublishDate": 1476179880,
+      "intelligenceType": "overview",
+      "reportType": "Actor Overview",
+      "reportLink": "https://api.isightpartners.com/report/006",
+      "webLink": "https://mysight.isightpartners.com/report/full/006"
+    },
+    {
+      "reportId": "007",
+      "title": "Report not found",
+      "ThreatScape": [
+        "Test ThreatScape"
+      ],
+      "audience": [
+        "Test audience"
+      ],
+      "publishDate": 1476179880,
+      "version": "1",
+      "version1PublishDate": 1476179880,
+      "intelligenceType": "overview",
+      "reportType": "Actor Overview",
+      "reportLink": "https://api.isightpartners.com/report/007",
+      "webLink": "https://mysight.isightpartners.com/report/full/007"
+    }
+  ]
+}

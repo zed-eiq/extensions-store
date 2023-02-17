@@ -1,0 +1,62 @@
+{
+  "name": "Intel 471 posts enricher",
+  "extension_type": "enricher",
+  "license": "MIT license",
+  "maintainer": "PINT <pint@eclecticiq.com>",
+  "producer": "Eclectic IQ",
+  "eiq_verified": true,
+  "repository": "https://extensions.eclecticiq.com",
+  "application_path": "process.py",
+  "edk_protocol": "1.0",
+  "version": "0.1.0",
+  "programming_language": "Python",
+  "programming_language_version": "3.8",
+   "supported_extract_types": [
+        "actor-id", "name"
+   ],
+  "source_reliability": "A",
+  "content_types": [
+    {
+      "id": "urn:eiq-edk:eclectic_iq:intel471_malware_feed:0.1.0",
+      "name": "Intel471 posts enricher",
+      "description": "Intel471 posts enricher",
+      "content_groups": ["edk_intel471_extension"],
+      "file_extension": "json",
+      "mime_type": "application/json",
+      "configuration": [
+        {
+          "default": "https://api.intel471.com/v1/",
+          "required": true,
+          "type": "string",
+          "description": "The URL pointing to the API endpoint exposing the service that makes the data available for retrieval through the feed.",
+          "title": "API URL",
+          "name": "api_url"
+        },
+        {
+          "default": "***",
+          "required": true,
+          "type": "string",
+          "description": "API access key provided by Intel 471.",
+          "title": "API Key",
+          "name": "api_key"
+        },
+        {
+          "default": "***@***.****",
+          "required": true,
+          "type": "string",
+          "description": "A valid email address to be granted access to the Intel 471 API endpoint.",
+          "title": "email",
+          "name": "email"
+        },
+          {
+          "default": "",
+          "required": false,
+          "type": "string",
+          "description": "Place value here to lookup forum posts the actor has written.",
+          "title": "Actor",
+          "name": "actor"
+        }
+      ]
+    }
+  ]
+}

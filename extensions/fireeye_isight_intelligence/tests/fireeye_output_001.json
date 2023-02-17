@@ -1,0 +1,53 @@
+{
+	"type": "linked-entities",
+	"entities": [{
+			"data": {
+				"id": "{https://api.isightpartners.com/}Report-83e963d1-53a4-5b1d-ad2f-3b32bccd728e",
+				"title": "Test",
+				"type": "report",
+				"timestamp": "1800-11-14T12:54:00+00:00",
+				"description": "<br>>Test<br><section itemscope itemtype=\"http://eclecticiq.com/microdata/section\"><h1 itemprop=\"title\">Recommendations</h1><div itemprop=\"content\">TestTest<p><a href=\"https://www.test.com\">Test Information</a></p><p><a href=\"https://www.test.com\">Test Update Information</a></p></div></section>",
+				"intents": [],
+				"short_description": "Test",
+				"information_source": {
+					"description": "https://api.isightpartners.com",
+					"type": "information-source",
+					"identity": {
+						"name": "FireEye iSIGHT Intelligence Report API",
+						"type": "identity"
+					},
+					"references": ["https://www.test.com", "https://www.test.com", "https://www.test.com", "https://www.test.com"],
+					"roles": [{
+							"value": "Aggregator",
+							"vocab": "{http://stix.mitre.org/default_vocabularies-1}InformationSourceRoleVocab-1.0"
+						}
+					]
+				}
+			},
+			"meta": {
+				"tags": ["Mitigation - Patch"],
+				"attack": [],
+				"bundled_extracts": [{
+						"kind": "cve",
+						"value": "1234-5678",
+						"classification": "good"
+					}
+				],
+				"estimated_observed_time": "1800-09-07T01:00:00+00:00",
+                        "estimated_threat_end_time": null,
+                        "estimated_threat_start_time": "1800-11-14T12:54:00+00:00",
+                        "extraction_ignore_paths": ["information_source",
+                                                    "producer"],
+                        "half_life": 1,
+                        "tags": ["Mitigation - Patch"],
+                        "taxonomy": [],
+                        "tlp_color": "NONE"
+			},
+			"attachments": [{
+                "filename": "Test.pdf",
+                "data": "This is a test."
+            }]
+		}
+	],
+	"relations": []
+}
