@@ -1,0 +1,3 @@
+requests
+furl
+simplejson==3.18.1

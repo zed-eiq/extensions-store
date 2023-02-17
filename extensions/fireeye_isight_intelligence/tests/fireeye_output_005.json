@@ -1,0 +1,51 @@
+{
+	"type": "linked-entities",
+	"entities": [
+		{
+			"attachments" : [],
+			"data": {
+				"id": "{https://api.isightpartners.com/}Report-4e4b731b-71b6-51d7-9b40-36cc18ea4fbe",
+				"title": "Remcos Malware Overview",
+				"intents": [],
+				"short_description": "",
+				"type": "report",
+				"description": "Test Malware Overview",
+				"timestamp": "2017-04-11T08:45:00+00:00",
+				"information_source": {
+					"description": "https://api.isightpartners.com",
+					"type": "information-source",
+					"references": [],
+					"identity": {
+						"name": "FireEye iSIGHT Intelligence Report API",
+						"type": "identity"
+					},
+					"roles": [
+						{
+							"value": "Initial Author",
+							"vocab": "{http://stix.mitre.org/default_vocabularies-1}InformationSourceRoleVocab-1.0"
+						}
+					]
+				}
+			},
+			"meta": {
+				"attack": [],
+				"tags": [
+					"Operating System - Windows",
+					"Malware - Backdoor"
+				],
+				"bundled_extracts": [{"classification": "unknown",
+                                              "kind": "domain",
+                                              "value": "input.domain.com"}],
+                        "estimated_observed_time": "2017-04-11T08:45:00+00:00",
+                        "estimated_threat_end_time": null,
+                        "estimated_threat_start_time": "2017-04-11T08:45:00+00:00",
+                        "extraction_ignore_paths": ["information_source",
+                                                    "producer"],
+                        "half_life": 1,
+                        "taxonomy": [],
+                        "tlp_color": "NONE"
+			}
+		}
+	],
+	"relations": []
+}

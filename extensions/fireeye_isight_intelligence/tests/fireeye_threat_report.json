@@ -1,0 +1,127 @@
+{
+    "message": {
+        "report": {
+            "reportId": "003",
+            "title": "CLONE-Regional Campaign Observed Targeting Financial Sector of Former Soviet Bloc Countries; Tenuous Links to Previously Observed Campaigns",
+            "ThreatScape": {
+                "product": [
+                    "ThreatScape High Value Auction Fraud"
+                ]
+            },
+            "threatDetail": "<html report here>",
+            "version1PublishDate": "May 10, 2017 02:45:00 AM",
+            "publishDate": "May 10, 2017 02:45:00 AM",
+            "intelligenceType": "threat",
+            "version": "1",
+            "reportType": "Event Coverage/Implication",
+            "execSummary": "test",
+            "tagSection": {
+                "files": {
+                    "file": [
+                        {
+                            "sha1": "33ef1a39c9bb8dde67e9fd86b3eee2b3b4e15b81",
+                            "fuzzyHash": "6144:BB2XCzZDkSa2PQJXNrDEzqeesU2TvZOthveE5LhFign4TfdPD6api+tnN:BMSFD4r4zc/vNLhFjncPDvnN",
+                            "identifier": "Attacker",
+                            "fileName": "Salary project.doc",
+                            "fileSize": "1436702",
+                            "sha256": "1c423933af5f5c95201ec9efffed171af1a3074cdeb1377b86dcaf8177cf5cb9",
+                            "type": "Rich Text Format data, version 1, ANSI",
+                            "md5": "85d074aa473f3ae94275f885f8a7d37e"
+                        }, {
+                            "sha1": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3",
+                            "fuzzyHash": "6144:BB2XCzZDkSa2PQJXNrDEzqeesU2TvZOthveE5LhFign4TfdPD6api+tnN:BMSFD4r4zc/vNLhFjncPDvnN",
+                            "identifier": "Attacker",
+                            "fileName": "unknown",
+                            "fileSize": "1436702",
+                            "sha256": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+                            "type": "Rich Text Format data, version 1, ANSI",
+                            "md5": "098f6bcd4621d373cade4e832627b4f6"
+                        }
+                    ]
+                },
+                "main": {
+                    "motivations": {
+                        "motivation": [
+                            "Financial or Economic"
+                        ]
+                    },
+                    "affectedIndustries": {
+                        "affectedIndustry": [
+                            "Financial Services"
+                        ]
+                    },
+                    "intendedEffects": {
+                        "intendedEffect": [
+                            "Financial Theft"
+                        ]
+                    },
+                    "ttps": {
+                        "ttp": [
+                            "Social Engineering",
+                            "Malware Propagation and Deployment"
+                        ]
+                    },
+                    "targetGeographies": {
+                        "targetGeography": [
+                            "Russian Federation"
+                        ]
+                    },
+                    "actors": {
+                        "actor": [
+                            {
+                                "id": "73c877bb-54fb-4f0a-90f8-c250bc303bcc",
+                                "name": "FIN7"
+                            }, {
+                                "id": "73c877bb-54fb-4f0a-90f8-c250bc303bca",
+                                "name": "TEMP.APT TEST INTRUSION SET"
+                            }
+                        ]
+                    },
+                    "malwareFamilies": {
+                        "malwareFamily": [
+                            {
+                                "id": "14b5cc08-1266-45d4-b4d7-db387f494021",
+                                "name": "METASTAGE"
+                            },
+                            {
+                                "id": "be550f51-df1d-409e-b15e-f1821b71a954",
+                                "name": "Buhtrap"
+                            },
+                            {
+                                "id": "bb5b3f75-3868-4731-9bd1-bf4dd8e303ac",
+                                "name": "Carbanak"
+                            },
+                            {
+                                "id": "cf293aa0-6318-479c-936e-995681d8d1d2",
+                                "name": "DRIFTPIN"
+                            }
+                        ]
+                    }
+                },
+                "networks": {
+                    "network": [
+                        {
+                            "url": "http://flyingducks.eu/svchost.exe",
+                            "networkType": "url",
+                            "identifier": "Attacker"
+                        },
+                        {
+                            "url": "https://invalid URL that shouldn't be sent to ingestion",
+                            "networkType": "url",
+                            "identifier": "Attacker"
+                        }
+                    ]
+                },
+                "emails": {
+                    "email": [
+                        {
+                            "recipient": [],
+                            "senderAddress": "test@test.com"
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "success": true
+}

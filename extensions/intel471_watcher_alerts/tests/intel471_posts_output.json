@@ -1,0 +1,75 @@
+{
+  "type": "linked-entities",
+  "entities": [
+    {
+      "data": {
+        "id": "{https://intel471.com/}Report-9f92c7c7-aaaf-5630-8a7e-dd39226727b2",
+        "title": "Intel 471 Forum Posts - alecx",
+        "type": "report",
+        "description": "<p>Intel 471 Forum Posts - alecx<p><h4>SUMMARY</h4><p>This Intel 471 report gives an overview of forums posts created by alecx.</p><h4>ANALYSIS *</h4><p><u><strong>Post</u></strong></p><p>Forum Name: test</p><p>Forum Description: First test description.</p><p>Thread Topic: First test topic..</p><p>Date: 2018-07-22T03:54:29</p><p><article class=\"forumPost\">\n\n<p>\n<a>https://test123.com</a>\n</p>\n\n\n<br>\n\n</article></p><br><p><u><strong>Post</u></strong></p><p>Forum Name: test2.com</p><p>Thread Topic: Second test topic..</p><p>Date: 2007-04-02T10:47:55</p><p><article class=\"forumPost\">Test article</article></p><br><p><u><strong>Post</u></strong></p><p>Forum Name: test3.com</p><p>Forum Description: Third test description.</p><p>Thread Topic: Test topic..</p><p>Date: 2007-03-15T09:46:59</p><p><article class=\"forumPost\">Test article forum</article></p><br><p><u><strong>Post</u></strong></p><p>Forum Name: test4.com</p><p>Thread Topic: test test topic topic.</p><p>Date: 2007-03-15T09:46:51</p><p><article class=\"forumPost\">Test Test Test [http://www.testtest.com</a>\n</article></p><br><p><u><strong>Post</u></strong></p><p>Forum Name: test6.com</p><p>Thread Topic: Some topic for test..</p><p>Date: 2007-02-24T09:49:36</p><p><article class=\"forumPost\">Something for test.</article></p><br><p><u><strong>Post</u></strong></p><p>Forum Name: exploit.in</p><p>Forum Description: Test description</p><p>Thread Topic: Продам YouTube каналы с логов.</p><p>Date: 2022-04-27T07:12:56</p><p>Test message</p><br><p><u><strong>Post</u></strong></p><p>Forum Name: ex.in</p><p>Forum Description: Test description 2</p><p>Date: 2022-04-27T07:12:56</p><p>Test message 2</p><br>"
+      },
+      "meta": {
+        "estimated_observed_time": "2007-02-24T09:49:36",
+        "bundled_extracts": [
+          {
+            "kind": "actor-id",
+            "link_type": "observed",
+            "value": "alecx"
+          },
+          {
+            "classification": "unknown",
+            "kind": "forum-name",
+            "link_type": "observed",
+            "value": "name"
+          },
+          {
+            "classification": "unknown",
+            "kind": "domain",
+            "link_type": "observed",
+            "value": "test2.com"
+          },
+          {
+            "classification": "unknown",
+            "kind": "domain",
+            "link_type": "observed",
+            "value": "test3.com"
+          },
+          {
+            "classification": "unknown",
+            "kind": "domain",
+            "link_type": "observed",
+            "value": "test4.com"
+          },
+          {
+            "classification": "unknown",
+            "kind": "domain",
+            "link_type": "observed",
+            "value": "test6.com"
+          },
+          {
+            "classification": "unknown",
+            "kind": "domain",
+            "link_type": "observed",
+            "value": "exploit.in"
+          },
+          {
+            "classification": "unknown",
+            "kind": "domain",
+            "link_type": "observed",
+            "value": "ex.in"
+          }
+        ],
+        "tags": [
+          "Posts Report",
+          "ex.in",
+          "exploit.in",
+          "test",
+          "test2.com",
+          "test3.com",
+          "test4.com",
+          "test6.com"
+        ]
+      }
+    }
+  ]
+}
