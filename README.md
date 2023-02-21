@@ -44,6 +44,8 @@ This documents the following three properties that define who to contact for sup
 
 ## Documentation
 
+The documentation for each extension can be found in the root directory of each extensions (e.g. `extensions/intel471/incoming_feeds/malware/docs.md`)
+
 If you wish to learn more about how to develop Extensions, please read our EDK Guide.
 
 ## Submission of new Extensions
