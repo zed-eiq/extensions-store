@@ -21,7 +21,7 @@
       "mime_type": "application/json",
       "configuration": [
         {
-          "default": "https://api.intel471.com/v1/",
+          "default": "https://api.silobreaker.com/search/documents",
           "required": true,
           "type": "string",
           "description": "The URL pointing to the API endpoint exposing the service that makes the data available for retrieval through the feed.",
