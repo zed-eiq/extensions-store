@@ -4,8 +4,8 @@
   "license": "MIT license",
   "maintainer": "PINT <pint@eclecticiq.com>",
   "producer": "Eclectic IQ",
-  "eiq_verified": false,
-  "repository": "https://extensions.eclecticiq.com"",
+  "eiq_verified": true,
+  "repository": "https://extensions.eclecticiq.com",
   "application_path": "main.py",
   "edk_protocol": "1.0",
   "version": "0.1.0",
@@ -40,9 +40,9 @@
           "default": "***@***.****",
           "required": true,
           "type": "string",
-          "description": "email",
-          "title": "email",
-          "name": "email"
+          "description": "Shared Key",
+          "title": "Shared Key",
+          "name": "shared_key"
         }
       ]
     }
