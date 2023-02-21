@@ -42,21 +42,35 @@ This documents the following three properties that define who to contact for sup
 * `support_email`: this field is an email address of the developer responsible for supporting the Extension. For EclecticIQ supported Extensions this will be equal to `support@eclecticiq.com`.
 * `eclecticiq_verified` (boolean): if set to `TRUE`, this means EclecticIQ have tested the Extension against our security and performace standards. It DOES NOT mean that is is supported by EIQ (see `support_*` fields).
 
+### Raising a bug
+
+Regardless of who supports the extension, if you find a bug in an Extension [you can raise it as an Issue here (with the tag `bug`)](](https://github.com/eclecticiq/edk-extensions/issues)).
+
+#### Bugs reported for EclecticIQ supported Extensions
+
+Will be reviewed inline with EclecticIQ SLAs.
+
+#### Bugs reported for Non-EclecticIQ supported Extensions
+
+The developer listed in the manifest will be notified of the issue via the email supplied. The developed in question is responsible for submitting a new PR for any required fixes (although PRs fixing the issue that can be fully tested will be accepted too).
+
 ## Documentation
 
 If you wish to learn more about how to develop Extensions, please read our EDK Guide.
 
 ## Submission of new Extensions
 
-### Suggestions for new Extensions
+There are two options for getting new Extensions added to this repository
 
-If you would like to suggest a new Extension to be built by the EclecticIQ team, you can raise a new Issue here](https://github.com/eclecticiq/edk-extensions).
+### 1. Suggestions for new Extensions
+
+If you would like to suggest a new Extension to be built by the EclecticIQ team, you can [raise a new Issue here](https://github.com/eclecticiq/edk-extensions/issues).
 
 Please include a detailed overview of what the Extension will do, how it will work, any authentication requirements to access or send data, and how to map the data into STIX 2.1 (if required).
 
 Each submitted Extension will be periodically reviewed, however, not all submissions are guaranteed to ever make the roadmap. In which case, you also have the option to build it yourself.
 
-### Build your own
+### 2. Build your own
 
 In addition to EclecticIQ contributions we welcome submissions of new Extensions from our partners and developers.
 
