@@ -109,7 +109,7 @@ Configuration options
             Enabling this makes an additional API call to
             |provider| for every report retrieved.
             Disable if the feed consumes your
-            `Daily Query Quota`_ too quickly.
+            Daily Query Quota too quickly.
 
     * - Start ingesting from\*
       - Ingest data from the feed source
@@ -117,8 +117,6 @@ Configuration options
         Use the drop-down calendar to select the date
         and time you want to start ingesting feed data from.
 
-
-.. _Daily Query Quota: https://docs.fireeye.com/iSight/index.html#/query_quota
 
 
 Ingestion results
