@@ -37,87 +37,20 @@ Requirements
 Configuration options
 ==============================
 
-..  list-table::
+..  csv-table::
+    :align: left
     :header-rows: 1
     :stub-columns: 1
 
-    * - Field
-      - Description
-
-    * - Transport type\*
-      - Select |transport_type_bold| from the drop-down menu.
-
-    * - Content type\*
-      - Select |content_type_bold| from the drop-down menu.
-
-    * - API URL\*
-      - Set this to the |provider| iSIGHT API endpoint.
-
-        By default, this is set to
-        ``https://api.isightpartners.com/``
-
-    * - API key (public)\*
-      - Set this to your |provider| public API key.
-
-    * - API key (private)\*
-      - Set this to your |provider| private API key.
-
-    * - SSL verification
-      - Selected by default.
-        Select this option to enable SSL for this feed.
-
-    * - SSL Cert
-      - Used when connecting to a feed
-        source that uses a custom CA.
-        Set this as the path to the SSL certificate
-        to use when authenticating the feed source.
-
-    * - Include Threat intelligence type
-      - Enable to retrieve threat intelligence reports
-        when you run the feed.
-
-        Selected by default.
-
-    * - Include Malware intelligence type
-      - Enable to retrieve malware intelligence reports
-        when you run the feed.
-
-        Selected by default.
-
-    * - Include Vulnerability intelligence type
-      - Enable to retrieve vulnerability intelligence reports
-        when you run the feed.
-
-        Selected by default.
-
-    * - Include Overview intelligence type
-      - Enable to retrieve 'Malware Overview' and
-        'Actor Overview' intelligence reports
-        when you run the feed.
-
-        Selected by default.
-
-    * - Download and attach PDF version of reports
-      - When the feed runs, it downloads and attaches
-        a PDF version for each report it receives from
-        the feed source.
-
-        Selected by default.
-
-        ..  CAUTION::
-
-            Enabling this makes an additional API call to
-            |provider| for every report retrieved.
-            Disable if the feed consumes your
-            Daily Query Quota too quickly.
-
-    * - Start ingesting from\*
-      - Ingest data from the feed source
-        starting from this date and time.
-        Use the drop-down calendar to select the date
-        and time you want to start ingesting feed data from.
-
-
+    "title","name","type","required","description","default"
+    "API URL","api_url","string","True","The URL pointing to the API endpoint to access the incoming feed.","https://api.isightpartners.com"
+    "API key (public)","public_key","string","True","API public key to authorize your account.","***"
+    "API key (private)","private_key","string","True","API private key to authorize your account.","***"
+    "Include Threat intelligence type","include_threats","boolean","True","Include Threat intelligence type","True"
+    "Include Malware intelligence type","include_malwares","boolean","True","Include Malware intelligence type","True"
+    "Include Vulnerability intelligence type","include_vulnerabilities","boolean","True","Include Vulnerability intelligence type","True"
+    "Include Overview intelligence type","include_overviews","boolean","True","Include Overview intelligence type","True"
+    "Download and attach PDF version of reports","download_pdf","boolean","True","Download and attach PDF version of reports","True"
 
 Ingestion results
 ========================
