@@ -43,46 +43,14 @@ Requirements
 Configuration options
 ==============================
 
-..  list-table::
+..  csv-table::
+    :align: left
     :header-rows: 1
     :stub-columns: 1
-    :align: left
 
-    * - Field
-      - Description
-    
-    * - Transport type\*
-      - Select |transport_type| from the drop-down menu.
+    "title","name","type","required","description","default"
+    "API URL","api_url","string","True","The URL pointing to the API endpoint exposing the service that makes the data available for retrieval through the feed.","https://api.intel471.com/v1/"
+    "API Key","api_key","password","True","API Key","***"
+    "email","email","string","True","email","***@***.****"
 
-    * - Content type\*
-      - Select |content_type| from the drop-down menu.
-
-    * - API URL\*
-      - Set this to the Intel 471 REST API endpoint.
-
-        By default, this is set to
-        ``https://api.intel471.com/v1/``.
-
-    * - API key\*
-      - Set this to your Intel 471 API key.
-
-    * - Email\*
-      - Set this to the email address associated
-        with your Intel 471 account. 
-
-    * - SSL verification
-      - Selected by default.
-        Select this option to enable SSL for this feed.
-
-    * - Path to SSL certificate file.
-      - Used when connecting to a feed
-        source that uses a custom CA.
-        Set this as the path to the SSL certificate
-        to use when authenticating the feed source.
-
-    * - Start ingesting from\*
-      - Ingest data from the feed source
-        starting from this date and time.
-        Use the drop-down calendar to select the date
-        and time you want to start ingesting feed data from.
 

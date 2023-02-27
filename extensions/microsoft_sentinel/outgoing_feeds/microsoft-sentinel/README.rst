@@ -11,7 +11,7 @@ Outgoing feed - |transport_type|
 
     * -
       - Specifications
-    
+
     * - Transport type
       - |transport_type|
 
@@ -73,55 +73,16 @@ Use ``client_id`` and ``client_secret`` in `Configuration options`_.
 Configuration options
 ==============================
 
-
-..  list-table::
+..  csv-table::
+    :align: left
     :header-rows: 1
     :stub-columns: 1
 
-    * - Field
-      - Description
-
-    * - Transport type\*
-      - Select |transport_type| from the drop-down menu.
-
-    * - Content type\*
-      - Select |content_type| from the drop-down menu.
-
-    * - Datasets\*
-      - Select one or more existing datasets from the drop-down menu.
-        The menu only displays datasets that contain observables
-        supported by the **Transport type** you've selected.
-
-        See `Supported observable types`_ for more information.
-
-    * - Update strategy\*
-      - Select an update strategy.
-
-        See `Update strategies for Microsoft Azure Sentinel`_
-        for more information.
-
-        Supported update strategies:
-
-        - **DIFF**
-        - **APPEND**
-        - **REPLACE**
-
-    * - API URL\*
-      - ``https://graph.microsoft.com/beta/``
-
-    * - Client ID\*
-      - Enter the ``client_id`` for your service application.
-
-        See `Set up service application on Azure`_ for more information.
-
-    * - Client Secret\*
-      - Enter the ``client_secret`` for your service application.
-
-        See `Set up service application on Azure`_ for more information.
-
-    * - Tenant ID\*
-      - Enter the tenant ID of the tenant that your Azure Sentinel
-        workspace is located on.
+    "title","name","type","required","description","default"
+    "API URL","api_url","string","True","The URL pointing to the API endpoint exposing the service.","https://graph.microsoft.com/beta/"
+    "Client id","client_id","string","True","Client id","*********"
+    "Tenant id","tenant_id","string","True","tenant id",""
+    "Client secret","client_secret","string","True","Client secret","**********"
 
 
 
@@ -188,7 +149,7 @@ Where:
 
 - ``EIQ_ENTITY_ID`` is an EclecticIQ Platform entity identifier
   in the format: ``<EclecticIQ_Platform_URL><entity_type>-<uuid>``
-  
+
   For example: ``{https://tip.example.com}indicator-14975dea-86cd-4211-a5f8-9c2e4daab69a``
 - ``EIQ_OBSERVABLE_ID`` is an EclecticIQ Platform observable identifier
   in the format ``<observable_type>:<observable_value>``

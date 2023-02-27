@@ -42,26 +42,16 @@ Requirements
 Configuration options
 ============================================
 
-..  list-table::
+..  csv-table::
+    :align: left
     :header-rows: 1
     :stub-columns: 1
-    :align: left
 
-    * - Field
-      - Description
-
-    * - API key\*
-      - Set this to your |provider| API key.
-
-    * - Email\*
-      - Set this to the email address associated
-        with your |provider| account.
-
-    * - Actor
-      - Enter a known ``handle``
-        of an actor to retrieve only records of forum posts
-        associated with that handle.
-
+    "title","name","type","required","description","default"
+    "API URL","api_url","string","True","The URL pointing to the API endpoint exposing the service that makes the data available for retrieval through the feed.","https://api.intel471.com/v1/"
+    "API Key","api_key","string","True","API access key provided by Intel 471.","***"
+    "email","email","string","True","A valid email address to be granted access to the Intel 471 API endpoint.","***@***.****"
+    "Actor","actor","string","False","Place value here to lookup forum posts the actor has written.",""
 
 Enrichment result
 ======================
